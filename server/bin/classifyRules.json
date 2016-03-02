@@ -1,0 +1,334 @@
+[
+  { "type" : "GE",
+    "id" : "GEBYMANUFACTURER",
+    "description" : "This scan is from GE",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^GE MEDICAL"
+      }
+    ]  
+  },
+  { "type" : "SIEMENS",
+    "id" : "SIEMENSBYMANUFACTURER",
+    "description" : "This scan is from SIEMENS",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^SIEMENS"
+      }
+    ]  
+  },
+  { "type" : "PHILIPS",
+    "id" : "PHILIPSBYMANUFACTURER",
+    "description" : "This scan is from Philips",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^Philips"
+      }
+    ]  
+  },
+  {
+  	"type" : "sagittal",
+        "description": "A sagittal scan",
+        "id": "ORIENTATIONSAG",
+  	"rules" : [
+  	    { "tag" : [ "0x20","0x37" ],
+  	      "value" : [0,1,0,0,0,-1],
+  	      "operator": "approx"
+  	    }
+  	]
+  },
+  {
+  	"type" : "axial",
+  	"description": "An axial scan",
+        "id": "ORIENTATIONAX",
+  	"rules" : [
+  	    { "tag" : [ "0x20","0x37" ],
+  	      "value" : [1,0,0,0,1,0],
+  	      "operator": "approx",
+	      "approxLevel": "0.0004"
+  	    }
+  	]
+  },
+  {
+  	"type" : "coronal",
+  	"description": "A coronal scan",
+        "id": "ORIENTATIONCOR",
+  	"rules" : [
+  	    { "tag" : [ "0x20","0x37" ],
+  	      "value" : [1,0,0,0,0,-1],
+  	      "operator": "approx"
+  	    }
+  	]
+  },
+  {
+      "type" : "localizer",
+      "description": "A localizer scan, has been classified before as axial, sagittal and coronal",
+      "rules": [
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "axial" ,
+	      "operator": "contains"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "coronal",
+	      "operator": "contains"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "sagittal",
+	      "operator": "contains"
+	  }
+      ]
+  },
+  {
+	"type" : "T1weighted",
+	"description" : "T1 weighted",
+	"rules" : [
+	    { "tag" : [ "RepetitionTime" ],
+	      "value" : "5000",
+	      "operator": "<"
+	    },
+	    { "tag" : [ "EchoTime" ],
+	      "value" : "5",
+	      "operator": "<"
+	    }
+	]
+  },
+  {
+	"type" : "T2weighted",
+	"description" : "T2 weighted",
+	"rules" : [
+	    { "tag" : [ "EchoTime" ],
+	      "value" : "5",
+	      "operator": ">"
+	    },
+	    { "tag" : [ "RepetitionTime" ],
+	      "value" : "1000",
+	      "operator": ">"
+	    }
+	]
+  },
+  {
+	"type" : "T1",
+	"description" : "T1 according to new DICOM tags",
+	"rules" : [
+	    { "tag" : [ "0x08", "0x9209" ],
+	      "value" : "T1"
+	    }
+	]
+  },
+  {
+	"type" : "T2",
+	"description" : "T2 according to new DICOM tags",
+	"rules" : [
+	    { "tag" : [ "0x08", "0x9209" ],
+	      "value" : "T2"
+	    }
+	]
+  },
+  {
+	"type" : "DTI",
+	"description" : "DTI according to new DICOM tags",
+	"rules" : [
+	    { "tag" : [ "0x08", "0x9209" ],
+	      "value" : "DIFFUSION"
+	    }
+	]
+  },
+  { "type" : "T1",
+    "description" : "A T1 weighted image from GE and as EFGRE3D",
+    "rules" : [
+      {
+	"rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "0x19", "0x109e"],
+        "value": "EFGRE3D"
+      },{ 
+        "tag": [ "NumFiles" ],
+        "operator": ">",
+        "value": "100"
+      }
+    ]
+  },
+  { "type" : "T2",
+    "description" : "A T2 weighted image",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^GE MEDICAL SYSTEMS" 
+      },{
+        "tag": [ "0x19", "0x109c" ],
+        "operator": "regexp",
+        "value": "Cube"
+      }
+    ]
+  },
+  { "type" : "fMRI",
+    "description" : "fMRI",
+    "rules" : [
+      { 
+        "tag": [ "0x08", "0x70"],
+        "value": "^GE MEDICAL SYSTEMS" 
+      },{
+        "tag": [ "0x43", "0x1039", "0" ],
+        "operator": "==",
+        "value": "4000"
+      }
+    ]
+  },  
+  {
+      "type" : "oblique",
+      "description": "Neither coronal, sagittal nor axial",
+      "check": "SeriesLevel",
+      "rules": [
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "axial",
+	      "operator": "contains",
+	      "negate": "yes"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "coronal",
+	      "operator": "contains",
+	      "negate": "yes"
+	  },
+          {
+	      "tag": [ "ClassifyType" ],
+	      "value": "sagittal",
+	      "operator": "contains",
+	      "negate": "yes"
+	  }
+      ]
+  },
+  {	
+      "type" : "PhaseEncodeUD",
+      "description": "Phase encode direction is up/down relative to slice orientation",
+      "rules": [
+          {
+             "tag": [ "0x18", "0x1312" ],
+	     "value": "^COL"
+          }
+      ]
+  },
+  {
+      "type" : "PhaseEncodeLR",
+      "description": "Phase encode direction is left/right relative to slice orientation",
+      "rules": [
+          {
+             "tag": [ "0x18", "0x1312" ],
+	     "value": "^ROW"
+          }
+      ]
+  },
+  {
+      "type" : "mosaic",
+      "description": "Siemens Mosaic format",
+      "rules": [
+          {
+	     "tag": [ "0x08", "0x08" ],
+             "value": "MOSAIC",
+	     "operator": "contains"
+          },
+	  {
+	     "rule": "SIEMENSBYMANUFACTURER"
+	  }
+      ]
+  },
+  {
+      "type" : "GEDTI",
+      "id" : "GEDTI",
+      "description": "GE based MMIL DTI format",
+      "rules": [
+          {
+	     "tag": [ "0x19", "0x109c" ],
+             "value": "^epi2_pepolar$"
+          },
+	  {
+	     "rule": "GEBYMANUFACTURER"
+	  }
+      ]
+  },
+  {
+      "type" : "GERSI",
+      "id" : "GERSI",
+      "description": "GE based MMIL RSI format",
+      "rules": [
+          {
+	     "tag": [ "0x19", "0x109c" ],
+             "value": "^epi2_pepolarFLEX"
+          },
+	  {
+	     "rule": "GEBYMANUFACTURER"
+	  }
+      ]
+  },
+  {
+      "type" : "rev+forward",
+      "description": "GE based MMIL format for integrated distorion correction",
+      "rules": [
+          {
+	     "tag": [ "0x19", "0x10b3" ],
+             "value": "^2"
+          },
+	  {
+	     "rule": "GERSI"
+	  },
+	  {
+	     "rule": "GEBYMANUFACTURER"
+	  }
+      ]
+  },
+  {
+      "type" : "allreversed",
+      "description": "GE based MMIL format for integrated distorion correction",
+      "rules": [
+          {
+	     "tag": [ "0x19", "0x10b3" ],
+             "value": "^1"
+          },
+	  {
+	     "rule": "GERSI"
+	  },
+	  {
+	     "rule": "GEBYMANUFACTURER"
+	  }
+      ]
+  },
+  {
+      "type" : "allforward",
+      "description": "GE based MMIL format for integrated distorion correction",
+      "rules": [
+          {
+	     "tag": [ "0x19", "0x10b3" ],
+             "value": "^0"
+          },
+	  {
+	     "rule": "GERSI"
+	  },
+	  {
+	     "rule": "GEBYMANUFACTURER"
+	  }
+      ]
+  },
+  {
+      "type" : "forward+reverse",
+      "description": "GE based MMIL format for integrated distorion correction",
+      "rules": [
+          {
+	     "tag": [ "0x19", "0x10b3" ],
+             "value": "^3"
+          },
+	  {
+	     "rule": "GERSI"
+	  },
+	  {
+	     "rule": "GEBYMANUFACTURER"
+	  }
+      ]
+  }
+]

@@ -1,0 +1,4 @@
+cd fiona
+# this has to be done only once
+# mkdir UCSD
+get UCSD/*.md5sum_server
