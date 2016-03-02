@@ -13,20 +13,20 @@ Configuration
 
 ```
 /data/
-├── active-scans		// StudyInstanceUID touch files for active scans
+├── active-scans                // StudyInstanceUID touch files for active scans
 ├── config
-│   └── config.json		// system configuration (see below)
-├── DAIC			// files that have been copied to the DAIC (permanent storage)
-├── enabled			// text file 0/1 to disable/enable data receive (incron by root)
-├── failed-scans		// MPPS files with old dates or too fiew images per series
-├── finished-scans		// MPPS files after data is received
+│   └── config.json             // system configuration (see below)
+├── DAIC                        // files that have been copied to the DAIC (permanent storage)
+├── enabled                     // text file 0/1 to disable/enable data receive (incron by root)
+├── failed-scans                // MPPS files with old dates or too fiew images per series
+├── finished-scans              // MPPS files after data is received
 ├── outbox                      
-├── scanner			// MPPS file storage received from scanner
+├── scanner                     // MPPS file storage received from scanner
 ├── site                        
-│   ├── archive			// receives incoming DICOM, sorted by StudyInstanceUID
-│   ├── participants		// receives incoming DICOM, sorted by PatientID/Date_Time
-│   └── raw			// receives incoming DICOM, sorted by Study/Series/
-└── UCSD			// receives p-files+MD5SUM by scp from scanner
+│   ├── archive                 // receives incoming DICOM, sorted by StudyInstanceUID
+│   ├── participants            // receives incoming DICOM, sorted by PatientID/Date_Time
+│   └── raw                     // receives incoming DICOM, sorted by Study/Series/
+└── UCSD                        // receives p-files+MD5SUM by scp from scanner
 ```
 
 (/data/config/config.json)
