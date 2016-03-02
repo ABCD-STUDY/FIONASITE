@@ -11,6 +11,7 @@ Configuration
 
 ### Data directory:
 
+```
 /data/
 ├── active-scans		// StudyInstanceUID touch files for active scans
 ├── config
@@ -26,9 +27,10 @@ Configuration
 │   ├── participants            // receives incoming DICOM, sorted by PatientID/Date_Time
 │   └── raw			// receives incoming DICOM, sorted by Study/Series/
 └── UCSD			// receives p-files+MD5SUM by scp from scanner
-
+```
 
 (/data/config/config.json)
+```javascript
 {
   "DICOMIP": "<IP of this computer as seen by the scanner>",
   "DICOMPORT": "<Port number that receives DICOM data (4006)>",
@@ -41,6 +43,7 @@ Configuration
   "DAICSERVER": "137.110.181.166",
   "PFILEDIR": "/data/<site>"
 }
+```
 
 ### Web interface:
 
