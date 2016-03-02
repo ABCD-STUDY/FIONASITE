@@ -37,7 +37,7 @@ Configuration
   "DICOMAETITLE": "<Application Entity Title of this system <site>FIONA>",
   "SCANNERIP": "<IP of the scanner console sending DICOM data>",
   "SCANNERPORT": "<Port on the scanner console receiving findscu/storescu messages (4006)>",
-  "SCANNERAETITLE": <Application Entity Title of the scanner console>",
+  "SCANNERAETITLE": "<Application Entity Title of the scanner console>",
   "MPPSPORT": "<Multiple Performed Procedure Steps port number on this system (4007)>",
   "SERVERUSER": "<Name of the user account on the DAIC server system>",
   "DAICSERVER": "137.110.181.166",
