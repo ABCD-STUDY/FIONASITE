@@ -44,7 +44,8 @@ fi
 v=`cat ${P}/${F}`
 if [[ "$v" == "0" ]]; then
    # stop the cron system service
-   service cron stop
+   # service cron stop
+   systemctl stop crond
    su - processing -c "${SERVERDIR}/bin/storectl.sh stop"
    su - processing -c "${SERVERDIR}/bin/mppsctl.sh stop"
    su - processing -c "${SERVERDIR}/bin/heartbeat.sh stop"
@@ -54,7 +55,8 @@ else
    su - processing -c "${SERVERDIR}/bin/storectl.sh start"
    su - processing -c "${SERVERDIR}/bin/mppsctl.sh start"
    su - processing -c "${SERVERDIR}/bin/heartbeat.sh start"
-   service cron start
+   #service cron start
+   systemctl start crond
    echo "`date`: enabled system services" >> $log
 fi
 

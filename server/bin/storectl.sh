@@ -13,6 +13,9 @@ port=`cat /data/config/config.json | jq -r ".SCANNERPORT"`
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 pidfile=${SERVERDIR}/.pids/storescpd.pid
 scriptfile=${SERVERDIR}/bin/receiveSingleFile.sh
+
+export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
+
 #
 # the received file will be written to a named pipe which is evaluated by processSingleFile.py
 #
