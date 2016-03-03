@@ -239,3 +239,82 @@ _:-ms-input-placeholder, :root .demo-graph {
       -ms-flex-align: center;
           align-items: center;
 }
+
+.background {
+    fill: #ffffff;
+    fill-opacity: 0.01;
+}
+#system-load, #div2, #system-space, #div4 {
+            width: 200px;
+            height: 200px;
+            box-sizing: border-box;
+            float: left;
+        }
+
+        #system-load .arc {
+            stroke-weight: 0.1;
+            fill: #f0a417;
+        }
+        #system-load .arc2 {
+            stroke-weight: 0.1;
+            fill: #b00d08;
+        }
+        #system-load .arc3 {
+            stroke-weight: 0.1;
+            fill: #b00d08;
+        }
+        #system-space .arc {
+            stroke-weight: 0.1;
+            fill: #1d871b;
+        }
+        .selectedRadial {
+            border-radius: 3px;
+            background: #f4f4f4;
+            color: #000;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+            border: 1px solid rgba(200,200,200,0.85);
+        }
+
+        .radial {
+            border-radius: 3px;
+            background: #FFFFFF;
+            color: #000;
+        }
+.component {
+    fill: #e1e1e1;
+}
+.component .label {
+    fill: gray;
+    font-family: 'Roboto', 'Helvetica', sans-serif;
+    text-anchor: middle;
+    color: gray;
+}
+.arc {
+    fill: #4e8fff;
+}
+.label {
+    font-family: 'Roboto', 'Helvetica', sans-serif;
+    text-anchor: middle;
+    color: gray;
+}
+.radial-svg {
+    display: block;
+    margin: 0 auto;
+}
+#system-load {
+  padding-left: 30px;
+  padding-top: 30px;
+}
+#system-space {
+  padding-left: 30px;
+  padding-top: 30px;
+}
+.timeline {
+    position: absolute;    
+    border-top: 2px dashed red;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    z-index: 999;
+}
