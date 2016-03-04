@@ -611,6 +611,10 @@ class ProcessSingleFile(Daemon):
                                         logging.error('Not a DICOM file: %s' % response)
                                         continue
                                 # if we have a Siemens file get the CSA header structure as well
+
+                                ptag_img = { }
+                                ptag_ser = { }
+
                                 # (0x0029, 0x__10) is one of several possibilities
                                 # - SIEMENS CSA NON-IMAGE, CSA Data Info
                                 # - SIEMENS CSA HEADER, CSA Image Header Info
@@ -619,7 +623,7 @@ class ProcessSingleFile(Daemon):
                                 # - SIEMENS MEDCOM OOG, MedCom OOG Info (MEDCOM Object Oriented Graphics)
                                 # Pydicom identifies it as "CSA Image Header Info"
                                 for tag in ( (0x0029, 0x1010), (0x0029, 0x1210), (0x0029, 0x1110) ):
-                                        tag_data = None if tag not in dataset else dataset[tag].value
+                                        tag_data = self._get(dataset, tag, None)
                                         if tag_data:
                                                 break
                                                 
@@ -630,8 +634,8 @@ class ProcessSingleFile(Daemon):
                                 # [PS] I don't know what makes this "shadow" data.
                                 for tag in ( (0x0029, 0x1020), (0x0029, 0x1220), (0x0029, 0x1120) ):
                                         tag_data = self._get(dataset, tag, None)
-                                if tag_data:
-                                        break
+                                        if tag_data:
+                                                break
                                         
                                 if tag_data:
                                         ptag_ser = self._parse_csa_header(tag_data)
@@ -675,6 +679,14 @@ class ProcessSingleFile(Daemon):
                                 # lets store some data in a series specific file
                                 fn3 = os.path.join(outdir, dataset.StudyInstanceUID, dataset.SeriesInstanceUID) + ".json"
                                 data = { 'IncomingConnection': { 'AETitleCaller': aetitlecaller, 'AETitleCalled': aetitlecalled, 'CallerIP': callerip } }
+                                try:
+                                        data['CSAHeaderImg'] = ptag_img
+                                except:
+                                        pass
+                                try:
+                                        data['CSAHeaderSeries'] = ptag_ser
+                                except:
+                                        pass
                                 try:
                                         data['Manufacturer'] = dataset.Manufacturer
                                 except:
