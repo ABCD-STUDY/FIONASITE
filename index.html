@@ -105,12 +105,40 @@
             </svg> -->
             <div id="system-load"></div>
             <div id="system-space"></div>
-            <div>
+            <!-- <div>
                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="system-status">
                  <input type="checkbox" id="system-status" class="mdl-switch__input">
                  <span class="mdl-switch__label">receive data</span>
                </label>
-            </div>
+            </div> -->
+            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+		<thead>
+		  <tr>
+                        <th></th>
+			<th class="mdl-data-table__cell--non-numeric">Data Receive</th>
+ 		  </tr>
+		</thead>
+		<tbody>
+		  <tr>
+                        <td> 
+<label for="receive-dicom" id="receive-dicom-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+  <input type="checkbox" id="receive-dicom" class="mdl-checkbox__input" checked />
+  <span class="mdl-checkbox__label"></span>
+</label>
+                         </td>
+			<td class="mdl-data-table__cell--non-numeric">receive DICOM data</td>
+		  </tr>
+		  <tr>
+                        <td>
+<label for="receive-mpps" id="receive-mpps-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+  <input type="checkbox" id="receive-mpps" class="mdl-checkbox__input" checked />
+  <span class="mdl-checkbox__label"></span>
+</label>
+                        </td>
+			<td class="mdl-data-table__cell--non-numeric">auto-pull DICOM data using MPPS</td>
+                  </tr>
+          	</tbody>
+	    </table>
             <!-- <svg fill="currentColor" width="200px" height="200px" viewBox="0 0 1 1" class="demo-chart mdl-cell mdl-cell--4-col mdl-cell--3-col-desktop">
               <use xlink:href="#piechart" mask="url(#piemask)" />
               <text x="0.5" y="0.5" font-family="Roboto" font-size="0.3" fill="#888" text-anchor="middle" dy="0.1">82<tspan dy="-0.07" font-size="0.2">%</tspan>
@@ -230,10 +258,17 @@ function loadSystem() {
     });
     jQuery.get('/php/startstop.php', function(data) {
         console.log('change checked to reflect system status ' + data);
-        if (data == "0") {
-           jQuery('#system-status').prop('checked', false);
+        // we expect two values here
+        var vals = data.split('');
+        if (vals[0] == "0") {
+           document.querySelector('#receive-dicom-label').MaterialCheckbox.uncheck();
         } else {
-           jQuery('#system-status').prop('checked', true);
+           document.querySelector('#receive-dicom-label').MaterialCheckbox.check();
+        }
+        if (vals[1] == "0") {
+           document.querySelector('#receive-mpps-label').MaterialCheckbox.uncheck();
+        } else {
+           document.querySelector('#receive-mpps-label').MaterialCheckbox.check();
         }
     });
     //jQuery('#calendar-loc').fullCalendar('refetchEvents');
@@ -306,15 +341,19 @@ jQuery(document).ready(function() {
     setInterval(function() { loadSystem(); }, 5000);
     createCalendar();
 
-    jQuery('#system-status').change(function() {
+    jQuery('#receive-dicom-label').change(function() {
        console.log('changed system status');
-       var val = this.checked;
-       if (val) {
-          jQuery.get('/php/startstop.php?enable=1');
-       } else {
-          jQuery.get('/php/startstop.php?enable=0');
-       }
+       var a = jQuery('#receive-dicom')[0].checked ? 1:0;
+       var b = jQuery('#receive-mpps')[0].checked ? 1:0;
+       jQuery.get('/php/startstop.php?enable='+a+""+b);
     });
+    jQuery('#receive-mpps-label').change(function() {
+       console.log('changed system status');
+       var a = jQuery('#receive-dicom')[0].checked ? 1:0;
+       var b = jQuery('#receive-mpps')[0].checked ? 1:0;
+       jQuery.get('/php/startstop.php?enable='+a+""+b);
+    });
+
 });
 
 </script>

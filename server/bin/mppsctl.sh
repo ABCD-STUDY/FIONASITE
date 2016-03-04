@@ -19,6 +19,15 @@ pidfile=${SERVERDIR}/.pids/mpps.pid
 #
 case $1 in
     'start')
+        if [[ -f /data/enabled ]] && [[ -r /data/enabled ]]; then
+           v=`cat /data/enabled | head -c 2 | tail -c 1`
+           if [[ "$v" == "0" ]]; then
+              echo "`date`: service disabled using /data/enabled control file" >> ${SERVERDIR}/logs/ppsscpfs.log
+              echo "service disabled using /data/enabled control file"
+              exit
+           fi
+        fi
+
         if [ ! -d "$od" ]; then
           mkdir $od
         fi

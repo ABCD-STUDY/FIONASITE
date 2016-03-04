@@ -3,11 +3,11 @@
 #
 # This script is called by incrond (root) if someone changes the contents of /data/enabled.
 #
-# If the file contains the character "0" all receive actions on this machine are disabled.
-# If the file contains the character "1" all receive actions on this machine are enabled.
+# Characters in the /data/enabled file are used to control storescp (first character "0" to disable)
+# and the mpps system service (second character "0" to disable).
 #
-# enable:
-#   echo "1" > /data/enabled
+# enable all:
+#   echo "11" > /data/enabled
 #
 
 if [ $# -ne 2 ]; then
@@ -31,32 +31,26 @@ if [[ ! -f "${P}/${F}" ]]; then
   exit
 fi
 
-# We should find out if we have our services enabled right now
-# (storescp,mpps,heartbeat). We don't have to enable again
-# if its already running.
-enabled=0
-if [[ `service cron status` == "cron stop/waiting" ]]; then
-  enabled=0
-else 
-  enabled=1
-fi
+export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 
-v=`cat ${P}/${F}`
-if [[ "$v" == "0" ]]; then
-   # stop the cron system service
-   # service cron stop
-   systemctl stop crond
+vv=`cat ${P}/${F}`
+v1=${vv:0:1}
+v2=${vv:1:2}
+# start storescp
+if [[ "$v1" == "0" ]]; then
    su - processing -c "${SERVERDIR}/bin/storectl.sh stop"
-   su - processing -c "${SERVERDIR}/bin/mppsctl.sh stop"
-   su - processing -c "${SERVERDIR}/bin/heartbeat.sh stop"
-   echo "`date`: disabled system services" >> $log
+   su - processing -c "/usr/bin/python2.7 ${SERVERDIR}/bin/processSingleFile.py stop"
+   echo "`date`: disabled storescp services" >> $log
 else
-   # start the cron system service (which starts all other services)
    su - processing -c "${SERVERDIR}/bin/storectl.sh start"
+   su - processing -c "/usr/bin/python2.7 ${SERVERDIR}/bin/processSingleFile.py start"
+   echo "`date`: enable storescp services" >> $log
+fi
+if [[ "$v2" == "0" ]]; then
+   su - processing -c "${SERVERDIR}/bin/mppsctl.sh stop"
+   echo "`date`: disabled mpps services" >> $log
+else
+   echo "`date`: enable mpps services" >> $log
    su - processing -c "${SERVERDIR}/bin/mppsctl.sh start"
-   su - processing -c "${SERVERDIR}/bin/heartbeat.sh start"
-   #service cron start
-   systemctl start crond
-   echo "`date`: enabled system services" >> $log
 fi
 

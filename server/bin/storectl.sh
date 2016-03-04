@@ -4,6 +4,9 @@
 # purpose: start storescp server for processing user at boot time to receive data
 #          Move files to project specific file system
 #
+# This system service will fail if a control file /data/enabled exists and 
+# its first character is a "0".
+#
 # (Hauke Bartsch)
 
 od=/data/site/archive
@@ -21,6 +24,15 @@ export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 #
 case $1 in
     'start')
+        if [[ -f /data/enabled ]] && [[ -r /data/enabled ]]; then
+           v=`cat /data/enabled | head -c 1`
+           if [[ "$v" == "0" ]]; then
+              echo "`date`: service disabled using /data/enabled control file" >> ${SERVERDIR}/logs/storescpd.log
+              echo "service disabled using /data/enabled control file"
+              exit
+           fi
+        fi
+
         if [ ! -d "$od" ]; then
           mkdir $od
         fi
