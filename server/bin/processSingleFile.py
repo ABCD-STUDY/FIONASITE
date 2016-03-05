@@ -613,6 +613,20 @@ class ProcessSingleFile(Daemon):
                                         print("Not a DICOM file: ", response)
                                         logging.error('Not a DICOM file: %s' % response)
                                         continue
+                                # Ignore secondary captures etc., we don't need them and they could contain
+                                # patient information burned in.
+                                try:
+                                        if dataset.Modality != "MR":
+                                                # We want to remove this image again, don't keep it on our drive.
+                                                # Even better would be to not accept them in storescp.
+                                                logging.error('Non-MR modality DICOM image (%s) detected in %s, file will be removed' % (dataset.Modality, response))
+                                                try:
+                                                        os.remove(response)
+                                                except OSError:
+                                                        pass
+                                                continue
+                                except:
+                                        pass
                                 # if we have a Siemens file get the CSA header structure as well
 
                                 ptag_img = { }
