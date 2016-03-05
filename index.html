@@ -43,14 +43,15 @@
       z-index: 900;
     }
     </style>
+    <link rel="stylesheet" href="css/dialog-polyfill.min.css">
   </head>
   <body>
     <div class="demo-layout mdl-layout mdl-js-layout mdl-layout--fixed-drawer mdl-layout--fixed-header">
       <header class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
-          <span class="mdl-layout-title" title="Flash I/O Network Appliance">&nbsp;&nbsp;FIONA-CTIPM</span>
+          <span class="mdl-layout-title hostname" title="Flash I/O Network Appliance">&nbsp;&nbsp;ABCD's FIONA</span>
           <div class="mdl-layout-spacer"></div>
-          <div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+          <!--<div class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
             <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
               <i class="material-icons">search</i>
             </label>
@@ -58,14 +59,14 @@
               <input class="mdl-textfield__input" type="text" id="search" />
               <label class="mdl-textfield__label" for="search">Enter your query...</label>
             </div>
-          </div>
+          </div>-->
           <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
             <i class="material-icons">more_vert</i>
           </button>
           <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
-            <li class="mdl-menu__item">About</li>
+            <li class="mdl-menu__item" id="dialog-about-button">About</li>
             <li class="mdl-menu__item">Contact</li>
-            <li class="mdl-menu__item">Legal information</li>
+            <li class="mdl-menu__item" id="dialog-setup-button">Setup</li>
           </ul>
         </div>
       </header>
@@ -103,7 +104,9 @@
               <tspan font-size="0.1" dy="0.2" dx="-0.4">scans</tspan>
               </text>
             </svg> -->
-            <div id="system-load"></div>
+            <div id="system-load">
+	      <div class="mdl-spinner mdl-js-spinner is-active" style="width: 110px; height: 110px;margin-left: 10px;"></div>
+	    </div>
             <div id="system-space"></div>
             <!-- <div>
                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="system-status">
@@ -113,10 +116,6 @@
             </div> -->
             <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
 		<thead>
-		  <tr>
-                        <th></th>
-			<th class="mdl-data-table__cell--non-numeric">Data Receive</th>
- 		  </tr>
 		</thead>
 		<tbody>
 		  <tr>
@@ -126,7 +125,7 @@
   <span class="mdl-checkbox__label"></span>
 </label>
                          </td>
-			<td class="mdl-data-table__cell--non-numeric">receive DICOM data</td>
+			<td class="mdl-data-table__cell--non-numeric">allow to receive DICOM</td>
 		  </tr>
 		  <tr>
                         <td>
@@ -135,7 +134,16 @@
   <span class="mdl-checkbox__label"></span>
 </label>
                         </td>
-			<td class="mdl-data-table__cell--non-numeric">auto-pull DICOM data using MPPS</td>
+			<td class="mdl-data-table__cell--non-numeric">auto-pull DICOM</td>
+                  </tr>
+		  <tr>
+                        <td>
+<label for="anonymize" id="anonymize-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
+  <input type="checkbox" id="anonymize" class="mdl-checkbox__input" checked />
+  <span class="mdl-checkbox__label"></span>
+</label>
+                        </td>
+			<td class="mdl-data-table__cell--non-numeric">anonymize DICOM</td>
                   </tr>
           	</tbody>
 	    </table>
@@ -146,10 +154,10 @@
               </text>
             </svg> -->
           </div>
-          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--8-col">
+          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
 	      <div id="calendar-loc"></div>
           </div>
-          <div class="demo-cards mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
+        <!--  <div class="demo-cards mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
             <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--12-col-desktop">
               <div class="mdl-card__title mdl-card--expand mdl-color--teal-300">
                 <h2 class="mdl-card__title-text">Updates</h2>
@@ -198,10 +206,42 @@
                 <i class="material-icons">location_on</i>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
       </main>
     </div>
+
+<dialog class="mdl-dialog" id="modal-setup">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 20px;">
+            Configuration
+        </div>
+        <div id="setup-text">
+loading configuration file...
+        </div>
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="setup-dialog-cancel">Cancel</button>
+        <button type="button" class="mdl-button" id="setup-dialog-save">Save</button>
+    </div>
+</dialog>
+
+<dialog class="mdl-dialog" id="modal-about">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 20px;">
+            About
+        </div>
+        <div>
+	  <p>
+	    Learn more about this project on abcd-workspace.ucsd.edu.
+	  </p>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button close-dialog">OK</button>
+    </div>
+</dialog>
+
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" style="position: fixed; left: -1000px; height: -1000px;">
         <defs>
           <mask id="piemask" maskContentUnits="objectBoundingBox">
@@ -215,12 +255,14 @@
         </defs>
       </svg>
     <!--  <a href="https://github.com/google/material-design-lite/blob/master/templates/dashboard/" target="_blank" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--accent-contrast">View Source</a> -->
+    <script src="js/dialog-polyfill.min.js"></script>
     <script src="js/material.min.js"></script>
     <script src="js/d3.js"></script>
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/radialProgress.js"></script>
     <script src="js/moment-with-locales.min.js"></script>
     <script src="js/fullcalendar.min.js"></script>
+    <script src="js/ace-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script>
 
 function loadSubjects() {
@@ -236,8 +278,10 @@ var rp2 = "";
 function loadSystem() {
     //jQuery('#system-load').children().remove();
     jQuery.getJSON('/php/stats.php', function(data) {
+        jQuery('.hostname').text(data.hostname);
 	//var load=d3.select(document.getElementById('system-load'));
         if (rp1 == "") {
+            jQuery('#system-load').children().remove();
             rp1 = radialProgress(document.getElementById('system-load'))
                 .label("load")
                 .diameter(150)
@@ -247,6 +291,7 @@ function loadSystem() {
             rp1.value(data.load_avg * 100).render();
 	}
         if (rp2 == "") {
+            jQuery('#system-space').children().remove();
             rp2 = radialProgress(document.getElementById('system-space'))
                 .label("space")
                 .diameter(150)
@@ -269,6 +314,11 @@ function loadSystem() {
            document.querySelector('#receive-mpps-label').MaterialCheckbox.uncheck();
         } else {
            document.querySelector('#receive-mpps-label').MaterialCheckbox.check();
+        }
+        if (vals[2] == "0") {
+           document.querySelector('#anonymize-label').MaterialCheckbox.uncheck();
+        } else {
+           document.querySelector('#anonymize-label').MaterialCheckbox.check();
         }
     });
     //jQuery('#calendar-loc').fullCalendar('refetchEvents');
@@ -328,13 +378,21 @@ function createCalendar() {
 	},
 	viewRender: function(view) {
 	   try { 
-              setTimeline(view);
+              //setTimeline(view);
            } catch( err ) {}
         },
     });
     
 }
 
+function changeSystemStatus() {
+   var a = jQuery('#receive-dicom')[0].checked ? 1:0;
+   var b = jQuery('#receive-mpps')[0].checked ? 1:0;
+   var c = jQuery('#anonymize')[0].checked ? 1:0;
+   jQuery.get('/php/startstop.php?enable='+a+""+b+""+c);
+}
+
+var editor = "";
 jQuery(document).ready(function() {
     console.log('in ready');
     loadSubjects();
@@ -342,18 +400,60 @@ jQuery(document).ready(function() {
     createCalendar();
 
     jQuery('#receive-dicom-label').change(function() {
-       console.log('changed system status');
-       var a = jQuery('#receive-dicom')[0].checked ? 1:0;
-       var b = jQuery('#receive-mpps')[0].checked ? 1:0;
-       jQuery.get('/php/startstop.php?enable='+a+""+b);
-    });
+       changeSystemStatus();
+     });
     jQuery('#receive-mpps-label').change(function() {
-       console.log('changed system status');
-       var a = jQuery('#receive-dicom')[0].checked ? 1:0;
-       var b = jQuery('#receive-mpps')[0].checked ? 1:0;
-       jQuery.get('/php/startstop.php?enable='+a+""+b);
+       changeSystemStatus();
+    });
+    jQuery('#anonymize-label').change(function() {
+       changeSystemStatus();
     });
 
+    var dialog = document.querySelector('#modal-setup');
+    if (!dialog.showModal) {
+       dialogPolyfill.registerDialog(dialog);
+    }
+    jQuery('#dialog-setup-button').click(function() {
+      var dialog = document.querySelector('#modal-setup');
+      dialog.showModal();
+      jQuery.get('php/config.php', function(data) {
+          if (editor == "") {
+             editor = ace.edit("setup-text");
+             //editor.setTheme("ace/theme/monokai");
+             editor.setTheme("ace/theme/chrome");
+             editor.getSession().setMode("ace/mode/javascript");
+             editor.setValue("try to load settings...\n");
+          }
+
+ 	  if (editor !== "") {
+             editor.setValue(data);
+          }
+      });
+
+    });
+    jQuery('#setup-dialog-save').click(function() {
+	jQuery.getJSON('php/config.php', { "action": "save", "value": editor.getValue() }, function(data) {
+	    // did saving the data work?
+            alert(data);
+        });
+    });
+
+    jQuery('#dialog-about-button').click(function() {
+       var dialog = document.querySelector('#modal-about');
+       if (!dialog.showModal) {
+         dialogPolyfill.registerDialog(dialog);
+       }
+       dialog.showModal();
+    });
+    var closeButton = dialog.querySelector('#setup-dialog-cancel');
+    var closeClickHandler = function (event) {
+       dialog.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+    jQuery('.close-dialog').click(function() {
+       var dialog = document.querySelector('#modal-about');
+       dialog.close();
+    });
 });
 
 </script>

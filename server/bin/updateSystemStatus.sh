@@ -36,6 +36,7 @@ export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 vv=`cat ${P}/${F}`
 v1=${vv:0:1}
 v2=${vv:1:2}
+v3=${vv:2:3}
 # start storescp
 if [[ "$v1" == "0" ]]; then
    su - processing -c "${SERVERDIR}/bin/storectl.sh stop"
@@ -52,5 +53,10 @@ if [[ "$v2" == "0" ]]; then
 else
    echo "`date`: enable mpps services" >> $log
    su - processing -c "${SERVERDIR}/bin/mppsctl.sh start"
+fi
+if [[ "$v3" == "0" ]]; then
+   echo "`date`: disabled anonymizer services" >> $log
+else
+   echo "`date`: enable anonymizer services" >> $log
 fi
 

@@ -17,6 +17,7 @@ function getSystemMemInfo()
   $d = '/data/site/archive';
   $data['disk_free_percent'] = round(100.0 * disk_free_space($d) / disk_total_space($d), 2);
   $data['load_avg'] = sys_getloadavg()[0];
+  $data['hostname'] = gethostname();
 
   echo(json_encode($data, JSON_PRETTY_PRINT));
 
