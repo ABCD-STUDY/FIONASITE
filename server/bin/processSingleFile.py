@@ -679,14 +679,14 @@ class ProcessSingleFile(Daemon):
                                 # lets store some data in a series specific file
                                 fn3 = os.path.join(outdir, dataset.StudyInstanceUID, dataset.SeriesInstanceUID) + ".json"
                                 data = { 'IncomingConnection': { 'AETitleCaller': aetitlecaller, 'AETitleCalled': aetitlecalled, 'CallerIP': callerip } }
-                                try:
-                                        data['CSAHeaderImg'] = ptag_img
-                                except:
-                                        pass
-                                try:
-                                        data['CSAHeaderSeries'] = ptag_ser
-                                except:
-                                        pass
+                                #try:
+                                #        data['CSAHeaderImg'] = ptag_img
+                                #except:
+                                #        pass
+                                #try:
+                                #        data['CSAHeaderSeries'] = ptag_ser
+                                #except:
+                                #        pass
                                 try:
                                         data['Manufacturer'] = dataset.Manufacturer
                                 except:
@@ -780,7 +780,44 @@ class ProcessSingleFile(Daemon):
                                         data['Private0043_1039'] = dataset[0x0043,0x1039].value
                                 except:
                                         pass
-                                        
+                                
+                                # lets add up all the diffusion information we find for Siemens
+                                siemensDiffusionInformation = None
+                                try:
+                                        ptag_img
+                                except NameError:
+                                        pass
+                                else:
+                                        siemensDiffusionInformation = {}
+                                        #try:
+                                        #        siemensDiffusionInformation['B_matrix'] = ptag_img['B_matrix']
+                                        #except:
+                                        #        pass
+                                        try:
+                                                siemensDiffusionInformation['B_value'] = ptag_img['B_value']
+                                        except:
+                                                pass
+                                        try:
+                                                siemensDiffusionInformation['DiffusionDirectionality'] = ptag_img['DiffusionDirectionality']
+                                        except:
+                                                pass
+                                        try:
+                                                siemensDiffusionInformation['DiffusionGradientDirection'] = ptag_img['DiffusionGradientDirection']
+                                        except:
+                                                pass
+                                        try: 
+                                                data['PhaseEncodingDirectionPositive'] = ptag_img['PhaseEncodingDirectionPositive']
+                                        except:
+                                                pass
+                                        try:
+                                                siemensDiffusionInformation['SOPInstanceUID'] = str(dataset[0x08,0x18].value)
+                                        except:
+                                                pass
+                                        try:
+                                                siemensDiffusionInformation['InstanceNumber'] = str(dataset[0x20,0x13].value)
+                                        except:
+                                                pass
+
                                 # keep the slice location (use the maximum values for all slice locations)
                                 currentSliceLocation = None
                                 try:
@@ -797,6 +834,14 @@ class ProcessSingleFile(Daemon):
                                                         data['SliceLocation'] = currentSliceLocation;
                                         except:
                                                 pass
+                                if siemensDiffusionInformation != None:
+                                        if not 'siemensDiffusionInformation' in data:
+                                                data['siemensDiffusionInformation'] = []
+                                        try:
+                                                data['siemensDiffusionInformation'].append( siemensDiffusionInformation )
+                                        except:
+                                                pass
+
                                 if not 'ClassifyType' in data:
                                         data['ClassifyType'] = []
                                 data['StudyInstanceUID'] = dataset.StudyInstanceUID
