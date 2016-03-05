@@ -23,8 +23,34 @@ log=${SERVERDIR}/logs/detectStudyArrival.log
 # only done if at least that old (in seconds)
 oldtime=15
 
+anonymize () {
+  SDIR=$1
+  SSERIESDIR=$2
+  # This loop is very inefficient, dcmodify called for each file is not good.
+  # We should group files together that not exceed the limit of the command line length in bash.
+  # Even better we should replace this with some GDCM code.
+  find /data/site/raw/${SDIR}/${SSERIESDIR}/ -print0 | while read -d $'\0' file2
+  do 
+      # find out the real name of this file
+      f=`/bin/readlink -f "$file2"`
+      # To properly annonymize data we need to follow http://dicom.nema.org/dicom/2013/output/chtml/part15/chapter_E.html
+      # We keep here the patient name and patient id - they have to be anonymized seperately, they are required still for site identification
+      /usr/bin/dcmodify -ie -nb -ea "(0010,0030)" -ea "(0020,000E)" -ea "(0020,000D)" \
+  	-ea "(0008,0080)" -ea "(0008,1040)" -ea "(0008,0081)" -ea "(0008,0050)" \
+  	-ea "(0008,0090)" -ea "(0008,1070)" -ea "(0008,1155)" -ea "(0010,0040)" \
+  	-ea "(0010,1000)" -ea "(0010,1001)" -ea "(0010,1010)" -ea "(0010,1040)" \
+  	-ea "(0020,0010)" -ea "(0020,4000)" "$f"
+  done
+  # We need to processSingleFile again after the anonymization is done. First delete the previous cached json file
+  echo "`date`: anonymize  - delete now /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
+  /bin/rm /data/site/raw/${SDIR}/${SSERIESDIR}.json
+  # then send files to processSingleFile again
+  echo "`date`: anonymize  - recreate /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
+  find -L /data/site/raw/${SDIR}/${SSERIESDIR}/ -type f -print | xargs -i echo "/data/raw/${SDIR}/${SSERIESDIR}/{}" >> /tmp/.processSingleFilePipe
+}
+
 detect () {
-  # every file in this directory is a potential job, but we need to find some that are old enough
+  # every file in this directory is a potential job, but we need to find some that are old enough, there could be more coming
   find "$DIR" -print0 | while read -d $'\0' file
   do
     if [ "$file" == "$DIR" ]; then
@@ -48,18 +74,17 @@ detect () {
       else
         SSERIESDIR=${SERIESDIR}
       fi
-      echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR series: $SSERIESDIR" >> $log
       # before we can do anything we need to anonymize this series (real file location, no symbolic links)
-      echo "`date`: anonymize files linked to by /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
-      find /data/site/raw/${SDIR}/${SSERIESDIR}/ -print0 | while read -d $'\0' file2
-      do
-	  # find out the real name of this file
-	  f=`/bin/readlink -f "$file2"`
-          # to properly annonymize data we need to follow http://dicom.nema.org/dicom/2013/output/chtml/part15/chapter_E.html
-          # We keep here the patient name and patient id - they have to be anonymized seperately, they are required still for site identification
-          /usr/bin/dcmodify -ie -nb -ea "(0010,0030)" -ea "(0020,000E)" -ea "(0020,000D)" -ea "(0008,0080)" -ea "(0008,1040)" -ea "(0008,0081)" -ea "(0008,0050)" -ea "(0008,0090)" -ea "(0008,1070)" -ea "(0008,1155)" -ea "(0010,0040)" -ea "(0010,1000)" -ea "(0010,1001)" -ea "(0010,1010)" -ea "(0010,1040)" -ea "(0020,0010)" -ea "(0020,4000)" "$f"
-      done
-      echo "`date`: anonymization is done" >> $log
+      anonimize=1
+      if [[ -f /data/enabled ]]; then
+        anonimize=`echo /data/enabled | head -c 3 | tail -c 1`
+      fi
+      if [[ $anonimize == "1" ]]; then
+        echo "`date`: anonymize files linked to by /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
+ 	anonymize ${SDIR} ${SSERIESDIR}
+        echo "`date`: anonymization is done" >> $log
+      fi
+      echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR series: $SSERIESDIR" >> $log
     else
       echo "`date`: Study detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR" >> $log
     fi
