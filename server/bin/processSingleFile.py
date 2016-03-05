@@ -2,6 +2,9 @@
 """
 Create a daemon process that listens to send messages and reads a DICOM file,
 extracts the header information and creates a Study/Series symbolic link structure.
+
+The parser for the Siemens CSA header have been adapted from 
+   https://scion.duhs.duke.edu/svn/vespa/tags/0_1_0/libduke_mr/util_dicom_siemens.py
 """
 
 import sys, os, time, atexit, stat, tempfile, copy
