@@ -32,6 +32,8 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/fullcalendar.min.css">
     <link rel="stylesheet" media="print" href="css/fullcalendar.print.css">
+    <link rel="stylesheet" href="css/jquery.bonsai.css">
+   
     <style>
     #view-source {
       position: fixed;
@@ -74,15 +76,15 @@
         <header class="demo-drawer-header">
           <img src="images/user.jpg" class="demo-avatar">
           <div class="demo-avatar-dropdown">
-            <span>fiona@ctipm.edu</span>
+            <span>Data</span>
             <div class="mdl-layout-spacer"></div>
             <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
               <i class="material-icons" role="presentation">arrow_drop_down</i>
               <span class="visuallyhidden">Accounts</span>
             </button>
             <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
-              <li class="mdl-menu__item">fiona@ctipm.edu</li>
-              <li class="mdl-menu__item"><i class="material-icons">add</i>Add another account...</li>
+              <li class="mdl-menu__item" id="load-subjects">Patients</li>
+              <li class="mdl-menu__item" id="load-studies">Studies</li>
             </ul>
           </div>
         </header>
@@ -104,49 +106,26 @@
               <tspan font-size="0.1" dy="0.2" dx="-0.4">scans</tspan>
               </text>
             </svg> -->
-            <div id="system-load">
+            <div id="system-load" class="mdl-cell mdl-cell--2-col">
 	      <div class="mdl-spinner mdl-js-spinner is-active" style="width: 110px; height: 110px;margin-left: 10px;"></div>
 	    </div>
-            <div id="system-space"></div>
-            <!-- <div>
-               <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="system-status">
-                 <input type="checkbox" id="system-status" class="mdl-switch__input">
-                 <span class="mdl-switch__label">receive data</span>
-               </label>
-            </div> -->
-            <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
-		<thead>
-		</thead>
-		<tbody>
-		  <tr>
-                        <td> 
+            <div id="system-space" class="mdl-cell mdl-cell--2-col"></div>
+            <div class="mdl-cell mdl-cell--4-col">
 <label for="receive-dicom" id="receive-dicom-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
   <input type="checkbox" id="receive-dicom" class="mdl-checkbox__input" checked />
-  <span class="mdl-checkbox__label"></span>
+  <span class="mdl-checkbox__label">allow to receive DICOM</span>
 </label>
-                         </td>
-			<td class="mdl-data-table__cell--non-numeric">allow to receive DICOM</td>
-		  </tr>
-		  <tr>
-                        <td>
+
 <label for="receive-mpps" id="receive-mpps-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
   <input type="checkbox" id="receive-mpps" class="mdl-checkbox__input" checked />
-  <span class="mdl-checkbox__label"></span>
+  <span class="mdl-checkbox__label">auto-pull DICOM</span>
 </label>
-                        </td>
-			<td class="mdl-data-table__cell--non-numeric">auto-pull DICOM</td>
-                  </tr>
-		  <tr>
-                        <td>
+
 <label for="anonymize" id="anonymize-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
   <input type="checkbox" id="anonymize" class="mdl-checkbox__input" checked />
-  <span class="mdl-checkbox__label"></span>
+  <span class="mdl-checkbox__label">anonymize files</span>
 </label>
-                        </td>
-			<td class="mdl-data-table__cell--non-numeric">anonymize DICOM</td>
-                  </tr>
-          	</tbody>
-	    </table>
+            </div>
             <!-- <svg fill="currentColor" width="200px" height="200px" viewBox="0 0 1 1" class="demo-chart mdl-cell mdl-cell--4-col mdl-cell--3-col-desktop">
               <use xlink:href="#piechart" mask="url(#piemask)" />
               <text x="0.5" y="0.5" font-family="Roboto" font-size="0.3" fill="#888" text-anchor="middle" dy="0.1">82<tspan dy="-0.07" font-size="0.2">%</tspan>
@@ -226,6 +205,20 @@ loading configuration file...
     </div>
 </dialog>
 
+<dialog class="mdl-dialog" id="modal-series-info">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 20px;">
+            Series Information
+        </div>
+        <div id="series-info-text">
+loading information...
+        </div>
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="series-info-dialog-cancel">ok</button>
+    </div>
+</dialog>
+
 <dialog class="mdl-dialog" id="modal-about">
     <div class="mdl-dialog__content">
         <div style="font-size: 32pt; margin-bottom: 20px;">
@@ -263,15 +256,54 @@ loading configuration file...
     <script src="js/moment-with-locales.min.js"></script>
     <script src="js/fullcalendar.min.js"></script>
     <script src="js/ace-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/jquery.bonsai.js" type="text/javascript"></script>
     <script>
 
+var subjectData = [];
 function loadSubjects() {
     jQuery.getJSON('/php/subjects.php', function(data) {
+	jQuery('#list-of-subjects').find('.data').remove();
+        subjectData = data; // we can re-use those
+        var l = 20;
 	for (var i = 0; i < data.length; i++) {
-	    jQuery('#list-of-subjects').append('<a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i>'+ data[i] +'</a>');
+            var shortname = data[i].PatientName;
+            if (shortname.length > l)
+               shortname = data[i].PatientName.substring(0, l) + "...";
+
+	    jQuery('#list-of-subjects').prepend('<div class="data" style="position: relative;"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 55px; bottom: -2px;">' + data[i].StudyDate + '/' + data[i].StudyTime.split('.')[0] + '</div>'+shortname+'</a></div>');
 	}
     });
 }
+function shortenName( name ) {
+   var l = 20;
+   if (name.length > l) {
+       // take the first part
+       return name.substring(0,5) + "..." + name.substring(name.length -15, name.length);
+   }
+   return name;
+}
+var studyData = [];
+function loadStudies() {
+    jQuery.getJSON('/php/series.php', function(data) {
+        studyData = data;
+	// here we get all series below each study, need a tree view, get rid of stuff already on display
+	jQuery('#list-of-subjects').find('.data').remove();
+        // create a nested list for bonsai
+	str = "<ul id=\"study-list-bonsai\" class=\"data\">";
+        var studies = Object.keys(data);
+        for (var i = 0; i < studies.length; i++) {
+	   str = str + "<li>" + data[studies[i]][0]['PatientName'] + "<ul>";
+           for (var j = 0; j < data[studies[i]].length; j++) {
+	       str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\">" + shortenName(data[studies[i]][j]['SeriesDescription']) + "</li>";
+           }
+           str = str + "</ul></li>";
+        }
+        str = str + "</ul>";
+        jQuery('#list-of-subjects').prepend(str);
+        jQuery('#study-list-bonsai').bonsai();
+    });
+}
+
 
 var rp1 = "";
 var rp2 = "";
@@ -393,11 +425,19 @@ function changeSystemStatus() {
 }
 
 var editor = "";
+var editor2 = "";
 jQuery(document).ready(function() {
-    console.log('in ready');
+
     loadSubjects();
     setInterval(function() { loadSystem(); }, 5000);
     createCalendar();
+
+    jQuery('#load-subjects').click(function() {
+	loadSubjects();
+    });
+    jQuery('#load-studies').click(function() {
+	loadStudies();
+    });
 
     jQuery('#receive-dicom-label').change(function() {
        changeSystemStatus();
@@ -407,6 +447,26 @@ jQuery(document).ready(function() {
     });
     jQuery('#anonymize-label').change(function() {
        changeSystemStatus();
+    });
+
+    var dialog = document.querySelector('#modal-series-info');
+    if (!dialog.showModal) {
+       dialogPolyfill.registerDialog(dialog);
+    }
+    jQuery('#list-of-subjects').on('click', '.open-series-info', function() {
+      var dialog = document.querySelector('#modal-series-info');
+      dialog.showModal();
+      if (editor2 == "") {
+             editor2 = ace.edit("series-info-text");
+             editor2.setTheme("ace/theme/chrome");
+             editor2.getSession().setMode("ace/mode/javascript");
+             editor2.setValue("try to load series info...\n");
+      }
+      if (editor2 !== "") {
+         editor2.setValue( JSON.stringify( studyData[ jQuery(this).attr('key') ][ jQuery(this).attr('entry') ], null, 4 ) );
+         editor2.selection.moveTo(1,0);
+      }
+
     });
 
     var dialog = document.querySelector('#modal-setup');
@@ -454,6 +514,11 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-about');
        dialog.close();
     });
+    jQuery('#series-info-dialog-cancel').click(function() {
+       var dialog = document.querySelector('#modal-series-info');
+       dialog.close();     
+    });
+
 });
 
 </script>

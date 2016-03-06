@@ -110,6 +110,7 @@ html, body {
           align-items: center;
   color: rgba(255, 255, 255, 0.56);
   font-weight: 500;
+  padding: 10px 20px;
 }
 .demo-layout .demo-navigation .mdl-navigation__link:hover {
   background-color: #00BCD4;
@@ -118,7 +119,7 @@ html, body {
 .demo-navigation .mdl-navigation__link .material-icons {
   font-size: 24px;
   color: rgba(255, 255, 255, 0.56);
-  margin-right: 32px;
+  margin-right: 10px;
 }
 
 .demo-content {
@@ -246,7 +247,7 @@ _:-ms-input-placeholder, :root .demo-graph {
 }
 #system-load, #div2, #system-space, #div4 {
             width: 200px;
-            height: 200px;
+            height: 160px;
             box-sizing: border-box;
             float: left;
         }
@@ -321,7 +322,8 @@ _:-ms-input-placeholder, :root .demo-graph {
 .mdl-dialog {
     border: none;
     box-shadow: 0 9px 46px 8px rgba(0, 0, 0, 0.14), 0 11px 15px -7px rgba(0, 0, 0, 0.12), 0 24px 38px 3px rgba(0, 0, 0, 0.2);
-    width: 480px; }
+    width: 680px; 
+}
 .mdl-dialog__title {
     padding: 24px 24px 0;
     margin: 0;
@@ -363,4 +365,13 @@ _:-ms-input-placeholder, :root .demo-graph {
     width: 100%;
     padding: 5px;
     border: 1px solid lightgray;
+}
+#series-info-text {
+    height: 400px;
+    width: 100%;
+    padding: 5px;
+    border: 1px solid lightgray;
+}
+#study-list-bonsai li {
+   padding-left: 30px;
 }
