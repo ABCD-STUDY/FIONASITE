@@ -245,7 +245,7 @@ _:-ms-input-placeholder, :root .demo-graph {
     fill: #ffffff;
     fill-opacity: 0.01;
 }
-#system-load, #div2, #system-space, #div4 {
+#system-load, #div2, #system-space, #system-memory, #div4 {
             width: 200px;
             height: 160px;
             box-sizing: border-box;
@@ -265,6 +265,10 @@ _:-ms-input-placeholder, :root .demo-graph {
             fill: #b00d08;
         }
         #system-space .arc {
+            stroke-weight: 0.1;
+            fill: #1d871b;
+        }
+        #system-memory .arc {
             stroke-weight: 0.1;
             fill: #1d871b;
         }
@@ -308,6 +312,10 @@ _:-ms-input-placeholder, :root .demo-graph {
   padding-top: 30px;
 }
 #system-space {
+  padding-left: 30px;
+  padding-top: 30px;
+}
+#system-memory {
   padding-left: 30px;
   padding-top: 30px;
 }

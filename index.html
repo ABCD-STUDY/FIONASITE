@@ -76,7 +76,7 @@
         <header class="demo-drawer-header">
           <img src="images/user.jpg" class="demo-avatar">
           <div class="demo-avatar-dropdown">
-            <span>Data</span>
+            <span>Data Views</span>
             <div class="mdl-layout-spacer"></div>
             <button id="accbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
               <i class="material-icons" role="presentation">arrow_drop_down</i>
@@ -110,6 +110,7 @@
 	      <div class="mdl-spinner mdl-js-spinner is-active" style="width: 110px; height: 110px;margin-left: 10px;"></div>
 	    </div>
             <div id="system-space" class="mdl-cell mdl-cell--2-col"></div>
+            <div id="system-memory" class="mdl-cell mdl-cell--2-col"></div>
             <div class="mdl-cell mdl-cell--4-col">
 <label for="receive-dicom" id="receive-dicom-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
   <input type="checkbox" id="receive-dicom" class="mdl-checkbox__input" checked />
@@ -307,6 +308,7 @@ function loadStudies() {
 
 var rp1 = "";
 var rp2 = "";
+var rp3 = "";
 function loadSystem() {
     //jQuery('#system-load').children().remove();
     jQuery.getJSON('/php/stats.php', function(data) {
@@ -331,6 +333,16 @@ function loadSystem() {
                 .render();
 	} else {
             rp2.value(100-data.disk_free_percent).render();
+	}
+        if (rp3 == "") {
+            jQuery('#system-memory').children().remove();
+            rp3 = radialProgress(document.getElementById('system-memory'))
+                .label("memory")
+                .diameter(150)
+                .value(100-data.memory_free_percent)
+                .render();
+	} else {
+            rp3.value(100-data.memory_free_percent).render();
 	}
     });
     jQuery.get('/php/startstop.php', function(data) {
