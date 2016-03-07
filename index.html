@@ -137,6 +137,9 @@
           <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
 	      <div id="calendar-loc"></div>
           </div>
+          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+	      <div id="circles"></div>
+          </div>
         <!--  <div class="demo-cards mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
             <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--12-col-desktop">
               <div class="mdl-card__title mdl-card--expand mdl-color--teal-300">
@@ -252,6 +255,7 @@ loading information...
     <script src="js/dialog-polyfill.min.js"></script>
     <script src="js/material.min.js"></script>
     <script src="js/d3.js"></script>
+    <script src="js/circles.js"></script>
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/radialProgress.js"></script>
     <script src="js/moment-with-locales.min.js"></script>
@@ -443,6 +447,8 @@ jQuery(document).ready(function() {
     loadSubjects();
     setInterval(function() { loadSystem(); }, 5000);
     createCalendar();
+
+    createCircles();
 
     jQuery('#load-subjects').click(function() {
 	loadSubjects();

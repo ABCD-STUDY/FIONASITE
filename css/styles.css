@@ -383,3 +383,34 @@ _:-ms-input-placeholder, :root .demo-graph {
 #study-list-bonsai li {
    padding-left: 30px;
 }
+
+#circles, text {
+  font-size: 11px;
+  pointer-events: none;
+}
+
+#circles, text.parent {
+  fill: #1f77b4;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #999;
+  pointer-events: all;
+}
+
+circle.parent {
+  fill: #1f77b4;
+  fill-opacity: .1;
+  stroke: steelblue;
+}
+
+circle.parent:hover {
+  stroke: #ff7f0e;
+  stroke-width: .5px;
+}
+
+circle.child {
+  fill: #ff7f0e;
+  pointer-events: none;
+}
