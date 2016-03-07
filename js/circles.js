@@ -52,7 +52,7 @@ function createCircles() {
    for (var i = 0; i < s.length; i++) {
       var n = { "name": studyData[s[i]][0].StudyDescription, "children": [] };
       // now add the series to this study
-      for (var j = 0; j < studyData[s[i]].length; j++) {
+      for (var j = 0; j < Object.keys(studyData[s[i]]).length; j++) {
          m = { "name": studyData[s[i]][j].SeriesDescription, "children": [] };
          for (var k = 0; k < studyData[s[i]][j].ClassifyType.length; k++) {
             m.children.push( { "name": studyData[s[i]][j].ClassifyType[k], "size": studyData[s[i]][j].NumFiles } );

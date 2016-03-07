@@ -390,7 +390,11 @@ _:-ms-input-placeholder, :root .demo-graph {
 }
 
 #circles, text.parent {
-  fill: #1f77b4;
+  fill: #424242;
+}
+
+#circles, text.child {
+  fill: #424242;
 }
 
 circle {
@@ -413,4 +417,23 @@ circle.parent:hover {
 circle.child {
   fill: #ff7f0e;
   pointer-events: none;
+}
+#bars {
+        height: 500px;
+        font: 13px sans-serif;
+}
+#bars, .node rect {
+        fill-opacity: .9;
+        shape-rendering: crispEdges;
+        stroke-width: 0;
+      }
+#bars, .node text {
+        text-shadow: 0 1px 0 #fff;
+        color: black;
+        fill: black;
+}
+#bars, .link {
+        fill: none;
+        stroke: #000;
+        stroke-opacity: .2;
 }

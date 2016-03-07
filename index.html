@@ -110,10 +110,11 @@
 	    </div>
             <div id="system-space" class="mdl-cell mdl-cell--2-col"></div>
             <div id="system-memory" class="mdl-cell mdl-cell--2-col"></div>
-            <div class="mdl-cell mdl-cell--4-col">
+            <div class="mdl-cell mdl-cell--2-col"></div>
+            <div class="mdl-cell mdl-cell--2-col">
 <label for="receive-dicom" id="receive-dicom-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
   <input type="checkbox" id="receive-dicom" class="mdl-checkbox__input" checked />
-  <span class="mdl-checkbox__label">allow to receive DICOM</span>
+  <span class="mdl-checkbox__label">receive DICOM</span>
 </label>
 
 <label for="receive-mpps" id="receive-mpps-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
@@ -137,7 +138,16 @@
 	      <div id="calendar-loc"></div>
           </div>
           <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
-	      <div id="circles"></div>
+              <div style="position: relative;">
+                <div style="font-size: 22pt; position: absolute; top: 20px;color: #757575; left: 10pt;">Studies present on this system</div>
+	        <div id="circles"></div>
+              </div>
+          </div>
+          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+              <div style="position: relative;">
+                <div style="font-size: 22pt; position: absolute; bottom: 20px;color: #757575; left: 10pt;">Studies present on this system</div>
+	        <div id="bars"></div>
+              </div>
           </div>
         <!--  <div class="demo-cards mdl-cell mdl-cell--4-col mdl-cell--8-col-tablet mdl-grid mdl-grid--no-spacing">
             <div class="demo-updates mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col mdl-cell--4-col-tablet mdl-cell--12-col-desktop">
@@ -195,7 +205,7 @@
 
 <dialog class="mdl-dialog" id="modal-setup">
     <div class="mdl-dialog__content">
-        <div style="font-size: 32pt; margin-bottom: 20px;">
+        <div style="font-size: 32pt; margin-bottom: 25px;">
             Configuration
         </div>
         <div id="setup-text">
@@ -224,12 +234,12 @@ loading information...
 
 <dialog class="mdl-dialog" id="modal-about">
     <div class="mdl-dialog__content">
-        <div style="font-size: 32pt; margin-bottom: 20px;">
-            About
+        <div style="font-size: 22pt; margin-bottom: 20px;">
+            Flash-based Input/Output Network Appliance
         </div>
         <div>
 	  <p>
-	    Learn more about this project on abcd-workspace.ucsd.edu.
+	    Learn more about this project by visiting <a href="https://abcd-workspace.ucsd.edu">abcd-workspace.ucsd.edu</a>.
 	  </p>
         </div>
     </div>
@@ -255,6 +265,12 @@ loading information...
     <script src="js/material.min.js"></script>
     <script src="js/d3.js"></script>
     <script src="js/circles.js"></script>
+
+    <script src="https://rawgit.com/newrelic-forks/d3-plugins-sankey/master/sankey.js"></script>
+    <script src="https://rawgit.com/misoproject/d3.chart/master/d3.chart.min.js"></script>
+    <script src="https://rawgit.com/q-m/d3.chart.sankey/master/d3.chart.sankey.min.js"></script>   
+    <script src="js/bars.js"></script>
+
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/radialProgress.js"></script>
     <script src="js/moment-with-locales.min.js"></script>
@@ -439,15 +455,17 @@ function changeSystemStatus() {
    jQuery.get('/php/startstop.php?enable='+a+""+b+""+c);
 }
 
-var editor = "";
-var editor2 = "";
+var editor = "";    // one for setup
+var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
     loadSubjects();
+    setTimeout(function() { loadSystem(); }, 100);
     setInterval(function() { loadSystem(); }, 5000);
     createCalendar();
 
     createCircles();
+    createBars();
 
     jQuery('#load-subjects').click(function() {
 	loadSubjects();
