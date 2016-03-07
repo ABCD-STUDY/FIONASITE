@@ -71,7 +71,7 @@ function createBars() {
             root.links.push( { "target": nID(studyData[s[i]][j].SeriesInstanceUID,root.nodes), 
 			       "source": nID(studyData[s[i]][0].StudyInstanceUID,root.nodes), 
 			       "value": studyData[s[i]][j].NumFiles } );
-            totalImages = totalImages + studyData[s[i]][j].NumFiles;
+            totalImages = totalImages + parseInt(studyData[s[i]][j].NumFiles);
             for (var k = 0; k < studyData[s[i]][j].ClassifyType.length; k++) {
                 foundType = false;
                 for (var l = 0 ; l < root.nodes.length; l++) {
@@ -88,7 +88,7 @@ function createBars() {
 				   "value":  studyData[s[i]][j].NumFiles / studyData[s[i]][j].ClassifyType.length } );
             } 
         }
-	li.value = 20;
+	li.value = totalImages;
         root.links.push( li );
     }
     
