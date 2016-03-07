@@ -1,10 +1,17 @@
 
 var colors = {
-      'SIEMENS':         '#edbd00',
+      'SIEMENS':             '#edbd00',
+      'GE':                  '#edbd00',
       'mosaic':              '#367d85',
+      'localizer':           '#367d85',
       'T2weighted':          '#97ba4c',
+      'fMRI':                '#ba974c',
+      'T1':                  '#66f54c',
       'PhaseEncodeUD':       '#f5662b',
       'oblique':             '#3f3e47',
+      'axial':               '#3f3e47',
+      'sagittal':            '#3f3e47',
+      'coronal':             '#3f3e47',
       'fallback':            '#9f9fa3'
 };
 
