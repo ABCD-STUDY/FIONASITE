@@ -37,6 +37,7 @@ case $1 in
         [ $RETVAL = 0 ] && exit || echo "ppsscpfs process not running, start now.."
         echo "Starting multipe performed procedure step daemon... (see /var/www/html/server/logs/ppsscpfs.log)"
         /usr/bin/nohup /usr/bin/ppsscpfs_e --output-directory "$od" -ll info \
+	    -L /usr/share/dcmtk/dcmpps.lic \
             $port &>${SERVERDIR}/logs/ppsscpfs.log &
         pid=$!
         echo $pid > $pidfile
