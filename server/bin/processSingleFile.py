@@ -800,11 +800,7 @@ class ProcessSingleFile(Daemon):
                                 
                                 # lets add up all the diffusion information we find for Siemens
                                 siemensDiffusionInformation = None
-                                try:
-                                        ptag_img
-                                except NameError:
-                                        pass
-                                else:
+                                if ptag_img:
                                         siemensDiffusionInformation = {}
                                         #try:
                                         #        siemensDiffusionInformation['B_matrix'] = ptag_img['B_matrix']
