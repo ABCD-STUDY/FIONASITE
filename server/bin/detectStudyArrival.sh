@@ -46,7 +46,7 @@ anonymize () {
   /bin/rm /data/site/raw/${SDIR}/${SSERIESDIR}.json
   # then send files to processSingleFile again
   echo "`date`: anonymize  - recreate /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
-  find -L /data/site/raw/${SDIR}/${SSERIESDIR}/ -type f -print | xargs -i echo "/data/raw/${SDIR}/${SSERIESDIR}/{}" >> /tmp/.processSingleFilePipe
+  find -L /data/site/raw/${SDIR}/${SSERIESDIR}/ -type f -print | xargs -i echo "{}" >> /tmp/.processSingleFilePipe
 }
 
 detect () {
