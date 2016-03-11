@@ -7,7 +7,7 @@
 # and the mpps system service (second character "0" to disable).
 #
 # enable all:
-#   echo "11" > /data/enabled
+#   echo "111" > /data/enabled
 #
 
 if [ $# -ne 2 ]; then
@@ -35,8 +35,9 @@ export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 
 vv=`cat ${P}/${F}`
 v1=${vv:0:1}
-v2=${vv:1:2}
+v2=${vv:1:1}
 v3=${vv:2:3}
+
 # start storescp
 if [[ "$v1" == "0" ]]; then
    su - processing -c "${SERVERDIR}/bin/storectl.sh stop"
