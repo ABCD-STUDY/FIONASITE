@@ -9,6 +9,8 @@
 # This script will only run if there is no "/var/www/html/server/.pids/moveFromScanner.lock". This prevents
 # multiple executions of this script in cases that a single processing steps takes more than 15 seconds.
 #
+# This script will only run if there is no "0" in the second /data/enabled bin (like in "101").
+#
 # This script depends on the following dcmtk tools: dcm2dump, findscu, movescu.
 #
 # Install using a cron-job every 15 seconds
@@ -26,6 +28,12 @@ SCANNERPORT=`cat /data/config/config.json | jq -r ".SCANNERPORT"`
 SCANNERAETITLE=`cat /data/config/config.json | jq -r ".SCANNERAETITLE"`
 # The aetitle of this fiona system (known to the scanner)
 DICOMAETITLE=`cat /data/config/config.json | jq -r ".DICOMAETITLE"`
+
+enabled=0
+if [[ -f /data/enabled ]]; then
+  # this will only work if there is no file named '2' in the /data directory
+  enabled=`cat /data/enabled | head -c 2| tail -c 1`
+fi
 
 getSeries () {
   studyInstanceUID=$1
@@ -134,8 +142,17 @@ getScans () {
   done
 }
 
+clearScans () {
+  # if we are switched off we need to delete scans, if we keep them or?
+
+}
+
 (
   flock -n 9 || exit 1
-  # command executed under lock
-  getScans
+  # command executed under lock only if we enable MPPS functionality
+  if [[ "$enabled" == "1" ]]; then
+    getScans
+  else
+    clearScans
+  fi 
 ) 9>${SERVERDIR}/.pids/moveFromScanner.lock

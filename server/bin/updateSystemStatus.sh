@@ -6,9 +6,19 @@
 # Characters in the /data/enabled file are used to control storescp (first character "0" to disable)
 # and the mpps system service (second character "0" to disable).
 #
+# We can run in two different modes. We can either disable MPPS as a system service on this machine
+# or we can leave it running but not react to its messages. If we don't leave it running the
+# scanner console will show errors because it cannot deliver the PPS messages. If we don't react
+# to the messages its hard to see from the outside if we are indeed switched off (no free lunch).
+#
 # enable all:
 #   echo "111" > /data/enabled
 #
+
+# mppsoff will switch off the MPPS service (will produce transfer errors on the scanner console)
+# If you leave this line commented out the service will continue to work but every received message
+# will be removed uppon receipt and no DICOM pull to the server is started.
+#mode="mppsoff"
 
 if [ $# -ne 2 ]; then
   echo "Usage: <directory> <file>"
@@ -49,11 +59,17 @@ else
    echo "`date`: enable storescp services" >> $log
 fi
 if [[ "$v2" == "0" ]]; then
-   su - processing -c "${SERVERDIR}/bin/mppsctl.sh stop"
-   echo "`date`: disabled mpps services" >> $log
+   # if you want to switch off the service leave this line in there
+   if [[ "$mode" == "mppsoff" ]]; then
+     su - processing -c "${SERVERDIR}/bin/mppsctl.sh stop"
+     echo "`date`: disabled mpps services" >> $log
+   fi
 else
-   echo "`date`: enable mpps services" >> $log
-   su - processing -c "${SERVERDIR}/bin/mppsctl.sh start"
+   if [[ "$mode" == "mppsoff" ]]; then
+     echo "`date`: enable mpps services" >> $log
+     # if you want to switch off the service leave this line in there
+     su - processing -c "${SERVERDIR}/bin/mppsctl.sh start"
+   fi
 fi
 if [[ "$v3" == "0" ]]; then
    echo "`date`: disabled anonymizer services" >> $log

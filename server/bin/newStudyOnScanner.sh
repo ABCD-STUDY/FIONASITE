@@ -13,6 +13,18 @@ SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/newStudyOnScanner.log
 echo "$*" >> $log
 
+# Check if we have MPPS on (if we have it off we should not copy to active-scans
+# actually we should remove the MPPS file as it might contain patient information for
+# non ABCD participants.
+if [[ -f /data/enabled ]]; then
+  enabled=`cat /data/enabled | head -c 2 | tail -c 1`
+  if [[ "$enabled" == "0" ]]; then
+     /bin/rm -f "$1/$2"
+     echo "Switched OFF, deleted MPPS file $1/$2 uppon receive" >> $log
+     exit
+  fi
+fi
+
 # we need to get the studyInstanceUID into the to pull folder
 l=`/usr/bin/dcmdump +P "StudyInstanceUID" $1/$2`
 val=`echo $l | cut -d'[' -f2 | cut -d']' -f1`
