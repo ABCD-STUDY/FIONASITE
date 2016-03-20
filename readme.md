@@ -41,7 +41,8 @@ Configuration
   "MPPSPORT":           "<Multiple Performed Procedure Steps port number on this system (4007)>",
   "SERVERUSER":         "<Name of the user account on the DAIC server system>",
   "DAICSERVER":         "137.110.181.166",
-  "PFILEDIR":           "/data/<site>"
+  "PFILEDIR":           "/data/<site>",
+  "MPPSMODE":           "mppson" | "mppsoff"
 }
 ```
 

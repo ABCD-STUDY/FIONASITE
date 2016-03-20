@@ -19,6 +19,7 @@
 # If you leave this line commented out the service will continue to work but every received message
 # will be removed uppon receipt and no DICOM pull to the server is started.
 #mode="mppsoff"
+mode=`cat /data/config/config.json | jq -r ".MPPSMODE"`
 
 if [ $# -ne 2 ]; then
   echo "Usage: <directory> <file>"
