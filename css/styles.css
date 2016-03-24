@@ -446,5 +446,10 @@ nav .brand-logo {
   margin-left: 20px;
 }
 nav ul a {
-  color: #9c9c9c;
+  color: #9c9c9c; 
+}
+.mdl-menu__item a {
+  color: rgba(0,0,0,0.87);
+  text-decoration: none;
+  font-weight: 400;
 }
