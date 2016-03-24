@@ -709,6 +709,14 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['AcquisitionMatrix'] = str(dataset.AcquisitionMatrix)
+                                except:
+                                        pass
+                                try:
+                                        data['AcquisitionLength'] = str(dataset[0x51, 0x100a].value)
+                                except:
+                                        pass
+                                try:
                                         data['Modality'] = dataset.Modality
                                 except:
                                         pass
