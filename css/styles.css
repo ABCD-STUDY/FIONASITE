@@ -437,3 +437,14 @@ circle.child {
         stroke: #000;
         stroke-opacity: .2;
 }
+nav {
+  background-color: #fff;
+  color: #9c9c9c;
+}
+nav .brand-logo {
+  color: #9c9c9c;
+  margin-left: 20px;
+}
+nav ul a {
+  color: #9c9c9c;
+}
