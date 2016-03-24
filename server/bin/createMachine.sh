@@ -16,7 +16,7 @@ endport=4220
 path=$1
 id=$2
 
-# remove the control file again
+# remove the control file again (if it is one)
 if [[ -f "$1/$2" ]]; then
   rm -f "$1/$2"
 fi
@@ -45,7 +45,7 @@ worked=0
 if [[ $action == "create" ]]; then
   echo "`date`: create a machine $id" >> $log
   cd /var/www/html/php/inventions/
-  docker build -t $id -f /var/www/html/php/inventions/Dockerfile .
+  docker build -t $id -f /var/www/html/php/inventions/assets/Dockerfile .
   # docker run -d -p ${port}:4200 $id && worked=1
 
   # we need to update the running machines files with the information for this machine

@@ -111,11 +111,11 @@
             for (var i = 0; i < data.length; i++) {
 	       if (id == data[i].id && typeof data[i].port != 'undefined' && data[i].port != "") {
   	         // found the right entry, add to page using its id
-	         setTimeout(function() { jQuery('#'+id).append("<iframe str='http://localhost:" + data[i].port + "'></iframe>"); }, 4000);
+	         setTimeout(function() { jQuery('#'+id).append("<iframe str='//localhost:" + data[i].port + "'></iframe>"); }, 4000);
                  return;
                }
             }
-            setTimeout(checkShell(id), 200); // check again later
+            setTimeout(checkShell(id), 500); // check again later
          });
       }
 
@@ -130,7 +130,7 @@
 				 "    <i class=\"large material-icons\">mode_edit</i>" +
 				 "  </a>" +
 				 "  <ul>" + 
-				 "    <li><a class=\"btn-floating green pubish-container\" title=\"publish this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">publish</i></a></li>" +
+				 //   <li><a class=\"btn-floating green pubish-container\" title=\"publish this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">publish</i></a></li>" +
 				 "    <li><a class=\"btn-floating blue save-container\" title=\"Save this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">save</i></a></li>" +
 				 "    <li><a class=\"btn-floating red stop-container\" title=\"Stop this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">clear</i></a></li>" +
 				 "    <li><a class=\"btn-floating green start-container\" title=\"Start this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">autorenew</i></a></li>" +

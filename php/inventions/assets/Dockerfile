@@ -8,7 +8,7 @@ RUN apt-get update && \
     apt-get -qq -y install gcc make git libssl-dev libpam0g-dev zlib1g-dev dh-autoreconf && \
     apt-get clean
 
-COPY work.sh /root/work.sh
+COPY assets/work.sh /root/work.sh
 
 RUN cd /tmp && \
     git clone https://github.com/shellinabox/shellinabox && \
