@@ -104,7 +104,7 @@ elif [[ $action == "delete" ]]; then
      c=`echo $line | cut -d' ' -f1`
      docker rmi $c
      # and remove from the machine file
-     cat /data/config/machines.json | jq ". | del(.[] | select(.id == \"machine56f1baa43b8d8\"))" > /tmp/_machines.json
+     cat /data/config/machines.json | jq ". | del(.[] | select(.id == \"$id\"))" > /tmp/_machines.json
      mv /tmp/_machines.json /data/config/machines.json
   fi 
 fi
