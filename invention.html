@@ -29,6 +29,8 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/materialize.min.css">
+    <!-- <link rel="stylesheet" href="css/ghpages-materialize.css"> -->
+
     <link rel="stylesheet" href="css/styles.css">
    
     <style>
@@ -96,9 +98,47 @@
         </div>
     </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
-        <button type="button" class="mdl-button close-dialog">OK</button>
+        <button type="button" class="btn mdl-button close-dialog">OK</button>
     </div>
 </dialog>
+
+<dialog class="mdl-dialog" id="modal-start-container">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 22pt; margin-bottom: 20px;">
+            Start
+        </div>
+        <div>
+	  <p>
+	     Specify what data this container should see on your system
+	  </p>
+	  <p>
+	    <form>
+ 	      <div class="row">
+                <div class="input-field col s6">
+                  <select id="start-container-start-option">
+                    <option value="">What data should be made available?</option>  
+		    <option value="all_data" selected>All Data</option>
+		    <option value="random_study">A random study</option>
+		    <option value="random_series">A random series</option>
+		    <option value="random_t1">A random T1 series</option>
+		    <option value="random_phantom">A random phantom scan</option>
+		    <option value="random_diffusion">A random diffusion series</option>
+		    <option value="random_resting">A random resting state series</option>
+		    <option value="random_functional">A random functional image series</option>
+		  </select>
+	  	  <label>Input provided to this container</label>
+	        </div>
+              </div>
+            </form>
+	  </p>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button type="button" class="btn mdl-button close-dialog">Close</button>
+        <button type="button" class="btn mdl-button" id="start-container-start">Start</button>
+    </div>
+</dialog>
+
 
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/dialog-polyfill.min.js"></script>
@@ -158,6 +198,7 @@
       }
 
       jQuery(document).ready(function() {
+         jQuery('select').material_select();
          getListOfMachines();   
          jQuery('#add-machine').click(function() {
             addNewMachine();
@@ -170,10 +211,22 @@
          });
          jQuery('#list-of-machines').on('click', '.start-container', function() {
            var id = jQuery(this).attr('container');
-           var options = { action: "start", id: id };
+ 	   var dialog = document.querySelector('#modal-start-container');  
+           if (!dialog.showModal) {
+             dialogPolyfill.registerDialog(dialog);
+           }
+           jQuery('#modal-start-container').attr('container', id);
+           dialog.showModal();
+         });
+         jQuery('#start-container-start').click(function() {
+           var opt = jQuery('#start-container-start-option').val();
+           var id = jQuery('#modal-start-container').attr('container');
+           
+           var options = { action: "start", id: id, opt: opt };
            jQuery.getJSON('php/machines.php', options, function(data) {
               checkShell( id );
 	   });
+           jQuery(this).parent().parent().closeModal();
          });
          jQuery('#list-of-machines').on('click', '.save-container', function() {
            var id = jQuery(this).attr('container');
@@ -193,8 +246,7 @@
            dialog.showModal();
          });
          jQuery('.close-dialog').click(function() {
-            var dialog = document.querySelector('#modal-about');
-            dialog.close();
+            jQuery(this).parent().parent().closeModal();
          });
       });
 

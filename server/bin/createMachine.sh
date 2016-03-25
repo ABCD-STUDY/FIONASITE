@@ -5,6 +5,9 @@
 #
 #
 
+log=/var/www/html/server/logs/machines.log
+echo "`date`: called createMachine \"$1\" \"$2\"" >> $log
+
 if [ $# -eq 0 ]; then
   echo "Usage: $0 <path to id file> <id file name>"
   exit 0
@@ -15,11 +18,6 @@ endport=4220
 
 path=$1
 id=$2
-
-# remove the control file again (if it is one)
-if [[ -f "$1/$2" ]]; then
-  rm -f "$1/$2"
-fi
 
 action=`echo $id | cut -d'_' -f1`
 # container id is at the end of the first underline (start_<container id>)
@@ -39,14 +37,10 @@ done
 # check if we found a free port here!
 # maybe that machine already exists?
 
-log=/var/www/html/server/logs/machines.log
-
-worked=0
 if [[ $action == "create" ]]; then
   echo "`date`: create a machine $id" >> $log
   cd /var/www/html/php/inventions/
   docker build -t $id -f /var/www/html/php/inventions/assets/Dockerfile .
-  # docker run -d -p ${port}:4200 $id && worked=1
 
   # we need to update the running machines files with the information for this machine
   # better here than in the web-frontend - might not know if its working
@@ -66,8 +60,28 @@ elif [[ $action == "start" ]]; then
   # find out if we have this machine running
   line=`docker ps | tail -n +2 | grep $id`
   if [[ $line == "" ]]; then
+     echo "`date`: $id not running yet" >> $log
+     # are there any options for this machine? Like what input it should get?
+     opt=`cat $1/$2 | jq -r ".opt"`
+     link=''
+     case $opt in
+	 all_data)
+            echo "`date`: $id is asking for all_data" >> $log
+	    link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw:/input:ro'
+            echo "`date`: $id is asking for all_data (${link})" >> $log
+	    ;;
+	 random_study)
+            r=`ls -d /data/site/raw | sort -R | head -1`
+            link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw/${r}:/input:ro'
+            echo "`date`: $id is asking for random study $link" >> $log
+	    ;;
+	 *)
+	     link=''
+	     ;;
+     esac
+
      # we don't have that id in the list of running machines, start it now
-     containerid=$(docker run -d -p ${port}:4200 $id)
+     containerid=$(docker run -d ${link} -p ${port}:4200 $id)
      # add the port number
      cat /data/config/machines.json | jq "[.[] | select(.id == \"$id\") |= .+ {port:\"$port\"}] " > /tmp/_machines.json
      mv /tmp/_machines.json /data/config/machines.json     
@@ -107,4 +121,10 @@ elif [[ $action == "delete" ]]; then
      cat /data/config/machines.json | jq ". | del(.[] | select(.id == \"$id\"))" > /tmp/_machines.json
      mv /tmp/_machines.json /data/config/machines.json
   fi 
+fi
+
+# remove the control file again (if it is one)
+if [[ -f "$1/$2" ]]; then
+  echo "`date`: done for $id, delete control file $1/$2 again" >> $log
+  rm -f "$1/$2"
 fi

@@ -65,7 +65,18 @@
     }
     // start a specific container
     if ($id != "") {
-      touch('inventions/start_'.$id); // should start the creation from the processing user
+      // lets use all variables that we get from the page for this
+      $ar = array();
+      foreach($_GET as $key => $value) {
+         if ($key != "action") {
+	     $ar[$key] = $value;
+         }
+      }
+      // we have to write to tmp file first, copy to incron observed location (to make this atomic)
+      $tfn = tempnam('/tmp/', 'start_invention');
+      file_put_contents($tfn, json_encode($ar)); // store all the keys
+      chmod($tfn, 0664);
+      rename($tfn, 'inventions/start_'.$id);
       echo ("{ \"message\": \"Done\", \"id\": \"$id\" }");
       return;
     }
