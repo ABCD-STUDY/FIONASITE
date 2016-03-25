@@ -91,7 +91,17 @@
       echo ("{ \"message\": \"Done\", \"id\": \"$id\" }");
       return;
     }
-
+  } else if ($action == "delete") {
+    $id = "";
+    if (isset($_GET['id'])) {
+       $id = $_GET['id'];
+    }
+    // delete a specific container
+    if ($id != "") {
+      touch('inventions/delete_'.$id); // should start the creation from the processing user
+      echo ("{ \"message\": \"Done\", \"id\": \"$id\" }");
+      return;
+    }
   } else { // default action is to print all results
     echo(json_encode($data, JSON_PRETTY_PRINT));
     return;

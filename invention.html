@@ -130,9 +130,10 @@
 				 "    <i class=\"large material-icons\">mode_edit</i>" +
 				 "  </a>" +
 				 "  <ul>" + 
-				 //   <li><a class=\"btn-floating green pubish-container\" title=\"publish this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">publish</i></a></li>" +
+				 //   <li><a class=\"btn-floating green publish-container\" title=\"publish this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">publish</i></a></li>" +
+				 "    <li><a class=\"btn-floating red remove-container\" title=\"delete this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">remove</i></a></li>" +
 				 "    <li><a class=\"btn-floating blue save-container\" title=\"Save this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">save</i></a></li>" +
-				 "    <li><a class=\"btn-floating red stop-container\" title=\"Stop this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">clear</i></a></li>" +
+				 "    <li><a class=\"btn-floating yellow stop-container\" title=\"Stop this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">clear</i></a></li>" +
 				 "    <li><a class=\"btn-floating green start-container\" title=\"Start this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">autorenew</i></a></li>" +
 				 "  </ul>" +
 				 "</div>");
@@ -177,6 +178,11 @@
          jQuery('#list-of-machines').on('click', '.save-container', function() {
            var id = jQuery(this).attr('container');
            var options = { action: "save", id: id };
+           jQuery.getJSON('php/machines.php', options, function(data) {});
+         });
+         jQuery('#list-of-machines').on('click', '.remove-container', function() {
+           var id = jQuery(this).attr('container');
+           var options = { action: "delete", id: id };
            jQuery.getJSON('php/machines.php', options, function(data) {});
          });
       });

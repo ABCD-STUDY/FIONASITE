@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #
-# Create/start/stop/save a virtual machine for our processing jobs (started by incron as user processing)
+# Create/start/stop/save/delete a virtual machine for our processing jobs (started by incron as user processing)
 #
 #
 
@@ -85,4 +85,26 @@ elif [[ $action == "stop" ]]; then
      cat /data/config/machines.json | jq "[.[] | select(.id == \"$id\") |= .+ {port:\"\"}]" > /tmp/_machines.json
      mv /tmp/_machines.json /data/config/machines.json
   fi
+elif [[ $action == "delete" ]]; then
+  echo "`date`: delete machine $id" >> $log
+  # find out if we have this machine running
+  line=`docker ps | tail -n +2 | grep $id`
+  if [[ ! $line == "" ]]; then
+     c=`echo $line | cut -d' ' -f1`
+     # we do have that id in the list of running machines, stop it now
+     docker stop $c
+     docker rm $c
+     # remove port number
+     cat /data/config/machines.json | jq "[.[] | select(.id == \"$id\") |= .+ {port:\"\"}]" > /tmp/_machines.json
+     mv /tmp/_machines.json /data/config/machines.json
+  fi
+  # now remove the machines image as well
+  line=`docker images | tail -n +2 | grep $id`
+  if [[ ! $line == "" ]]; then
+     c=`echo $line | cut -d' ' -f1`
+     docker rmi $c
+     # and remove from the machine file
+     cat /data/config/machines.json | jq ". | del(.[] | select(.id == \"machine56f1baa43b8d8\"))" > /tmp/_machines.json
+     mv /tmp/_machines.json /data/config/machines.json
+  fi 
 fi
