@@ -185,6 +185,17 @@
            var options = { action: "delete", id: id };
            jQuery.getJSON('php/machines.php', options, function(data) {});
          });
+         jQuery('#dialog-about-button').click(function() {
+           var dialog = document.querySelector('#modal-about');
+           if (!dialog.showModal) {
+             dialogPolyfill.registerDialog(dialog);
+           }
+           dialog.showModal();
+         });
+         jQuery('.close-dialog').click(function() {
+            var dialog = document.querySelector('#modal-about');
+            dialog.close();
+         });
       });
 
 </script>
