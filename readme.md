@@ -48,7 +48,7 @@ Configuration
 
 ### Web interface:
 
-/var/www/html/ (git clone https://github.com/HaukeBartsch/FIONASITE.git)
+/var/www/html/ (git clone https://github.com/ABCD-STUDY/FIONASITE.git)
 
 ### Server components:
 
