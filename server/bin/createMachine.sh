@@ -54,6 +54,12 @@ elif [[ $action == "save" ]]; then
   if [[ ! $line == "" ]]; then
      c=`echo $line | cut -d' ' -f1`
      docker commit "$c" "$id"
+     # shutdown this machine now (image id has been changed)
+     docker stop "$c"
+     docker rm "$c"
+     # remove the port number
+     cat /data/config/machines.json | jq "[.[] | select(.id == \"$id\") |= .+ {port:\"\"}]" > /tmp/_machines.json
+     mv /tmp/_machines.json /data/config/machines.json
   fi
 elif [[ $action == "start" ]]; then
   echo "`date`: start a machine $id" >> $log
@@ -71,9 +77,13 @@ elif [[ $action == "start" ]]; then
             echo "`date`: $id is asking for all_data (${link})" >> $log
 	    ;;
 	 random_study)
-            r=`ls -d /data/site/raw | sort -R | head -1`
-            link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw/${r}:/input:ro'
-            echo "`date`: $id is asking for random study $link" >> $log
+            r=`ls /data/site/raw | sort -R | head -1`
+            if [[ ${r} == "" ]]; then
+              echo "`date`: Error, no random study could be found in /data/site/raw/" >> $log
+            else
+              link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw/${r}:/input:ro'
+              echo "`date`: $id is asking for random study \"$link\"" >> $log
+            fi
 	    ;;
 	 *)
 	     link=''
