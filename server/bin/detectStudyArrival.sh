@@ -19,6 +19,7 @@ fi
 # Where is this script? The parent directory of this script is the server dir.
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/detectStudyArrival.log
+pfiledir=`cat /data/config/config.json | jq -r ".PFILEDIR"`
 
 # only done if at least that old (in seconds)
 oldtime=15
@@ -87,6 +88,20 @@ detect () {
       echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR series: $SSERIESDIR" >> $log
     else
       echo "`date`: Study detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR" >> $log
+
+      # We have a study we can pack&go for sending it off to the DAIC.
+      # We should do this in two stages - first get all the DICOM files into a single tar file (add md5sum).
+      # Next store them in a to-be-send-of directory and ask the user on the interface if that is ok.
+      # Next send them using sendFiles.sh (looks into /data/<site>) for files. If they are all send over they end up in /data/DAIC/.
+      
+      # copy the study data to the $pfiledir directory (use tar without compression and resolve symbolic links)
+      if [[ -f ${pfiledir}/${SSERIESDIR}.tar ]]; then
+         # delete any privious file (we got new series data so file needs to be updated)
+         rm -f -- ${pfiledir}/${SSERIESDIR}.*
+      fi
+      tar --dereference -cvf ${pfiledir}/${SSERIESDIR}.tar /data/site/raw/${SDIR}/${SSERIESDIR}/
+      md5sum ${pfiledir}/${SSERIESDIR}.tar > ${pfiledir}/${SSERIESDIR}.md5sum
+      # now the user interface needs to display this as new data
     fi
     #
     # /usr/bin/nohup /data/streams/bucket01/process.sh \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP "/data/site/archive/$SDIR" &

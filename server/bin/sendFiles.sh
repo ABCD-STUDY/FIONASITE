@@ -5,13 +5,18 @@
 # Add the above line to your machine using:
 #   > crontab -e
 #
+# This script is supposed to send compressed data files for DICOM and k-space
+# to the DAIC endpoint using sftp. All data in the /data/outbox directory will
+# be send using local and DAIC md5sum files.
+#
 
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/sendFiles.log
 commandScript=${SERVERDIR}/bin/CommandScript
 commandScriptMD5s=${SERVERDIR}/bin/CommandScriptMD5s
 user=`cat /data/config/config.json | jq -r ".SERVERUSER"`
-pfiles=`cat /data/config/config.json | jq -r ".PFILEDIR"`
+# directory storing the files that are ok to send
+pfiles=/data/outbox
 
 
 #
