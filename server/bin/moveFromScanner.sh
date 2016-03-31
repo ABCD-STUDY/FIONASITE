@@ -22,12 +22,16 @@
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/moveFromScanner.log
 
+# logger lock file is in ${SERVERDIR}/.pids/moveFromScanner.lock
+# echo "`date`: lock file is at: ${SERVERDIR}/.pids/moveFromScanner.lock" >> $log
+
 # Scanner we will ask for our images
 SCANNERIP=`cat /data/config/config.json | jq -r ".SCANNERIP"`
 SCANNERPORT=`cat /data/config/config.json | jq -r ".SCANNERPORT"`
 SCANNERAETITLE=`cat /data/config/config.json | jq -r ".SCANNERAETITLE"`
 # The aetitle of this fiona system (known to the scanner)
 DICOMAETITLE=`cat /data/config/config.json | jq -r ".DICOMAETITLE"`
+
 
 enabled=0
 if [[ -f /data/enabled ]]; then
@@ -144,15 +148,17 @@ getScans () {
 
 clearScans () {
   # if we are switched off we need to delete scans, if we keep them or?
-
+  echo "`date`: try to clear the scans (todo)" >> $log
 }
 
 (
   flock -n 9 || exit 1
   # command executed under lock only if we enable MPPS functionality
   if [[ "$enabled" == "1" ]]; then
+    echo "`date`: move enabled, start getScans" >> $log
     getScans
   else
+    echo "`date`: move disabled, start clearScans" >> $log
     clearScans
   fi 
 ) 9>${SERVERDIR}/.pids/moveFromScanner.lock
