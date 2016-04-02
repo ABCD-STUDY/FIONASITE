@@ -138,8 +138,7 @@ checkTools() {
 # check if a single directory exists
 checkDirectoryExist() {
     path=$1
-    expected=$2
-    if [[ -f "$path" ]]; then
+    if [[ -d "$path" ]]; then
        echo "1"
     fi
     echo "0"
@@ -171,7 +170,7 @@ checkDirectoriesExist() {
         #rmdir $dir
         
         if [[ $(checkDirectoryExist "$dir") == "0" ]]; then
-           echo "ERROR: Directory $dir does not exist"
+           echo "Error: Directory \"$dir\" does not exist"
            if [[ "$force" == "1" ]]; then
               fixDirectoryExist "$dir"
               if [[ $(checkDirectoryExist "$dir") == "0" ]]; then
