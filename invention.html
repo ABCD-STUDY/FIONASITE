@@ -52,6 +52,17 @@
       animation-duration: 1s;
       box-shadow: 0px 0px 10px #888;
     }
+    .console {
+       background-color: rgba(200,200,200,0.5);
+       color: #fff;
+       width: 100%;
+       height: 400px;
+       position: absolute;
+       bottom: 0;
+    }
+    .console textarea {
+       height: 400px;
+    }
     </style>
     <link rel="stylesheet" href="css/dialog-polyfill.min.css">
   </head>
@@ -90,7 +101,7 @@
         </div>
         <div>
 	  <p>
-	     Create processing pipelines that can be shared across instances of this platform.
+	     Create processing pipelines that can be shared across instances of this platform. In order to see what goes on behind the scenes open the <span id="console-start">console</span>.
 	  </p>
 	  <p>
              Learn more about this project by visiting <a href="https://abcd-workspace.ucsd.edu">abcd-workspace.ucsd.edu</a>.
@@ -146,6 +157,7 @@
 
     <script>
 
+      runUpdate = false;
       function checkShell( id ) {
          jQuery.getJSON('php/machines.php', {}, function(data) {
             for (var i = 0; i < data.length; i++) {
@@ -155,7 +167,10 @@
                  return;
                }
             }
-            setTimeout(checkShell(id), 500); // check again later
+            if (runUpdate == false) {
+              setTimeout(checkShell(id), 2000); // check again later
+              runUpdate=true;
+            }
          });
       }
 
@@ -193,11 +208,30 @@
          };
 	 jQuery.getJSON('php/machines.php', options, function(data) {
             // we should get back how to access the new system (id)
-            setTimeout( checkShell(data.id) , 200);
+            setTimeout( checkShell(data.id) , 2000);
          });
       }
 
+      function displayConsole() {
+         // if the console exists already delete it
+         if (jQuery('#console').length === 0) {
+  	   jQuery('body').append('<div class=\"console\"><textarea rows=\"200\" cols=\"80\">Console</textarea></div>');
+           setInterval(function() {
+	      // get the log file from /server/logs/machines.log
+              jQuery.get('server/logs/machines.log', function(data) {
+                 jQuery('.console textarea').text( data );
+              });
+           }, 2000);
+           return;
+         }
+         jQuery('#console').remove();
+      }
+
       jQuery(document).ready(function() {
+         jQuery('#console-start').on('click', function() {
+	    displayConsole();
+         });
+
          jQuery('select').material_select();
          getListOfMachines();   
          jQuery('#add-machine').click(function() {
