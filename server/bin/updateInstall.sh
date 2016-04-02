@@ -165,6 +165,7 @@ checkDirectoriesExist() {
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       if [[ "${todo[$i]}" == "existsDirectory" ]]; then
+        echo -e "\e[0K\r `date`: check if the directories exist... [$i]"
         dir=${todo[(($i+1))]}
         
         # As a test, first remove the directory
@@ -220,6 +221,7 @@ checkFilesExist() {
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       if [[ "${todo[$i]}" == "existsFile" ]]; then
+        echo -e "\e[0K\r `date`: check if the files exist... [$i]"
         file=${todo[(($i+1))]}
         expected=${todo[(($i+2))]}
         if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
@@ -270,6 +272,7 @@ checkOwners() {
     do
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "owner" ]]; then
+          echo -e "\e[0K\r `date`: check the owners... [$i]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
@@ -320,6 +323,7 @@ checkPermissions() {
     do
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "permission" ]]; then
+          echo -e "\e[0K\r `date`: check the permissions... [$i]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
