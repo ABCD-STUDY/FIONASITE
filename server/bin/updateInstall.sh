@@ -159,13 +159,13 @@ fixDirectoryExist() {
 # check if the directories exist
 checkDirectoriesExist() {
     force=$1
-    echo -e "`date`: check if the directories exist..."
+    echo -n "`date`: check if the directories exist..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       if [[ "${todo[$i]}" == "existsDirectory" ]]; then
-        echo -e "\e[0K\r `date`: check if the directories exist... [$i]"
+        printf "\e[0K\r`date`: check if the directories exist... [$i]"
         dir=${todo[(($i+1))]}
         
         # As a test, first remove the directory
@@ -215,13 +215,13 @@ fixFileExist() {
 # check if the files exist
 checkFilesExist() {
     force=$1
-    echo -e "`date`: check if the files exist..."
+    echo -n "`date`: check if the files exist..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       if [[ "${todo[$i]}" == "existsFile" ]]; then
-        echo -e "\e[0K\r`date`: check if the files exist... [$i]"
+        printf "\e[0K\r`date`: check if the files exist... [$i]"
         path=${todo[(($i+1))]}
         expected=${todo[(($i+2))]}
         if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
@@ -265,14 +265,14 @@ fixOwner() {
 # check the owners
 checkOwners() {
     force=$1
-    echo -e "`date`: check the owners..."
+    echo -n "`date`: check the owners..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "owner" ]]; then
-          echo -e "\e[0K\r`date`: check the owners... [$i]"
+          printf "\e[0K\r`date`: check the owners... [$i]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
@@ -316,14 +316,14 @@ fixPermission() {
 # check all permissions
 checkPermissions() {
     force=$1
-    echo -e "`date`: check the permissions..."
+    echo -n "`date`: check the permissions..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "permission" ]]; then
-          echo -e "\e[0K\r`date`: check the permissions... [$i]"
+          printf "\e[0K\r`date`: check the permissions... [$i]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
