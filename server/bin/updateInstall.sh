@@ -8,7 +8,6 @@
 #
 
 log=/var/www/html/server/logs/updateInstall.log
-echo "`date`: called updateInstall" >> $log
 
 todo_old=(
     'existsDirectory' '/data' ''
@@ -87,16 +86,38 @@ do
     key="$1"
     
     case $key in
-	force|-f)
-	    force=1
-	    ;;
-	*)
-	    echo "unknown option"
-	    exit 1
-	    ;;
+    force|-f)
+        force=1
+        ;;
+    *)
+        echo "unknown option"
+        exit 1
+        ;;
     esac
     shift
 done
+
+# check if we have the tools to check on a checkable system
+checkTools() {
+    force=$1
+    # operating system check
+    operatingSystem=`uname -s`
+    if [[ ! $operatingSystem == "Linux" ]]; then
+        echo "Error: only Linux is currently supported (found $operatingSystem instead). Giving up..."
+        exit 1;
+    fi
+    # check for logfile location
+    if [[ ! -w $log ]]; then
+        echo "Error: cannot write messages to logfile $log"
+        if [[ "$force" == "1" ]]; then
+             log=/tmp/updateInstall.log
+             echo "`date`: Attempt to create logfile in $log" >> $log
+             if [[ -w "$log" ]]; then
+                 echo "FIX: logs will be written to $log instead"
+             fi             
+        fi
+    fi
+}
 
 # check if the directories exist
 checkDirectoriesExist() {
@@ -106,20 +127,20 @@ checkDirectoriesExist() {
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
-	if [[ "${todo[$i]}" == "existsDirectory" ]]; then
-	    dir=${todo[(($i+1))]}
-	    
-	    # As a test, first remove the directory
-	    #rmdir $dir
-	    
-            if [[ ! -d "$dir" ]]; then
-		echo "ERROR: Directory $dir does not exist"
-		if [[ "$force" == "1" ]]; then
-		    echo "FIX: mkdir -p $dir"
-		    mkdir -p "$dir"
-		fi
-            fi
-	fi
+    if [[ "${todo[$i]}" == "existsDirectory" ]]; then
+        dir=${todo[(($i+1))]}
+        
+        # As a test, first remove the directory
+        #rmdir $dir
+        
+        if [[ ! -d "$dir" ]]; then
+           echo "ERROR: Directory $dir does not exist"
+           if [[ "$force" == "1" ]]; then
+               echo "FIX: mkdir -p $dir"
+               mkdir -p "$dir"
+           fi
+        fi
+    fi
     done
 }
 
@@ -131,35 +152,64 @@ checkFilesExist() {
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
-	if [[ "${todo[$i]}" == "existsFile" ]]; then
-	    file=${todo[(($i+1))]}
-	    expected=${todo[(($i+2))]}
-            if [[ -f "$file" ]]; then
-		# if the file exists...
-		if [[ "$expected" != "" ]]; then
-		    # and if the expected contents are specified...
-		    filecontents=$(cat "$file")
-		    if [[ "$filecontents" != "$expected" ]]; then
-			# and if the file contents do not match the expected contents
-			# then warn the user, but do not try to fix the file.
-			echo "WARNING: File $file contents: $filecontents do not match the expected contents: $expected"
-		    fi
-		fi
-	    else
-		# if the file does not exist, then attempt to create the file
-		# using the expected contents
-		echo "ERROR: File $file does not exist"
-		if [[ "$force" == "1" ]]; then
-		    if [[ "$expected" == "" ]]; then
-			echo "ERROR: Expected contents not provided. Cannot create file $file"
-		    else
-			echo "FIX: Creating file: echo $expected > $file"
-			echo "$expected" > $file
-		    fi
-		fi
+      if [[ "${todo[$i]}" == "existsFile" ]]; then
+        file=${todo[(($i+1))]}
+        expected=${todo[(($i+2))]}
+        if [[ -f "$file" ]]; then
+          # if the file exists...
+          if [[ "$expected" != "" ]]; then
+            # and if the expected contents are specified...
+            filecontents=$(cat "$file")
+            if [[ "$filecontents" != "$expected" ]]; then
+               # and if the file contents do not match the expected contents
+               # then warn the user, but do not try to fix the file.
+               echo "WARNING: File $file contents: $filecontents do not match the expected contents: $expected"
             fi
-	fi
+          fi
+        else
+          # if the file does not exist, then attempt to create the file
+          # using the expected contents
+          echo "ERROR: File $file does not exist"
+          if [[ "$force" == "1" ]]; then
+            if [[ "$expected" == "" ]]; then
+              touch $file
+              if [[ -w $file ]]; then
+                 echo "FIX: created empty file $file"
+              else
+                 echo "Error: could not create empty file $file"
+              fi
+            else
+              echo "FIX: Creating file: echo $expected > $file"
+              echo "$expected" > $file
+            fi
+          fi
+        fi
+      fi
     done
+}
+
+#######################################
+#
+#  check owner
+#
+#######################################
+
+# check a single files owner
+checkOwner() {
+    path=$1
+    expected=$2
+    owner=$(stat -c %U:%G "$path")
+    if [[ "$owner" != "$expected" ]]; then
+       echo "0"
+    fi
+    echo "1"
+}
+
+# fix a single permission
+fixOwner() {
+    path=$1
+    expected=$2
+    chown "$expected" "$path"
 }
 
 # check the owners
@@ -170,27 +220,48 @@ checkOwners() {
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
-	# echo ${todo[$i]}
-	if [[ "${todo[$i]}" == "owner" ]]; then
-	    path=${todo[(($i+1))]}
-	    expected=${todo[(($i+2))]}
-	    owner=$(stat -c %U:%G "$path")
-	    
-	    # As a test, first change the owner to apache:apache
-	    #chown apache:apache $path
-	    
-	    if [[ "$owner" != "$expected" ]]; then
-		echo "ERROR: Owner of: $path is $owner. Expected to be: $expected"
-		if [[ "$force" == "1" ]]; then
-		    echo "FIX: chown $expected $path"
-		    chown $expected $path
-		fi
-	    fi
-	fi
+      # echo ${todo[$i]}
+      if [[ "${todo[$i]}" == "owner" ]]; then
+          path=${todo[(($i+1))]}
+          expected=${todo[(($i+2))]}
+          if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
+             echo "ERROR: owner for \"$path\" is wrong. Expected to be \"$expected\""
+             if [[ "$force" == "1" ]]; then
+                fixOwner "$path" "$expected"
+                if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
+                   echo "Error: could not fix owner on $path to $expected"
+                fi
+             fi
+          fi
+      fi
     done
 }
 
-# check the permissions
+#######################################
+#
+#  check permissions
+#
+#######################################
+
+# check a single permission
+checkPermission() {
+    path=$1
+    expected=$2
+    permission=$(stat -c %a "$path")
+    if [[ "$permission" != "$expected" ]]; then
+       echo "0"
+    fi
+    echo "1"
+}
+
+# fix a single permission
+fixPermission() {
+    path=$1
+    expected=$2
+    chmod "$expected" "$path"
+}
+
+# check all permissions
 checkPermissions() {
     force=$1
     echo "`date`: check the permissions..."
@@ -198,26 +269,24 @@ checkPermissions() {
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
-	# echo ${todo[$i]}
-	if [[ "${todo[$i]}" == "permission" ]]; then
-	    path=${todo[(($i+1))]}
-	    expected=${todo[(($i+2))]}
-	    permission=$(stat -c %a "$path")
-	    
-	    # As a test, first change the permission to apache:apache
-	    #chmod 444 $path
-	    
-	    if [[ "$permission" != "$expected" ]]; then
-		echo "ERROR: Permission for: $path is $permission. Expected to be: $expected"
-		if [[ "$force" == "1" ]]; then
-		    echo "FIX: chmod $expected $path"
-		    chmod $expected $path
-		fi
-	    fi
-	fi
+      # echo ${todo[$i]}
+      if [[ "${todo[$i]}" == "permission" ]]; then
+          path=${todo[(($i+1))]}
+          expected=${todo[(($i+2))]}
+          if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
+             echo "ERROR: permission wrong for $path. Expected to be: $expected"
+             if [[ "$force" == "1" ]]; then
+                fixPermission "$path" "$expected"
+                if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
+                   echo "Error: could not fix permissions on $path to $expected"
+                fi          
+             fi
+          fi
+      fi
     done
 }
 
+checkTools $force
 checkDirectoriesExist $force
 checkFilesExist $force
 checkOwners $force
