@@ -126,6 +126,7 @@ checkTools() {
        echo "Error: This script should be run as root" 1>&2
        exit 1
     fi
+    printf "\n"
 }
 
 
@@ -182,6 +183,7 @@ checkDirectoriesExist() {
         fi
       fi
     done
+    printf "\n"
 }
 
 #######################################
@@ -235,6 +237,7 @@ checkFilesExist() {
         fi
       fi
     done
+    printf "\n"
 }
 
 #######################################
@@ -286,6 +289,7 @@ checkOwners() {
           fi
       fi
     done
+    printf "\n"
 }
 
 #######################################
@@ -337,6 +341,7 @@ checkPermissions() {
           fi
       fi
     done
+    printf "\n"
 }
 
 checkTools $force
