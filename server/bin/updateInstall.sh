@@ -104,6 +104,8 @@ done
 # check if we have the tools to check on a checkable system
 checkTools() {
     force=$1
+    echo -n "`date`: check tools..."
+
     # operating system check
     operatingSystem=`uname -s`
     if [[ ! $operatingSystem == "Linux" ]]; then
@@ -160,7 +162,7 @@ fixDirectoryExist() {
 # check if the directories exist
 checkDirectoriesExist() {
     force=$1
-    echo -n "`date`: check if the directories exist..."
+    echo -n "`date`: check directories..."
     
     l=${#todo[@]}
     count=0
@@ -168,7 +170,7 @@ checkDirectoriesExist() {
     do
       if [[ "${todo[$i]}" == "existsDirectory" ]]; then
         count=$((count+1))
-        printf "\e[0K\r`date`: check if the directories exist... [$count]"
+        printf "\e[0K\r`date`: check directories... [$count]"
         dir=${todo[(($i+1))]}
         
         # As a test, first remove the directory
@@ -219,7 +221,7 @@ fixFileExist() {
 # check if the files exist
 checkFilesExist() {
     force=$1
-    echo -n "`date`: check if the files exist..."
+    echo -n "`date`: check files..."
     
     l=${#todo[@]}
     count=0
@@ -227,7 +229,7 @@ checkFilesExist() {
     do
       if [[ "${todo[$i]}" == "existsFile" ]]; then
         count=$((count+1))
-        printf "\e[0K\r`date`: check if the files exist... [$count]"
+        printf "\e[0K\r`date`: check files... [$count]"
         path=${todo[(($i+1))]}
         expected=${todo[(($i+2))]}
         if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
@@ -272,7 +274,7 @@ fixOwner() {
 # check the owners
 checkOwners() {
     force=$1
-    echo -n "`date`: check the owners..."
+    echo -n "`date`: check owners..."
     
     l=${#todo[@]}
     count=0
@@ -281,7 +283,7 @@ checkOwners() {
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "owner" ]]; then
          count=$((count+1))
-         printf "\e[0K\r`date`: check the owners... [$count]"
+         printf "\e[0K\r`date`: check owners... [$count]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
@@ -326,7 +328,7 @@ fixPermission() {
 # check all permissions
 checkPermissions() {
     force=$1
-    echo -n "`date`: check the permissions..."
+    echo -n "`date`: check permissions..."
     
     l=${#todo[@]}
     count=0
@@ -335,7 +337,7 @@ checkPermissions() {
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "permission" ]]; then
           count=$((count+1))
-          printf "\e[0K\r`date`: check the permissions... [$count]"
+          printf "\e[0K\r`date`: check permissions... [$count]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
