@@ -163,10 +163,12 @@ checkDirectoriesExist() {
     echo -n "`date`: check if the directories exist..."
     
     l=${#todo[@]}
+    count=0
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       if [[ "${todo[$i]}" == "existsDirectory" ]]; then
-        printf "\e[0K\r`date`: check if the directories exist... [$i]"
+        count=$((count+1))
+        printf "\e[0K\r`date`: check if the directories exist... [$count]"
         dir=${todo[(($i+1))]}
         
         # As a test, first remove the directory
@@ -220,10 +222,12 @@ checkFilesExist() {
     echo -n "`date`: check if the files exist..."
     
     l=${#todo[@]}
+    count=0
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       if [[ "${todo[$i]}" == "existsFile" ]]; then
-        printf "\e[0K\r`date`: check if the files exist... [$i]"
+        count=$((count+1))
+        printf "\e[0K\r`date`: check if the files exist... [$count]"
         path=${todo[(($i+1))]}
         expected=${todo[(($i+2))]}
         if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
@@ -271,11 +275,13 @@ checkOwners() {
     echo -n "`date`: check the owners..."
     
     l=${#todo[@]}
+    count=0
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "owner" ]]; then
-          printf "\e[0K\r`date`: check the owners... [$i]"
+         count=$((count+1))
+         printf "\e[0K\r`date`: check the owners... [$count]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
@@ -323,11 +329,13 @@ checkPermissions() {
     echo -n "`date`: check the permissions..."
     
     l=${#todo[@]}
+    count=0
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
       # echo ${todo[$i]}
       if [[ "${todo[$i]}" == "permission" ]]; then
-          printf "\e[0K\r`date`: check the permissions... [$i]"
+          count=$((count+1))
+          printf "\e[0K\r`date`: check the permissions... [$count]"
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
