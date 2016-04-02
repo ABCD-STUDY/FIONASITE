@@ -65,16 +65,20 @@ todo=(
     'owner' '/var/www/html/server/bin/alextest/testfile' 'processing:processing'
 )
 
-if [[ "$1" == "--help" ]]
-then
+if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "NAME:"
     echo " updateInstall - check the directories, files, permissions, owners and cronjobs"
+    echo ""
+    echo " This program is part of the FIONA computer and checks the system health."
     echo ""
     echo "AUTHOR:"
     echo "  Hauke Bartsch - <HaukeBartsch@gmail.com>"
     echo "  Alex DeCastro - <AlexDeCastro2@gmail.com>"
     echo ""
     echo "USAGE:"
+    echo ""
+    echo " > sudo $0          # print out errors found with this installation"
+    echo " > sudo $0 -force   # fix errors found with this installation"
     echo ""
     exit 1
 fi
@@ -103,19 +107,52 @@ checkTools() {
     # operating system check
     operatingSystem=`uname -s`
     if [[ ! $operatingSystem == "Linux" ]]; then
-        echo "Error: only Linux is currently supported (found $operatingSystem instead). Giving up..."
+        echo "Error: only Linux is currently supported (found $operatingSystem instead). Giving up..." 1>&2
         exit 1;
     fi
     # check for logfile location
     if [[ ! -w $log ]]; then
-        echo "Error: cannot write messages to logfile $log"
+        echo "Error: cannot write messages to logfile $log" 1>&2
         if [[ "$force" == "1" ]]; then
              log=/tmp/updateInstall.log
              echo "`date`: Attempt to create logfile in $log" >> $log
              if [[ -w "$log" ]]; then
-                 echo "FIX: logs will be written to $log instead"
+                 echo "FIX: logs will be written to $log instead" 1>&2
              fi             
         fi
+    fi
+    # are we root?
+    if [[ $EUID -ne 0 ]]; then
+       echo "Error: This script should be run as root" 1>&2
+       exit 1
+    fi
+}
+
+
+#######################################
+#
+#  check if directory exists
+#
+#######################################
+
+# check if a single directory exists
+checkDirectoryExist() {
+    path=$1
+    expected=$2
+    if [[ -f "$path" ]]; then
+       echo "1"
+    fi
+    echo "0"
+}
+
+# fix a single directory
+fixDirectoryExist() {
+    path=$1
+    expected=$2
+    if [[ "$expected" == "" ]]; then
+       touch $path
+    else
+       echo "$expected" > $file
     fi
 }
 
@@ -127,21 +164,50 @@ checkDirectoriesExist() {
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
     do
-    if [[ "${todo[$i]}" == "existsDirectory" ]]; then
+      if [[ "${todo[$i]}" == "existsDirectory" ]]; then
         dir=${todo[(($i+1))]}
         
         # As a test, first remove the directory
         #rmdir $dir
         
-        if [[ ! -d "$dir" ]]; then
+        if [[ $(checkDirectoryExist "$dir") == "0" ]]; then
            echo "ERROR: Directory $dir does not exist"
            if [[ "$force" == "1" ]]; then
-               echo "FIX: mkdir -p $dir"
-               mkdir -p "$dir"
+              fixDirectoryExist "$dir"
+              if [[ $(checkDirectoryExist "$dir") == "0" ]]; then
+                 echo "Error: could not create directory \"$dir\""
+              fi
            fi
         fi
-    fi
+      fi
     done
+}
+
+#######################################
+#
+#  check if files exist
+#
+#######################################
+
+# check if a single file exists
+checkFileExist() {
+    path=$1
+    expected=$2
+    if [[ -f "$path" ]]; then
+       echo "1"
+    fi
+    echo "0"
+}
+
+# fix a single permission
+fixFileExist() {
+    path=$1
+    expected=$2
+    if [[ "$expected" == "" ]]; then
+       touch $path
+    else
+       echo "$expected" > $file
+    fi
 }
 
 # check if the files exist
@@ -155,34 +221,14 @@ checkFilesExist() {
       if [[ "${todo[$i]}" == "existsFile" ]]; then
         file=${todo[(($i+1))]}
         expected=${todo[(($i+2))]}
-        if [[ -f "$file" ]]; then
-          # if the file exists...
-          if [[ "$expected" != "" ]]; then
-            # and if the expected contents are specified...
-            filecontents=$(cat "$file")
-            if [[ "$filecontents" != "$expected" ]]; then
-               # and if the file contents do not match the expected contents
-               # then warn the user, but do not try to fix the file.
-               echo "WARNING: File $file contents: $filecontents do not match the expected contents: $expected"
-            fi
-          fi
-        else
-          # if the file does not exist, then attempt to create the file
-          # using the expected contents
-          echo "ERROR: File $file does not exist"
-          if [[ "$force" == "1" ]]; then
-            if [[ "$expected" == "" ]]; then
-              touch $file
-              if [[ -w $file ]]; then
-                 echo "FIX: created empty file $file"
-              else
-                 echo "Error: could not create empty file $file"
+        if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
+           echo "ERROR: file \"$path\" does not exist."
+           if [[ "$force" == "1" ]]; then
+              fixFileExist "$path" "$expected"
+              if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
+                 echo "Error: could not create file $path"
               fi
-            else
-              echo "FIX: Creating file: echo $expected > $file"
-              echo "$expected" > $file
-            fi
-          fi
+           fi
         fi
       fi
     done
