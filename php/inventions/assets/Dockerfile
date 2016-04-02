@@ -1,4 +1,4 @@
-FROM ubuntu
+FROM ubuntu:14.04
 MAINTAINER Hauke Bartsch
 
 ENV VERSION 2.14
@@ -23,7 +23,7 @@ RUN cd /tmp && \
     mkdir /root/storage \
     chmod +rx /root/work.sh
 
-ADD setup.sh /setup.sh
+ADD assets/setup.sh /setup.sh
 RUN /setup.sh
 
 CMD ["shellinaboxd", "-s", "/:LOGIN", "--disable-ssl", "--user-css", "Normal:+/etc/shellinabox-css/white-on-black.css,Reverse:-/etc/shellinabox-css/black-on-white.css"]

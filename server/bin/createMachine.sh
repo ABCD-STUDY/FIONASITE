@@ -1,4 +1,4 @@
-#!/bin/bash
+1;95;0c#!/bin/bash
 
 #
 # Create/start/stop/save/delete a virtual machine for our processing jobs (started by incron as user processing)
@@ -37,16 +37,27 @@ done
 # check if we found a free port here!
 # maybe that machine already exists?
 
+# we need to store information about the running machines in a configuration file
+if [[ ! -f /data/config/machines.json ]]; then
+  echo "[]" > /data/config/machines.json
+  if [[ ! -w /data/config/machines.json ]]; then
+     echo "`date`: Error, could not write to /data/config/machines.json" >> $log
+  fi
+fi
+
 if [[ $action == "create" ]]; then
   echo "`date`: create a machine $id" >> $log
-  cd /var/www/html/php/inventions/
+  cd /var/www/html/php/inventions
   docker build -t $id -f /var/www/html/php/inventions/assets/Dockerfile .
 
-  # we need to update the running machines files with the information for this machine
-  # better here than in the web-frontend - might not know if its working
- 
-  cat /data/config/machines.json | jq ". |= .+ [ {name:\"$id\",id:\"$id\"} ]" > /tmp/_machines.json
-  mv /tmp/_machines.json /data/config/machines.json
+  # check if the machine really exists
+  l=`docker images | grep $id`
+  if [[ "$l" == "" ]]; then
+    echo "`date`: creating machine with id $id failed" >> $log
+  else 
+    cat /data/config/machines.json | jq ". |= .+ [ {name:\"$id\",id:\"$id\"} ]" > /tmp/_machines.json
+    mv /tmp/_machines.json /data/config/machines.json
+  fi
 elif [[ $action == "save" ]]; then
   echo "`date`: save machine $id under the same id" >> $log
   # save the currently running incarnation of the container as the new image
@@ -63,9 +74,14 @@ elif [[ $action == "save" ]]; then
   fi
 elif [[ $action == "start" ]]; then
   echo "`date`: start a machine $id" >> $log
+  # find out if that machine exists
+  l=`docker images | grep $id`
+  if [[ "$l" == "" ]]; then
+    echo "`date`: machine with id $id does not exist, cannot start" >> $log
+  fi
   # find out if we have this machine running
   line=`docker ps | tail -n +2 | grep $id`
-  if [[ $line == "" ]]; then
+  if [[ $line == "" ]] && [[ "$l" != "" ]]; then
      echo "`date`: $id not running yet" >> $log
      # are there any options for this machine? Like what input it should get?
      opt=`cat $1/$2 | jq -r ".opt"`
