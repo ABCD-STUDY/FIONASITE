@@ -172,7 +172,7 @@ checkDirectoriesExist() {
         #rmdir $dir
         
         if [[ $(checkDirectoryExist "$dir") == "0" ]]; then
-           echo "Error: Directory \"$dir\" does not exist"
+           printf "\nError: Directory \"$dir\" does not exist"
            if [[ "$force" == "1" ]]; then
               fixDirectoryExist "$dir"
               if [[ $(checkDirectoryExist "$dir") == "0" ]]; then
@@ -225,7 +225,7 @@ checkFilesExist() {
         file=${todo[(($i+1))]}
         expected=${todo[(($i+2))]}
         if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
-           echo "\nError: file \"$path\" does not exist."
+           printf "\nError: file \"$path\" does not exist."
            if [[ "$force" == "1" ]]; then
               fixFileExist "$path" "$expected"
               if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
@@ -276,7 +276,7 @@ checkOwners() {
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
-             echo "\nERROR: owner for \"$path\" is wrong. Expected to be \"$expected\""
+             printf "\nERROR: owner for \"$path\" is wrong. Expected to be \"$expected\""
              if [[ "$force" == "1" ]]; then
                 fixOwner "$path" "$expected"
                 if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
@@ -327,7 +327,7 @@ checkPermissions() {
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
-             echo "\nError: permission wrong for $path. Expected to be: $expected"
+             printf "\nError: permission wrong for $path. Expected to be: $expected"
              if [[ "$force" == "1" ]]; then
                 fixPermission "$path" "$expected"
                 if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
