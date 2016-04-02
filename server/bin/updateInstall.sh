@@ -344,3 +344,4 @@ checkDirectoriesExist $force
 checkFilesExist $force
 checkOwners $force
 checkPermissions $force
+printf "\n"
