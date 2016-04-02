@@ -159,7 +159,7 @@ fixDirectoryExist() {
 # check if the directories exist
 checkDirectoriesExist() {
     force=$1
-    echo "`date`: check if the directories exist..."
+    echo -e "`date`: check if the directories exist..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
@@ -215,7 +215,7 @@ fixFileExist() {
 # check if the files exist
 checkFilesExist() {
     force=$1
-    echo "`date`: check if the files exist..."
+    echo -e "`date`: check if the files exist..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
@@ -225,7 +225,7 @@ checkFilesExist() {
         file=${todo[(($i+1))]}
         expected=${todo[(($i+2))]}
         if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
-           echo "ERROR: file \"$path\" does not exist."
+           echo "\nError: file \"$path\" does not exist."
            if [[ "$force" == "1" ]]; then
               fixFileExist "$path" "$expected"
               if [[ $(checkFileExist "$path" "$expected") == "0" ]]; then
@@ -265,7 +265,7 @@ fixOwner() {
 # check the owners
 checkOwners() {
     force=$1
-    echo "`date`: check the owners..."
+    echo -e "`date`: check the owners..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
@@ -276,7 +276,7 @@ checkOwners() {
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
-             echo "ERROR: owner for \"$path\" is wrong. Expected to be \"$expected\""
+             echo "\nERROR: owner for \"$path\" is wrong. Expected to be \"$expected\""
              if [[ "$force" == "1" ]]; then
                 fixOwner "$path" "$expected"
                 if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
@@ -316,7 +316,7 @@ fixPermission() {
 # check all permissions
 checkPermissions() {
     force=$1
-    echo "`date`: check the permissions..."
+    echo -e "`date`: check the permissions..."
     
     l=${#todo[@]}
     for (( i=0; i<${l}+1; i=$i+3 ));
@@ -327,7 +327,7 @@ checkPermissions() {
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
-             echo "ERROR: permission wrong for $path. Expected to be: $expected"
+             echo "\nError: permission wrong for $path. Expected to be: $expected"
              if [[ "$force" == "1" ]]; then
                 fixPermission "$path" "$expected"
                 if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
