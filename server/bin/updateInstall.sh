@@ -140,8 +140,9 @@ checkDirectoryExist() {
     path=$1
     if [[ -d "$path" ]]; then
        echo "1"
+    else
+       echo "0"
     fi
-    echo "0"
 }
 
 # fix a single directory
@@ -194,8 +195,9 @@ checkFileExist() {
     expected=$2
     if [[ -f "$path" ]]; then
        echo "1"
+    else
+       echo "0"
     fi
-    echo "0"
 }
 
 # fix a single permission
@@ -246,8 +248,9 @@ checkOwner() {
     owner=$(stat -c %U:%G "$path")
     if [[ "$owner" != "$expected" ]]; then
        echo "0"
+    else
+       echo "1"
     fi
-    echo "1"
 }
 
 # fix a single permission
@@ -295,8 +298,9 @@ checkPermission() {
     permission=$(stat -c %a "$path")
     if [[ "$permission" != "$expected" ]]; then
        echo "0"
+    else
+       echo "1"
     fi
-    echo "1"
 }
 
 # fix a single permission
