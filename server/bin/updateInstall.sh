@@ -205,9 +205,9 @@ fixFileExist() {
     path=$1
     expected=$2
     if [[ "$expected" == "" ]]; then
-       touch $path
+       touch "$path"
     else
-       echo "$expected" > $file
+       echo "$expected" > $path
     fi
 }
 
