@@ -25,6 +25,13 @@ The 'crontab -e' for the processing user should look like this:
 */1 * * * * /var/www/html/server/bin/mppsctl.sh start
 ```
 
+The 'incrontab -e' for the processing user should look like this:
+
+```
+/data/scanner/ IN_CREATE /var/www/html/server/bin/newStudyOnScanner.sh $@ $#
+/var/www/html/php/inventions IN_CREATE,IN_MOVED_TO /var/www/html/server/bin/createMachine.sh $@ $#
+```
+
 Additionally the root user needs the following 'incrontab -e' entries:
 
 ```

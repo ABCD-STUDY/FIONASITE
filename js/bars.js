@@ -26,6 +26,9 @@ function createBars() {
 
 
     function label(node) {
+        if (typeof node.name == "undefined") {
+	    return 'unknown';
+        }
         return node.name.replace(/\s*\(.*?\)$/, '');
     }
     function color(node, depth) {
