@@ -709,6 +709,14 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['ManufacturerModelName'] = dataset.ManufacturerModelName
+                                except:
+                                        pass
+                                try:
+                                        data['SoftwareVersion'] = dataset.SoftwareVersion
+                                except:
+                                        pass
+                                try:
                                         data['AcquisitionMatrix'] = str(dataset.AcquisitionMatrix)
                                 except:
                                         pass
@@ -718,6 +726,10 @@ class ProcessSingleFile(Daemon):
                                         pass
                                 try:
                                         data['Modality'] = dataset.Modality
+                                except:
+                                        pass
+                                try:
+                                        data['AcquisitionLength'] = str(dataset[0x51, 0x100a].value)
                                 except:
                                         pass
                                 try:
@@ -746,6 +758,10 @@ class ProcessSingleFile(Daemon):
                                         pass
                                 try:
                                         data['SeriesDescription'] = dataset.SeriesDescription
+                                except:
+                                        pass
+                                try:
+                                        data['SequenceName'] = str(dataset.[0x18,0x24].value)
                                 except:
                                         pass
                                 try:
@@ -789,6 +805,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['ImagesInAcquisition'] = str(dataset[0x20,0x1002].value)
+                                except:
+                                        pass
+                                try:
                                         data['AccessionNumber'] = str(dataset[0x08,0x50].value)
                                 except:
                                         pass
@@ -816,6 +836,14 @@ class ProcessSingleFile(Daemon):
                                         #        pass
                                         try:
                                                 siemensDiffusionInformation['B_value'] = ptag_img['B_value']
+                                                try:
+                                                        siemensDiffusionInformation['SOPInstanceUID'] = str(dataset[0x08,0x18].value)
+                                                except:
+                                                        pass
+                                                try:
+                                                        siemensDiffusionInformation['InstanceNumber'] = str(dataset[0x20,0x13].value)
+                                                except:
+                                                        pass
                                         except:
                                                 pass
                                         try:
@@ -828,14 +856,6 @@ class ProcessSingleFile(Daemon):
                                                 pass
                                         try: 
                                                 data['PhaseEncodingDirectionPositive'] = ptag_img['PhaseEncodingDirectionPositive']
-                                        except:
-                                                pass
-                                        try:
-                                                siemensDiffusionInformation['SOPInstanceUID'] = str(dataset[0x08,0x18].value)
-                                        except:
-                                                pass
-                                        try:
-                                                siemensDiffusionInformation['InstanceNumber'] = str(dataset[0x20,0x13].value)
                                         except:
                                                 pass
 

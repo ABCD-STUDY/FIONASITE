@@ -35,13 +35,13 @@
       "id" : "MOSAIC",
       "rules": [
           {
-	     "tag": [ "0x08", "0x08" ],
+             "tag": [ "0x08", "0x08" ],
              "value": "MOSAIC",
-	     "operator": "contains"
+             "operator": "contains"
           },
-	  {
-	     "rule": "SIEMENSBYMANUFACTURER"
-	  }
+          {
+             "rule": "SIEMENSBYMANUFACTURER"
+          }
       ]
   },
   {
@@ -50,9 +50,9 @@
       "id" : "ORIGINAL",
       "rules": [
           {
-	     "tag": [ "0x08", "0x08" ],
+             "tag": [ "0x08", "0x08" ],
              "value": "ORIGINAL",
-	     "operator": "contains"
+             "operator": "contains"
           }
       ]
   },
@@ -61,27 +61,27 @@
       "description": "A localizer scan, has been classified before as axial, sagittal and coronal",
       "rules": [
           {
-	      "tag": [ "ClassifyType" ],
-	      "value": "axial" ,
-	      "operator": "contains"
-	  },
+              "tag": [ "ClassifyType" ],
+              "value": "axial" ,
+              "operator": "contains"
+          },
           {
-	      "tag": [ "ClassifyType" ],
-	      "value": "coronal",
-	      "operator": "contains"
-	  },
+              "tag": [ "ClassifyType" ],
+              "value": "coronal",
+              "operator": "contains"
+          },
           {
-	      "tag": [ "ClassifyType" ],
-	      "value": "sagittal",
-	      "operator": "contains"
-	  }
+              "tag": [ "ClassifyType" ],
+              "value": "sagittal",
+              "operator": "contains"
+          }
       ]
   },
   { "type" : "ABCD-T1",
-    "description" : "A T1 weighted image from GE and as EFGRE3D",
+    "description" : "A T1 weighted image from GE with ABCD resolution",
     "rules" : [
       {
-	"rule" : "GEBYMANUFACTURER"
+        "rule" : "GEBYMANUFACTURER"
       },{ 
         "tag": [ "AcquisitionMatrix" ],
         "value": "0, 320, 320, 0"
@@ -96,7 +96,7 @@
     "description" : "A T1 weighted image from Siemens with ABCD resolution",
     "rules" : [
       {
-	"rule" : "SIEMENSBYMANUFACTURER"
+        "rule" : "SIEMENSBYMANUFACTURER"
       },{ 
         "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -117,7 +117,7 @@
     "description" : "A T2 weighted image from Siemens with ABCD resolution",
     "rules" : [
       {
-	"rule" : "SIEMENSBYMANUFACTURER"
+        "rule" : "SIEMENSBYMANUFACTURER"
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -138,9 +138,9 @@
     "description" : "Field Maps for ABCD Diffusion scan",
     "rules" : [
       {
-	"rule" : "SIEMENSBYMANUFACTURER"
+        "rule" : "SIEMENSBYMANUFACTURER"
       },{
-	"rule" : "ORIGINAL"
+        "rule" : "ORIGINAL"
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -161,11 +161,11 @@
     "description" : "ABCD Diffusion scan",
     "rules" : [
       {
-	"rule" : "SIEMENSBYMANUFACTURER"
+        "rule" : "SIEMENSBYMANUFACTURER"
       },{
-	"rule" : "ORIGINAL"
+        "rule" : "ORIGINAL"
       },{
-	"rule" : "MOSAIC"
+        "rule" : "MOSAIC"
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -186,9 +186,9 @@
     "description" : "ABCD Nback fMRI scan",
     "rules" : [
       {
-	"rule" : "SIEMENSBYMANUFACTURER"
+        "rule" : "SIEMENSBYMANUFACTURER"
       },{
-	"rule" : "ORIGINAL"
+        "rule" : "ORIGINAL"
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -212,9 +212,9 @@
     "description" : "Field Maps for ABCD Diffusion scan",
     "rules" : [
       {
-	"rule" : "SIEMENSBYMANUFACTURER"
+        "rule" : "SIEMENSBYMANUFACTURER"
       },{
-	"rule" : "ORIGINAL"
+        "rule" : "ORIGINAL"
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -231,18 +231,91 @@
     ]
   },
   {
-      "type" : "GEDTI",
+      "type" : "ABCD-DTI",
       "id" : "GEDTI",
       "description": "GE based MMIL DTI format",
       "rules": [
-          {
-	     "tag": [ "0x19", "0x109c" ],
-             "value": "^epi2_pepolar$"
-          },
-	  {
-	     "rule": "GEBYMANUFACTURER"
-	  }
+          {"rule": "GEBYMANUFACTURER"
+          },{
+             "tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "2916"
+      }
+          
       ]
+  },
+  {
+      "type" : "ABCD-Diffusion-FM",
+      "description": "GE based DTI field map",
+      "rules": [
+          {          
+             "rule": "GEBYMANUFACTURER"
+          },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "189"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-fMRI-FM",
+      "description": "Field Maps for ABCD fMRI scan",
+      "rules": [
+          {          
+             "rule": "GEBYMANUFACTURER"
+          },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/epi_pepolar"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "104, 0, 0, 104"
+      },{ 
+        "tag": [ "0x19", "0x10b3" ],
+        "value": "2.000000"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-rsfMRI",
+      "description": "GE ABCD rsfMRI",
+      "rules": [
+          {          
+             "rule": "GEBYMANUFACTURER"
+          },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "104, 0, 0, 104"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "3744"
+      }
+      ]
+  },
+  { "type" : "ABCD-T2",
+    "description" : "A T2 weighted image from GE with ABCD resolution",
+    "rules" : [
+      {
+        "rule" : "GEBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 320, 320, 0"
+      },{ 
+        "tag": [ "0x19", "0x109c"],
+        "value": "research/3dfse_promo"
+      }
+    ]
   },
   {
       "type" : "GERSI",
@@ -250,12 +323,12 @@
       "description": "GE based MMIL RSI format",
       "rules": [
           {
-	     "tag": [ "0x19", "0x109c" ],
+             "tag": [ "0x19", "0x109c" ],
              "value": "^epi2_pepolarFLEX"
           },
-	  {
-	     "rule": "GEBYMANUFACTURER"
-	  }
+          {
+             "rule": "GEBYMANUFACTURER"
+          }
       ]
   }
 ]
