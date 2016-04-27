@@ -753,7 +753,7 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
-                                        data['StudyDescription'] = dataset.StudyDescription
+                                        data['StudyDescription'] = unicode(dataset.StudyDescription, "UTF-8", errors='ignore')
                                 except:
                                         pass
                                 try:
