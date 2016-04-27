@@ -761,7 +761,7 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
-                                        data['SequenceName'] = str(dataset.[0x18,0x24].value)
+                                        data['SequenceName'] = str(dataset[0x18,0x24].value)
                                 except:
                                         pass
                                 try:
