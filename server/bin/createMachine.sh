@@ -13,6 +13,7 @@ if [ $# -eq 0 ]; then
   exit 0
 fi
 
+# we do need permissions to access these ports on the network additionally to port 443/80
 startport=4200
 endport=4220
 
@@ -84,21 +85,21 @@ elif [[ $action == "start" ]]; then
   if [[ $line == "" ]] && [[ "$l" != "" ]]; then
      echo "`date`: $id not running yet" >> $log
      # are there any options for this machine? Like what input it should get?
-     opt=`cat $1/$2 | jq -r ".opt"`
+     opt=`cat "$1/$2" | jq -r ".opt"`
      link=''
      case $opt in
 	 all_data)
             echo "`date`: $id is asking for all_data" >> $log
-	    link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw:/input:ro'
-            echo "`date`: $id is asking for all_data (${link})" >> $log
+	    link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw:/input:ro -v /data/site/output:/output'
+            echo "`date`: $id is asking for all_data with ${opt} (${link})" >> $log
 	    ;;
 	 random_study)
             r=`ls /data/site/raw | sort -R | head -1`
-            if [[ ${r} == "" ]]; then
+            if [[ "${r}" == "" ]]; then
               echo "`date`: Error, no random study could be found in /data/site/raw/" >> $log
             else
-              link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw/${r}:/input:ro'
-              echo "`date`: $id is asking for random study \"$link\"" >> $log
+              link="-v /data/site/archive/scp_${r}:/data/site/archive/scp_${r}:ro -v /data/site/raw/${r}:/input:ro -v /data/site/output:/output"
+              echo "`date`: $id is asking for random study \"$link\" in /data/site/archive/" >> $log
             fi
 	    ;;
 	 *)
