@@ -54,17 +54,19 @@
     }
     .console {
        background-color: rgba(200,200,200,0.5);
-       color: #fff;
+       color: #000;
        width: 100%;
        height: 400px;
        position: absolute;
        bottom: 0;
+       padding: 5px;
     }
     .console textarea {
        height: 400px;
+       padding: 10px;
     }
     </style>
-    <link rel="stylesheet" href="css/dialog-polyfill.min.css">
+    <!-- <link rel="stylesheet" href="css/dialog-polyfill.min.css"> -->
   </head>
   <body>
 
@@ -74,7 +76,7 @@
       <div class="nav-wrapper">
         <a href="#" class="brand-logo">&nbsp;Invention</a>
         <ul class="right hide-on-med-and-down">
-          <li><a href="#" id="dialog-about-button">About</a></li>
+          <li><a href="#modal-about" class="modal-trigger" id="dialog-about-button">About</a></li>
         </ul>
       </div>
     </nav>
@@ -94,8 +96,8 @@
       </main>
     </div>
 
-<dialog class="mdl-dialog" id="modal-about">
-    <div class="mdl-dialog__content">
+<dialog class="mdl-dialog modal" id="modal-about">
+    <div class="mdl-dialog__content modal-content">
         <div style="font-size: 22pt; margin-bottom: 20px;">
             Invention
         </div>
@@ -108,13 +110,13 @@
 	  </p>
         </div>
     </div>
-    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
-        <button type="button" class="btn mdl-button close-dialog">OK</button>
+    <div class="modal-footer">
+        <button type="button" class="btn mdl-button close-dialog modal-action modal-close btn-flat">OK</button>
     </div>
 </dialog>
 
-<dialog class="mdl-dialog" id="modal-start-container">
-    <div class="mdl-dialog__content">
+<dialog class="mdl-dialog modal" id="modal-start-container">
+    <div class="mdl-dialog__content modal-content">
         <div style="font-size: 22pt; margin-bottom: 20px;">
             Start
         </div>
@@ -144,15 +146,15 @@
 	  </p>
         </div>
     </div>
-    <div class="mdl-dialog__actions">
-        <button type="button" class="btn mdl-button close-dialog">Close</button>
-        <button type="button" class="btn mdl-button" id="start-container-start">Start</button>
+    <div class="mdl-dialog__actions modal-footer">
+        <button type="button" class="btn mdl-button modal-action modal-close close-dialog">Close</button> &nbsp;
+        <button type="button" class="btn mdl-button modal-action modal-close" id="start-container-start">Start</button>
     </div>
 </dialog>
 
 
     <script src="js/jquery-2.1.4.min.js"></script>
-    <script src="js/dialog-polyfill.min.js"></script>
+    <!-- <script src="js/dialog-polyfill.min.js"></script> -->
     <script src="js/materialize.min.js"></script>
 
     <script>
@@ -214,8 +216,8 @@
 
       function displayConsole() {
          // if the console exists already delete it
-         if (jQuery('#console').length === 0) {
-  	   jQuery('body').append('<div class=\"console\"><textarea rows=\"200\" cols=\"80\">Console</textarea></div>');
+         if (jQuery('#console').length == 0) {
+  	   jQuery('body').append('<div id=\"console\" class=\"console\"><textarea rows=\"200\" cols=\"80\">loading ...</textarea></div>');
            setInterval(function() {
 	      // get the log file from /server/logs/machines.log
               jQuery.get('server/logs/machines.log', function(data) {
@@ -245,12 +247,12 @@
          });
          jQuery('#list-of-machines').on('click', '.start-container', function() {
            var id = jQuery(this).attr('container');
- 	   var dialog = document.querySelector('#modal-start-container');  
-           if (!dialog.showModal) {
-             dialogPolyfill.registerDialog(dialog);
-           }
+ 	   //var dialog = document.querySelector('#modal-start-container');  
+           //if (!dialog.showModal) {
+           //  dialogPolyfill.registerDialog(dialog);
+           //}
            jQuery('#modal-start-container').attr('container', id);
-           dialog.showModal();
+           jQuery('#modal-start-container').openModal();
          });
          jQuery('#start-container-start').click(function() {
            var opt = jQuery('#start-container-start-option').val();
@@ -273,15 +275,17 @@
            jQuery.getJSON('php/machines.php', options, function(data) {});
          });
          jQuery('#dialog-about-button').click(function() {
-           var dialog = document.querySelector('#modal-about');
-           if (!dialog.showModal) {
-             dialogPolyfill.registerDialog(dialog);
-           }
-           dialog.showModal();
+           //var dialog = document.querySelector('#modal-about');
+           //if (!dialog.openModal) {
+           //  dialogPolyfill.registerDialog(dialog);
+           //}
+           //dialog.openModal();
+	   jQuery('#modal-about').openModal();
          });
-         jQuery('.close-dialog').click(function() {
-            jQuery(this).parent().parent().closeModal();
-         });
+         //jQuery('.close-dialog').click(function() {
+         //   jQuery(this).parent().parent().closeModal();
+	 //   jQuery('._dialog_overlay').remove();
+         //});
       });
 
 </script>
