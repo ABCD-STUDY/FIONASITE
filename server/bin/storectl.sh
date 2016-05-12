@@ -37,10 +37,10 @@ case $1 in
           mkdir $od
         fi
         # check if we have a pipe to send events to
-        if [[ -p $pipe ]]; then
-            echo "Found pipe"
+        if [[ "$(/usr/bin/test -p ${pipe})" != "0" ]]; then
+            echo "Found pipe ${pipe}..."
         else
-            echo "Error: the pipe of processSingleFile.py could not be found"
+            echo "Error: the pipe of processSingleFile.py \"$pipe\" could not be found"
             exit -1
         fi
         echo "Check if storescp daemon is running..."
@@ -48,7 +48,7 @@ case $1 in
         RETVAL=$?
         [ $RETVAL = 0 ] && exit || echo "storescpd process not running, start now.."
         echo "Starting storescp daemon..."
-        echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescp --fork --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd.log
+        echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescp --fork --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
 
         /usr/bin/nohup /usr/bin/storescp --fork \
             --write-xfer-little \
