@@ -9,6 +9,7 @@ RUN apt-get update && \
     apt-get clean
 
 COPY assets/work.sh /root/work.sh
+COPY assets/info.json /root/info.json
 
 RUN cd /tmp && \
     git clone https://github.com/shellinabox/shellinabox && \
@@ -21,7 +22,8 @@ RUN cd /tmp && \
     cp shellinabox/*.css /etc/shellinabox-css/ && \
     adduser processing && usermod -aG sudo processing && echo processing:processing | chpasswd \
     mkdir /root/storage \
-    chmod +rx /root/work.sh
+    chmod +rx /root/work.sh \
+    chmod +r /root/info.json
 
 ADD assets/setup.sh /setup.sh
 RUN /setup.sh
