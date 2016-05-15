@@ -48,7 +48,8 @@ getSeries () {
   printf "# request all images for the seriesinstanceuid\n#\n(0008,0052) CS [SERIES]     # QueryRetrieveLevel\n(0020,000e) UI [${seriesInstanceUID}]    # SeriesInstanceUID\n" >> $f
   /usr/bin/dump2dcm +te $f ${f}.dcm
   cmd="/usr/bin/movescu -aet $DICOMAETITLE -aec $SCANNERAETITLE --study -aem $DICOMAETITLE $SCANNERIP $SCANNERPORT ${f}.dcm"
-  #echo $cmd >> $log
+  echo "`date`: pull this series -> `cat $f`" >> $log
+  echo "`date`: $cmd" >> $log
   eval $cmd
   # be nice and wait before asking for more trouble
   sleep 5
