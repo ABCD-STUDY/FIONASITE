@@ -30,18 +30,21 @@ anonymize () {
   # This loop is very inefficient, dcmodify called for each file is not good.
   # We should group files together that not exceed the limit of the command line length in bash.
   # Even better we should replace this with some GDCM code.
-  find /data/site/raw/${SDIR}/${SSERIESDIR}/ -print0 | while read -d $'\0' file2
-  do 
-      # find out the real name of this file
-      f=`/bin/readlink -f "$file2"`
-      # To properly annonymize data we need to follow http://dicom.nema.org/dicom/2013/output/chtml/part15/chapter_E.html
-      # We keep here the patient name and patient id - they have to be anonymized seperately, they are required still for site identification
-      /usr/bin/dcmodify -ie -nb -ea "(0010,0030)" -ea "(0020,000E)" -ea "(0020,000D)" \
-  	-ea "(0008,0080)" -ea "(0008,1040)" -ea "(0008,0081)" -ea "(0008,0050)" \
-  	-ea "(0008,0090)" -ea "(0008,1070)" -ea "(0008,1155)" -ea "(0010,0040)" \
-  	-ea "(0010,1000)" -ea "(0010,1001)" -ea "(0010,1010)" -ea "(0010,1040)" \
-  	-ea "(0020,0010)" -ea "(0020,4000)" "$f"
-  done
+  #find /data/site/raw/${SDIR}/${SSERIESDIR}/ -print0 | while read -d $'\0' file2
+  #do 
+  #    # find out the real name of this file
+  #    f=`/bin/readlink -f "$file2"`
+  #    # To properly annonymize data we need to follow http://dicom.nema.org/dicom/2013/output/chtml/part15/chapter_E.html
+  #    # We keep here the patient name and patient id - they have to be anonymized seperately, they are required still for site identification
+  #    /usr/bin/dcmodify -ie -nb -ea "(0010,0030)" -ea "(0020,000E)" -ea "(0020,000D)" \
+  # 	-ea "(0008,0080)" -ea "(0008,1040)" -ea "(0008,0081)" -ea "(0008,0050)" \
+  # 	-ea "(0008,0090)" -ea "(0008,1070)" -ea "(0008,1155)" -ea "(0010,0040)" \
+  # 	-ea "(0010,1000)" -ea "(0010,1001)" -ea "(0010,1010)" -ea "(0010,1040)" \
+  #	-ea "(0020,0010)" -ea "(0020,4000)" "$f"
+  #done
+  # run python version of anonymizer
+  ${SERVERDIR}/bin/anonymize.sh /data/site/raw/${SDIR}/${SSERIESDIR}
+
   # We need to processSingleFile again after the anonymization is done. First delete the previous cached json file
   echo "`date`: anonymize  - delete now /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
   /bin/rm /data/site/raw/${SDIR}/${SSERIESDIR}.json
