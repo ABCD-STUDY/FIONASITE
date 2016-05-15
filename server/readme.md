@@ -40,4 +40,6 @@ Additionally the root user needs the following 'incrontab -e' entries:
 
 ## Files of interest
 
-Each DICOM files that arrives on this system is parsed by a daemon process implemented as processSingleFile.py. The process will classify files on a series level and create a summary file as a json next to the image series. The particular rules used by processSingleFile.py are stored in classifyRules.json. 
+Each DICOM files that arrives on this system is parsed by a daemon process implemented as processSingleFile.py. The process will classify files on a series level and create a summary file as a json next to the image series (/data/site/raw). The particular rules used by processSingleFile.py are stored in classifyRules.json.
+
+If the anonymizer is active (see web-interface) incoming DICOM files are anonymized based a list of tags in anonymizeTags.json. The anonymizer is replacing these tags (if they exist) with an empty string. The speed of the anonymization can be adjusted by increasing the number of pool workers in anonymize.sh. 
