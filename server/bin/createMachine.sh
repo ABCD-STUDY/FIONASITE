@@ -108,12 +108,15 @@ elif [[ $action == "start" ]]; then
      esac
 
      # we don't have that id in the list of running machines, start it now
-     # "shellinaboxd", "-s", "/:LOGIN", "--disable-ssl", "--user-css", "Normal:+/etc/shellinabox-css/white-on-black.css,Reverse:-/etc/shellinabox-css/black-on-white.css"
      containerid=$(docker run -d ${link} -p ${port}:4200 $id shellinaboxd -s /:LOGIN --disable-ssl --user-css Normal:+/etc/shellinabox-css/white-on-black.css,Reverse:-/etc/shellinabox-css/black-on-white.css  2>&1)
      # check if the container is running now
      echo "`date`: start the container, got: $containerid" >> $log
-     
-
+     # We would like to know the info for this container as well
+     info=$(docker run $id /bin/bash -c "cat /root/info.json" | jq ".")
+     if [[ ! "$info" == "" ]]; then
+       cat /data/config/machines.json | jq "[.[] | select(.id == \"$id\") |= .+ {info: $info}] " > /tmp/_machines.json
+       mv /tmp/_machines.json /data/config/machines.json
+     fi
      # add the port number
      cat /data/config/machines.json | jq "[.[] | select(.id == \"$id\") |= .+ {port:\"$port\"}] " > /tmp/_machines.json
      mv /tmp/_machines.json /data/config/machines.json     

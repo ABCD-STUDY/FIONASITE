@@ -105,6 +105,9 @@
 	  <p>
 	     Create processing pipelines that can be shared across instances of this platform. In order to see what goes on behind the scenes open the <span id="console-start">console</span>.
 	  </p>
+	     Note: The docker interface components depend on a particular port range (4200-4220) to be open on your network. If these ports are not open no connection to the consoles can be established. You can still run a local browser on the machine to see the interface.
+	  <p>
+          </p>
 	  <p>
              Learn more about this project by visiting <a href="https://abcd-workspace.ucsd.edu">abcd-workspace.ucsd.edu</a>.
 	  </p>
@@ -188,13 +191,31 @@
 				 "  </a>" +
 				 "  <ul>" + 
 				 //   <li><a class=\"btn-floating green publish-container\" title=\"publish this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">publish</i></a></li>" +
-				 "    <li><a class=\"btn-floating red remove-container\" title=\"delete this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">remove</i></a></li>" +
+				 "    <li><a class=\"btn-floating red remove-container\" title=\"delete this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">delete_forever</i></a></li>" +
 				 "    <li><a class=\"btn-floating blue save-container\" title=\"Save this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">save</i></a></li>" +
-				 "    <li><a class=\"btn-floating yellow stop-container\" title=\"Stop this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">clear</i></a></li>" +
+				 "    <li><a class=\"btn-floating yellow stop-container\" title=\"Stop this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">pan_tool</i></a></li>" +
 				 "    <li><a class=\"btn-floating green start-container\" title=\"Start this container\" container=\""+data[i].id+"\"><i class=\"material-icons\">autorenew</i></a></li>" +
 				 "  </ul>" +
 				 "</div>");
-		jQuery('#'+data[i].id).append('<div>' + data[i].id + '</div>');
+                str = "";
+		str = str + '<div><span>' + data[i].id + '</span>';
+                if (typeof data[i].port !== 'undefined' && data[i].port !== "") {
+                   str = str + ' (:' + data[i].port + ')';
+                }
+                if (typeof data[i].info !== 'undefined') {
+                   alt = "empty description";
+                   if (typeof data[i].info['description'] !== 'undefined') {
+                       alt = data[i].info['description'];
+                   }
+                   if (typeof data[i].info['name'] !== 'undefined') {
+                     str = str + ' <span style=\"text-transform: uppercase;\" title=\"' + alt + '\">"' + data[i].info['name'] + '"</span>';
+                   }
+                   if (typeof data[i].info['version'] !== 'undefined') {
+                     str = str + ' v:' + data[i].info['version'];
+                   }
+                }
+                str = str + '</div>';
+                jQuery('#'+data[i].id).append(str);
                 if (typeof data[i].port != 'undefined' && data[i].port != "") {
 		   jQuery('#'+data[i].id).append("<iframe src=\"http://localhost:" + data[i].port + "\"></iframe>");
                 }
@@ -244,6 +265,7 @@
            var id = jQuery(this).attr('container');
            var options = { action: "stop", id: id };
            jQuery.getJSON('php/machines.php', options, function(data) {});
+           jQuery('.fixed-action-btn').closeFAB();
          });
          jQuery('#list-of-machines').on('click', '.start-container', function() {
            var id = jQuery(this).attr('container');
@@ -253,6 +275,7 @@
            //}
            jQuery('#modal-start-container').attr('container', id);
            jQuery('#modal-start-container').openModal();
+           jQuery('.fixed-action-btn').closeFAB();
          });
          jQuery('#start-container-start').click(function() {
            var opt = jQuery('#start-container-start-option').val();
@@ -262,12 +285,14 @@
            jQuery.getJSON('php/machines.php', options, function(data) {
               checkShell( id );
 	   });
-           jQuery(this).parent().parent().closeModal();
+           //jQuery(this).parent().parent().closeModal();
+           jQuery('.fixed-action-btn').closeFAB();
          });
          jQuery('#list-of-machines').on('click', '.save-container', function() {
            var id = jQuery(this).attr('container');
            var options = { action: "save", id: id };
            jQuery.getJSON('php/machines.php', options, function(data) {});
+           jQuery('.fixed-action-btn').closeFAB();
          });
          jQuery('#list-of-machines').on('click', '.remove-container', function() {
            var id = jQuery(this).attr('container');
