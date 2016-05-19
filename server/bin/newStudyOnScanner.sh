@@ -26,12 +26,15 @@ if [[ -f /data/enabled ]]; then
 fi
 
 # we need to get the studyInstanceUID into the to pull folder
-l=`/usr/bin/dcmdump +P "StudyInstanceUID" $1/$2`
+# lets give the system some time to write the file
+l=`sleep 1; /usr/bin/dcmdump +P "StudyInstanceUID" $1/$2`
 val=`echo $l | cut -d'[' -f2 | cut -d']' -f1`
 if [[ "$val" == "$l" ]]; then
+  echo "ERROR: could not read StudyInstanceUID from $1/$2, got $val with" >> $log
   val="-"
-  echo "ERROR: could not read StudyInstanceUID from $1/$2" >> $log
   exit
+else
+  echo "`date`: got StudyInstanceUID: \"$val\"" >> $log
 fi
 
 # $val is now the study instance uid, work on this study until we are done
@@ -42,4 +45,6 @@ tfile="/data/active-scans/${val}"
 /usr/bin/touch "${tfile}"
 if [ ! -f "$tfile" ]; then
   echo "ERROR: could not create touch file as /data/active-scans/${val}" >> $log
+else
+  echo "Info: created ${tfile}" >> $log
 fi
