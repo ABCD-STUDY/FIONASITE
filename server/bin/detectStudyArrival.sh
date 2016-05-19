@@ -131,7 +131,7 @@ detect () {
       mkdir -p ${d}
       machineid=machine57080de9bbc3d
       SSDIR=${SDIR:4}
-      echo "`date`: protocol compliance check (/usr/bin/nohup watch -n $interval docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SSDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &)" >> $log
+      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SSDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &)" >> $log
       id=$(docker run -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SSDIR}:/input ${machineid} /bin/bash -c "/root/work.sh /input /output" 2>&1 >> /tmp/watch.log)
       echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log
 
@@ -194,8 +194,9 @@ detect () {
          # delete any privious file (we got new series data so file needs to be updated)
          rm -f -- ${pfiledir}/${SSERIESDIR}.*
       fi
-      tar --dereference -cvf ${pfiledir}/${SSERIESDIR}.tar /data/site/raw/${SDIR}/${SSERIESDIR}/
-      md5sum ${pfiledir}/${SSERIESDIR}.tar > ${pfiledir}/${SSERIESDIR}.md5sum
+      mkdir -p /data/quarantine/
+      tar --dereference -cvf /data/quarantine/${SSERIESDIR}.tar /data/site/raw/${SDIR}/${SSERIESDIR}/
+      md5sum /data/quarantine/${SSERIESDIR}.tar > /data/quarantine/${SSERIESDIR}.md5sum
       # now the user interface needs to display this as new data
     fi
     #
