@@ -179,6 +179,16 @@ detect () {
       fi
       echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR series: $SSERIESDIR" >> $log
       runSeriesInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR $SSERIESDIR
+
+      # we have a series store it as a tar
+      mkdir -p /data/quarantine/
+      echo "`date`: write tar file /data/quarantine/${SSERIESDIR}.tar, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
+      out=/data/quarantine/${SDIR}_${SSERIESDIR}.tar
+      tar --dereference -cvf "$out" "/data/site/raw/${SDIR}/${SSERIESDIR}/"
+      md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
+      echo "`date`: done with creating tar file and md5sum" >> $log
+      # now the user interface needs to display this as new data
+
     else
       echo "`date`: Study detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR" >> $log
 
@@ -191,13 +201,9 @@ detect () {
       
       # copy the study data to the $pfiledir directory (use tar without compression and resolve symbolic links)
       if [[ -f ${pfiledir}/${SSERIESDIR}.tar ]]; then
-         # delete any privious file (we got new series data so file needs to be updated)
+         # delete any previous file (we got new series data so file needs to be updated)
          rm -f -- ${pfiledir}/${SSERIESDIR}.*
       fi
-      mkdir -p /data/quarantine/
-      tar --dereference -cvf /data/quarantine/${SSERIESDIR}.tar /data/site/raw/${SDIR}/${SSERIESDIR}/
-      md5sum /data/quarantine/${SSERIESDIR}.tar > /data/quarantine/${SSERIESDIR}.md5sum
-      # now the user interface needs to display this as new data
     fi
     #
     # /usr/bin/nohup /data/streams/bucket01/process.sh \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP "/data/site/archive/$SDIR" &
