@@ -19,6 +19,8 @@
 #  */1 * * * * sleep 15; /var/www/html/server/bin/moveFromScanner.sh
 #  */1 * * * * sleep 45; /var/www/html/server/bin/moveFromScanner.sh
 
+export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
+
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/moveFromScanner.log
 
@@ -68,6 +70,7 @@ getScans () {
     numFinishedSeries=0
     studyInstanceUID=`basename "$file"`
     # get the list of series from the scanner for this study
+    echo "`date`: call findscu with \"findscu -aet ${DICOMAETITLE} -aec ${SCANNERAETITLE} --study -k 0008,0052=SERIES -k \"0020,000d=${studyInstanceUID}\" ${SCANNERIP} ${SCANNERPORT}\" to get series for this study" >> $log
     series=`findscu -aet ${DICOMAETITLE} -aec ${SCANNERAETITLE} --study -k 0008,0052=SERIES -k "0020,000d=${studyInstanceUID}" ${SCANNERIP} ${SCANNERPORT} 2>&1`
     while read line; do
        # this failed because there was a file named '2' in the current directory (bummer)
@@ -109,6 +112,7 @@ getScans () {
          seriesInstanceUID=$val
        fi
     done < <(echo "$series")
+    echo "`date`: done with scanning for series in study ${studyInstanceUID}" >> $log
 
     # if the study is in progress we will not have a PerformedProcedureStepEndTime yet, don't close the study in that case
     # MPPS files are named after their MediaStorageInstanceUID, we need to find the correct one for our current studyInstanceUID
@@ -117,6 +121,7 @@ getScans () {
     if [[ -f "$mppsfile" ]]; then
         l=`/usr/bin/dcmdump +P "PerformedProcedureStepEndTime" "${mppsfile}"`
         val=`echo $l | cut -d'[' -f2 | cut -d']' -f1`
+        #echo "`date` looking for \"no value available\" in $val" >> $log
         if [[ "$val" == *"no value available"* ]]; then
 	    # we don't have an end-time yet
 	    echo "`date`: no PerformedProcedureStepEndTime yet, still in progress" >> $log
@@ -132,8 +137,10 @@ getScans () {
     # are we done with this study?
     if [[ $stillInProcess == 0 ]] && [[ "$numSeries" == "$numFinishedSeries" ]]; then
 	# we are done if we have all images for all series
-        echo "JOB $file to /data/finished-scans" >> $log
+        echo "`date`: JOB $file to /data/finished-scans" >> $log
 	mv "$file" /data/finished-scans/
+    else
+        echo "`date`: we are not done yet with this job" >> $log
     fi
     # we could also be done if a study was cancelled, we don't have all the images expected but the study is old
     testtime=86400
