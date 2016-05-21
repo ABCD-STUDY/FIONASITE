@@ -183,6 +183,8 @@ detect () {
 
       # we have a series store it as a tar
       mkdir -p /data/quarantine/
+      # allow the site user to write to this directory (from the scanner)
+      chmod 777 /data/quarantine
       echo "`date`: write tar file /data/quarantine/${SSERIESDIR}.tar, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
       out=/data/quarantine/${SDIR}_${SSERIESDIR}.tar
       cd /data/site/raw
