@@ -117,6 +117,7 @@ runAtInterval () {
 detect () {
   # we can have jobs that we need to run at regular intervals - like study compliance
   # first get a list of the current studies
+  echo "read $DIR for new files" >> $log
   find "$DIR" -print0 | while read -d $'\0' file
   do
     if [ "$file" == "$DIR" ]; then
@@ -184,7 +185,8 @@ detect () {
       mkdir -p /data/quarantine/
       echo "`date`: write tar file /data/quarantine/${SSERIESDIR}.tar, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
       out=/data/quarantine/${SDIR}_${SSERIESDIR}.tar
-      tar --dereference -cvf "$out" "/data/site/raw/${SDIR}/${SSERIESDIR}/"
+      cd /data/site/raw
+      tar --dereference -cvf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json"
       md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
       echo "`date`: done with creating tar file and md5sum" >> $log
       # now the user interface needs to display this as new data
