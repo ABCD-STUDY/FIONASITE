@@ -11,7 +11,12 @@
 # we have a new study on the scanner, lets try to find out more about it (series) and copy them
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/newStudyOnScanner.log
-echo "$*" >> $log
+echo "`date`: $*" >> $log
+
+if [ "$#" -ne 2 ]; then
+   echo "`date`: Error: incorrect call, expects two arguments, got $#" >> $log
+   exit
+fi
 
 # Check if we have MPPS on (if we have it off we should not copy to active-scans
 # actually we should remove the MPPS file as it might contain patient information for
@@ -20,7 +25,7 @@ if [[ -f /data/enabled ]]; then
   enabled=`cat /data/enabled | head -c 2 | tail -c 1`
   if [[ "$enabled" == "0" ]]; then
      /bin/rm -f "$1/$2"
-     echo "Switched OFF, deleted MPPS file $1/$2 uppon receive" >> $log
+     echo "`date`: Switched OFF, deleted MPPS file $1/$2 uppon receive" >> $log
      exit
   fi
 fi
@@ -30,8 +35,10 @@ fi
 l=`sleep 1; /usr/bin/dcmdump +P "StudyInstanceUID" $1/$2`
 val=`echo $l | cut -d'[' -f2 | cut -d']' -f1`
 if [[ "$val" == "$l" ]]; then
-  echo "ERROR: could not read StudyInstanceUID from $1/$2, got $val with" >> $log
+  echo "`date`: ERROR: could not read StudyInstanceUID from $1/$2, got \"$val\"" >> $log
   val="-"
+  # call yourself in 5 seconds again, it might take a while to get a StudyInstanceUID from MPPS
+  /usr/bin/nohup /bin/bash -c "sleep 5; $0 $1 $2 &" &
   exit
 else
   echo "`date`: got StudyInstanceUID: \"$val\"" >> $log
@@ -44,7 +51,7 @@ fi
 tfile="/data/active-scans/${val}"
 /usr/bin/touch "${tfile}"
 if [ ! -f "$tfile" ]; then
-  echo "ERROR: could not create touch file as /data/active-scans/${val}" >> $log
+  echo "`date`: ERROR: could not create touch file as /data/active-scans/${val}" >> $log
 else
-  echo "Info: created ${tfile}" >> $log
+  echo "`date`: Info: created ${tfile}" >> $log
 fi
