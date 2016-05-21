@@ -8,6 +8,8 @@
 # each series that does not exist already.
 #
 
+export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
+
 # we have a new study on the scanner, lets try to find out more about it (series) and copy them
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/newStudyOnScanner.log
