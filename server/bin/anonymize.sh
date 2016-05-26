@@ -107,6 +107,6 @@ if __name__ == "__main__":
                 pool.close()
                 sys.exit(0)
         else:
-                print "Anonymize a series of DICOM files in a directory."
+                print "Anonymize a series of DICOM files in a directory (in place)."
                 print "Requires as an argument the directory with the DICOM files to anonymize (in-place)."
                 sys.exit(2)

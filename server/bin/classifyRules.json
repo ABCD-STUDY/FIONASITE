@@ -206,7 +206,33 @@
         "value": "TA 05:12"
       }
     ]
-  },    
+  }, 
+  { 
+    "type" : "ABCD-fMRI-NBACK",
+    "description" : "ABCD Nback fMRI scan",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "936"
+      }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "91" 
+      },{ 
+        "tag": [ "SequenceName" ],
+        "value": "epfSM2d1_104"
+      },{ 
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 05:19"
+      }
+    ]
+  },   
   { 
     "type" : "ABCD-fMRI-FM",
     "description" : "Field Maps for ABCD Diffusion scan",
@@ -300,6 +326,59 @@
       },{ 
         "tag": [ "0x20", "0x1002" ],
         "value": "3519"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-MID-fMRI",
+      "description": "GE ABCD fMRI MID task",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "104, 0, 0, 104"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "3852"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-SST-fMRI",
+      "description": "GE ABCD fMRI SST task",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "104, 0, 0, 104"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "4023"
+      }
+      ]
+  },{
+      "type" : "ABCD-nBack-fMRI",
+      "description": "GE ABCD fMRI nBack task",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "104, 0, 0, 104"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "3582"
       }
       ]
   },
