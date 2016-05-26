@@ -1,0 +1,20 @@
+[
+  { "group": "0x08", "element": "0x80" },
+  { "group": "0x08", "element": "0x1040" },
+  { "group": "0x08", "element": "0x1070" },
+  { "group": "0x08", "element": "0x81" },
+  { "group": "0x08", "element": "0x50" },
+  { "group": "0x08", "element": "0x90" },
+  { "group": "0x08", "element": "0x1155" },
+  { "group": "0x10", "element": "0x30" },
+  { "group": "0x10", "element": "0x1000" },
+  { "group": "0x10", "element": "0x1001" },
+  { "group": "0x10", "element": "0x1010" },
+  { "group": "0x10", "element": "0x1040" },
+  { "group": "0x10", "element": "0x40" },
+  { "group": "0x20", "element": "0x4000"},
+  { "group": "0x20", "element": "0x0E" },
+  { "group": "0x20", "element": "0x0D" },
+  { "group": "0x20", "element": "0x10" },
+  { "name": "SeriesDescription" }
+]

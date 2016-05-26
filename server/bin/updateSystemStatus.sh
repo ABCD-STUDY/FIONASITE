@@ -49,14 +49,16 @@ v1=${vv:0:1}
 v2=${vv:1:1}
 v3=${vv:2:3}
 
+echo "called with $P $F $v1, $v2, $v3" >> $log
+
 # start storescp
 if [[ "$v1" == "0" ]]; then
-   su - processing -c "${SERVERDIR}/bin/storectl.sh stop"
-   su - processing -c "/usr/bin/python2.7 ${SERVERDIR}/bin/processSingleFile.py stop"
+   su - processing -c "${SERVERDIR}/bin/storectl.sh stop; sleep 1; /usr/bin/python2.7 ${SERVERDIR}/bin/processSingleFile.py stop"
    echo "`date`: disabled storescp services" >> $log
 else
-   su - processing -c "${SERVERDIR}/bin/storectl.sh start"
-   su - processing -c "/usr/bin/python2.7 ${SERVERDIR}/bin/processSingleFile.py start"
+   #echo "su - processing -c \"${SERVERDIR}/bin/storectl.sh start &>${SERVERDIR}/logs/storectl-sh.log\"" >> $log
+   #su - processing -c "/usr/bin/python2.7 ${SERVERDIR}/bin/processSingleFile.py start; sleep 1; ${SERVERDIR}/bin/storectl.sh start &>${SERVERDIR}/logs/storectl-sh.log"
+   su - processing -c "/usr/bin/python2.7 ${SERVERDIR}/bin/processSingleFile.py start; sleep 1; ${SERVERDIR}/bin/storectl.sh start &"
    echo "`date`: enable storescp services" >> $log
 fi
 if [[ "$v2" == "0" ]]; then

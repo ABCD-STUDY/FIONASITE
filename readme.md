@@ -59,3 +59,10 @@ Debug
 ======
 
 Use a vagrant setup such as https://github.com/ABCD-STUDY/abcd-dev.git for debugging and development.
+
+Processing containers inside FIONA use the DAIC Invention system which is docker based and provides a web interface that allows users to define a docker container, change its content and specify for which events the container will be started. The list of events currently supported is:
+
+ * a study arrives
+ * a particular series arrived as identified by a classification type
+
+![Invention user interface](/images/docker-interface.png?raw=true "User interface for docker containers on FIONA.")

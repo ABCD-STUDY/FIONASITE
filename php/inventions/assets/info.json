@@ -1,0 +1,6 @@
+{
+  "name": "Name of this container",
+  "id": "<unique id>",
+  "version": "0.0.1",
+  "description": "A container that I created."
+}
