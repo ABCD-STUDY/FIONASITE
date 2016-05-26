@@ -605,6 +605,10 @@ class ProcessSingleFile(Daemon):
                                 response      = ''.join([dicomdir, os.path.sep, dicomfile])
                                 try:
                                         dataset = dicom.read_file(response)
+                                except OSError:
+                                        print("Could not access file:", response)
+                                        logging.error('Could not access file: %s' % response)
+                                        continue                                        
                                 except IOError:
                                         print("Could not find file:", response)
                                         logging.error('Could not find file: %s' % response)
