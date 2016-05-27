@@ -20,6 +20,10 @@ def anonymize( df ):
                 print("Error: reading dicom file %s" % df)
                 log.error("Error: reading dicom file %s" % df)
                 return 0
+        except OSError:
+                print("Error: reading dicom file %s" % df)
+                log.error("Error: reading dicom file %s" % df)
+                return 0
         except InvalidDicomError:
                 print("Error: not a dicom file %s" % df)
                 log.error("Error: not a dicom file %s" % df)
@@ -50,12 +54,19 @@ def anonymize( df ):
                         except KeyError:
                                 print("Error: got keyerror trying to set the value of %s" % tagEntry['name'])
                                 log.error("Error: got keyerror trying to set the value of %s" % tagEntry['name'])
+        # find out if the file is a symbolic link, overwrite the origin instead
+        #if os.path.islink(df):
+        #        print("File is symlink, replace origin instead")
+        #        log.error("File is symlink %s" % df)
+
         # and overwrite the file again
         try:
+                #print("Save the file again in: %s" % df)
+                log.error("Save the file again in: %s" % df)
                 dataset.save_as(df)
-        except IOError:
+        except:
                 print("Error: could not overwrite DICOM %s" % df)
-                log.error("Error: could not overwrite DICOM %s" % df);
+                log.error("Error: could not overwrite DICOM %s" % df)
         log.info("Anonymize %s (%d tags touched)" % (df, num))
         return 0
 
