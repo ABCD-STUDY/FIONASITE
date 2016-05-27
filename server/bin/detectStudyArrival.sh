@@ -171,9 +171,9 @@ detect () {
       # before we can do anything we need to anonymize this series (real file location, no symbolic links)
       anonymize=1
       if [[ -f /data/enabled ]]; then
-        anonymize=`echo /data/enabled | head -c 3 | tail -c 1`
+        anonymize=`cat /data/enabled | head -c 3 | tail -c 1`
       fi
-      if [[ $anonymize == "1" ]]; then
+      if [[ "$anonymize" == "1" ]]; then
         echo "`date`: anonymize files linked to by /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
  	anonymize ${SDIR} ${SSERIESDIR}
         echo "`date`: anonymization is done" >> $log
