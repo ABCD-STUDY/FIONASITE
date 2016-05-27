@@ -43,14 +43,22 @@ anonymize () {
   #	-ea "(0020,0010)" -ea "(0020,4000)" "$f"
   #done
   # run python version of anonymizer
-  ${SERVERDIR}/bin/anonymize.sh /data/site/raw/${SDIR}/${SSERIESDIR}
+  echo "We will run now: ${SERVERDIR}/bin/anonymize.sh /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
+  ${SERVERDIR}/bin/anonymize.sh /data/site/raw/${SDIR}/${SSERIESDIR} 2>&1 >> $log
+
+  # we need to cache the connection information for this file, lets get the values first
+  AETitleCalled=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCalled] | jq .[]`
+  AETitleCaller=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCaller] | jq .[]`
+  CallerIP=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.CallerIP] | jq .[]`
 
   # We need to processSingleFile again after the anonymization is done. First delete the previous cached json file
   echo "`date`: anonymize  - delete now /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
   /bin/rm /data/site/raw/${SDIR}/${SSERIESDIR}.json
   # then send files to processSingleFile again
   echo "`date`: anonymize  - recreate /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
-  find -L /data/site/raw/${SDIR}/${SSERIESDIR}/ -type f -print | xargs -i echo "{}" >> /tmp/.processSingleFilePipe
+  cd /data/site/raw/${DIR}/${SSERIESDIR}
+  echo "`date`: run find -L . -type f -print | xargs -i echo \"${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${DIR}/${SSERIESDIR},{}\" in /data/site/raw/${DIR}/${SSERIESDIR}" >> $log
+  find -L . -type f -print | xargs -i echo "${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${DIR}/${SSERIESDIR},{}" >> /tmp/.processSingleFilePipe
 }
 
 runSeriesInventions () {
