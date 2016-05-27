@@ -308,6 +308,69 @@
       },{ 
         "tag": [ "0x19", "0x10b3" ],
         "value": "2.000000"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "144"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-Diffusion-QA",
+      "description": "QA for diffusion on GE scanners",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "297"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-fBIRN-QA",
+      "description": "GE fBIRN QA (non-Multiband)",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^/research/ABCD/epi_pepolar"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "64, 0, 0, 64"
+      },{ 
+        "tag": [ "0x19", "0x10b3" ],
+        "value": "2.000000"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "6000"
+      },{ 
+        "tag": [ "0x18", "0x80" ],
+        "value": "2000"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-Coil-QA",
+      "description": "GE phantom coil scan",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/efgre3d"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 32, 32, 0"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "4224"
       }
       ]
   },
@@ -379,6 +442,24 @@
       },{ 
         "tag": [ "0x20", "0x1002" ],
         "value": "3582"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-MB-fMRI-QA",
+      "description": "GE ABCD fMRI MultiBand QA",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "104, 0, 0, 104"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "3528"
       }
       ]
   },
