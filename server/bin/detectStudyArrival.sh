@@ -56,9 +56,9 @@ anonymize () {
   /bin/rm /data/site/raw/${SDIR}/${SSERIESDIR}.json
   # then send files to processSingleFile again
   echo "`date`: anonymize  - recreate /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
-  cd /data/site/raw/${DIR}/${SSERIESDIR}
-  echo "`date`: run find -L . -type f -print | xargs -i echo \"${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${DIR}/${SSERIESDIR},{}\" in /data/site/raw/${DIR}/${SSERIESDIR}" >> $log
-  find -L . -type f -print | xargs -i echo "${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${DIR}/${SSERIESDIR},{}" >> /tmp/.processSingleFilePipe
+  cd /data/site/raw/${SDIR}/${SSERIESDIR}
+  echo "`date`: run find -L . -type f -print | xargs -i echo \"${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${SDIR}/${SSERIESDIR},{}\" in /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
+  find -L . -type f -print | xargs -i echo "${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${SDIR}/${SSERIESDIR},{}" >> /tmp/.processSingleFilePipe
 }
 
 runSeriesInventions () {
