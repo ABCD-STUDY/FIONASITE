@@ -3,17 +3,18 @@
 
   $d = 'raw';
   $results = scandir($d);
+
   # get all files first (need to sort by modification time)
   $dirs = array();
   foreach ($results as $dd) {
     if ($dd === '.' or $dd === '..') 
       continue;
-    $dirs[filemtime($dd)] = $dd;
+    $dirs[$dd] = filemtime($dd);
   }
-  ksort($dirs);
+  asort($dirs);
 
   $subjects = array();
-  foreach ($dirs as $result) {
+  foreach ($dirs as $result => $value) {
      $files = glob($d . '/' . $result . '/*.json');
      foreach ($files as $f) {
        $data = json_decode(file_get_contents($f), True);
