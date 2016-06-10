@@ -1,4 +1,4 @@
 cd fiona
 # this has to be done only once
-# mkdir WASHU
-put -r /data/outbox
+# mkdir <SITE>
+get <SITE>/*.md5sum_server
