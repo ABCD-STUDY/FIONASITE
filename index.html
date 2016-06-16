@@ -35,15 +35,21 @@
     <link rel="stylesheet" href="css/jquery.bonsai.css">
    
     <style>
-    #view-source {
-      position: fixed;
-      display: block;
-      right: 0;
-      bottom: 0;
-      margin-right: 40px;
-      margin-bottom: 40px;
-      z-index: 900;
-    }
+     #view-source {
+       position: fixed;
+       display: block;
+       right: 0;
+       bottom: 0;
+       margin-right: 40px;
+       margin-bottom: 40px;
+       z-index: 900;
+     }
+     .green-background {
+       background-color: lightgreen;
+     }
+     .yellow-background {
+       background-color: lightyellow;
+     }
     </style>
     <link rel="stylesheet" href="css/dialog-polyfill.min.css">
   </head>
@@ -219,6 +225,36 @@ loading configuration file...
     </div>
 </dialog>
 
+<dialog class="mdl-dialog" id="modal-study-info">
+  <div class="mdl-dialog__content">
+    <div style="font-size: 32pt; margin-bottom: 20px;">
+      Study Information
+    </div>
+    <div class="row">
+      <div class="mdl-cell mdl-cell--12-col"  id="study-info-text"></div>
+    </div>
+	<div class="row">
+      <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button" id="study-info-dialog-send">Send</button>
+      </div>
+    </div>
+	<div class="row">
+      <div class="mdl-cell mdl-cell--12-col"  id="header-section"></div>
+	</div>
+	<div class="row">
+      <div class="mdl-cell mdl-cell--12-col"  id="detected-scans"></div>
+	</div>
+	<div class="row">
+      <div class="mdl-cell mdl-cell--12-col"  id="additional-scans"></div>
+	</div>
+	<div class="row">
+      <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="study-info-dialog-cancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
 <dialog class="mdl-dialog" id="modal-series-info">
     <div class="mdl-dialog__content">
         <div style="font-size: 32pt; margin-bottom: 20px;">
@@ -228,7 +264,7 @@ loading configuration file...
 loading information...
         </div>
     </div>
-    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+    <div class="mdl-dialog__actions">
         <button type="button" class="mdl-button" id="series-info-dialog-cancel">ok</button>
     </div>
 </dialog>
@@ -282,6 +318,7 @@ loading information...
 
 var subjectData = [];
 function loadSubjects() {
+    console.log("loadSubjects");
     jQuery.getJSON('/php/subjects.php', function(data) {
 	jQuery('#list-of-subjects').find('.data').remove();
         subjectData = data; // we can re-use those
@@ -291,7 +328,7 @@ function loadSubjects() {
             if (shortname.length > l)
                shortname = data[i].PatientName.substring(0, l) + "...";
 
-	    jQuery('#list-of-subjects').prepend('<div class="data" style="position: relative;"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 55px; bottom: -2px;">' + data[i].StudyDate + '/' + data[i].StudyTime.split('.')[0] + '</div>'+shortname+'</a></div>');
+	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 55px; bottom: -2px;">' + data[i].StudyDate + '/' + data[i].StudyTime.split('.')[0] + '</div>'+shortname+'</a></div>');
 	}
     });
 }
@@ -456,13 +493,80 @@ function changeSystemStatus() {
    jQuery.get('/php/startstop.php?enable='+a+""+b+""+c);
 }
 
+function displayHeaderSection(data) {
+
+         jQuery('#header-section').children().remove();
+         var str = "";
+
+         var keys = Object.keys(data);
+         console.log("Keys: " + keys);
+         for (var i = 0; i < keys.length; i++) {
+             var value = data[keys[i]];
+
+             if (!(Array.isArray(value)) && (typeof value === 'object')) {
+                 var status = value["status"];
+                 var color = (status == 1) ? "green-background" : "yellow-background";
+                 str = str.concat("<div class='row " + color + "'>" + keys[i] + " : " + value["status"] + " : " + value["message"] + "</div>");
+             }
+         }
+
+         var status = data["status"];
+         var color = (status == 1) ? "green-background" : "yellow-background";
+         str = str.concat("<div class='row " + color + "'>status: " + data["status"] + "</div>");
+         str = str.concat("<div class='row " + color + "'>message: " + data["message"] + "</div>");
+         str = str.concat("<div class='row'>shortmessage: " + data["shortmessage"] + "</div>");
+         str = str.concat("<div class='row'>PatientID: " + data["PatientID"] + "</div>");
+         str = str.concat("<div class='row'>PatientName: " + data["PatientName"] + "</div>");
+         str = str.concat("<div class='row'>StudyDate: " + data["StudyDate"] + "</div>");
+         str = str.concat("<div class='row'>StudyTime: " + data["StudyTime"] + "</div>");
+         str = str.concat("<div class='row'>StudyInstanceUID: " + data["StudyInstanceUID"] + "</div>");
+         str = str.concat("<div class='row'>Manufacturer: " + data["Manufacturer"] + "</div>");
+         str = str.concat("<div class='row'>ManufacturerModelName: " + data["ManufacturerModelName"] + "</div>");
+
+         jQuery('#header-section').append(str);
+}
+
+function displayDetectedScans(data) {
+
+         jQuery('#detected-scans').children().remove();
+         var str = "";
+
+         var keys = Object.keys(data);
+         console.log("Keys: " + keys);
+         for (var i = 0; i < keys.length; i++) {
+             var value = data[keys[i]];
+
+             if (!(Array.isArray(value)) && (typeof value === 'object')) {
+                 var status = value["status"];
+                 var color = (status == 1) ? "green-background" : "yellow-background";
+                 str = str.concat("<div class='row " + color + "'>" + keys[i] + " : " + value["status"] + " : " + value["message"] + "</div>");
+             }
+         }
+         jQuery('#detected-scans').append(str);
+}
+
+function displayAdditionalScans(data) {
+
+         jQuery('#additional-scans').children().remove();
+         var str = "";
+
+         var item;
+         var array = data["AdditionalSeries"];
+         for (item of array) {
+             console.log("item[ClassifyType]: " + JSON.stringify(item["ClassifyType"]));
+             str = str.concat("<div class='row'>" + JSON.stringify(item["ClassifyType"]) + " SeriesNumber: " + item["SeriesNumber"] + "</div>");
+         }
+         jQuery('#additional-scans').append(str);
+}
+
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
     loadSubjects();
-    setTimeout(function() { loadSystem(); }, 100);
-    setInterval(function() { loadSystem(); }, 5000);
+    // TODO: temporarily disabled this until I am done debugging
+    //setTimeout(function() { loadSystem(); }, 100);
+    //setInterval(function() { loadSystem(); }, 5000);
     createCalendar();
 
     createCircles();
@@ -502,6 +606,64 @@ jQuery(document).ready(function() {
          editor2.setValue( JSON.stringify( studyData[ jQuery(this).attr('key') ][ jQuery(this).attr('entry') ], null, 4 ) );
          editor2.selection.moveTo(1,0);
       }
+
+    });
+
+    var dialog = document.querySelector('#modal-study-info');
+        if (!dialog.showModal) {
+        dialogPolyfill.registerDialog(dialog);
+    }
+    var studyinstanceuid;
+    jQuery('#list-of-subjects').on('click', '.open-study-info', function() {
+        console.log("clicked on study: ");
+        var dialog = document.querySelector('#modal-study-info');
+        dialog.showModal();
+
+        studyinstanceuid = jQuery(this).attr('studyinstanceuid');
+        console.log("studyinstanceuid: " + studyinstanceuid);
+
+        var options = {
+            "action": "getStudy",
+            "study": studyinstanceuid
+        };
+        jQuery.getJSON('/php/fileStatus.php', options, function(data) {
+            jQuery('#study-info-text').text(JSON.stringify(data.message));
+            if (data.ok == 1) {
+                jQuery('#study-info-text').css({'background-color':'lightgreen'});
+            } else {
+                jQuery('#study-info-text').css({'background-color':'lightyellow'});
+            }
+        });
+         
+        var options = {
+            "action": "getStudy",
+            "study": studyinstanceuid
+        };
+        jQuery.getJSON('/php/existingData.php', options, function(data) {
+            dataSec1 = {};
+            dataSec2 = {};
+            dataSec3 = {};
+            var keys = Object.keys(data);
+            console.log("keys: " + keys);
+            for (var i = 0; i < keys.length; i++) {
+
+                var value = data[keys[i]];
+                if (Array.isArray(value)) {
+                    dataSec3[keys[i]] = value;
+                } else if (typeof value === 'object') {
+                    dataSec2[keys[i]] = value;
+                } else if (typeof value === 'string') {
+                    dataSec1[keys[i]] = value;
+                } else {
+                    alert("ERROR: Unknown JSON value type");
+                }
+            }
+            console.log(dataSec1);
+            displayHeaderSection(dataSec1);
+            displayDetectedScans(dataSec2);
+            displayAdditionalScans(dataSec3);
+
+        });
 
     });
 
@@ -550,11 +712,28 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-about');
        dialog.close();
     });
-    jQuery('#series-info-dialog-cancel').click(function() {
-       var dialog = document.querySelector('#modal-series-info');
+    jQuery('#study-info-dialog-cancel').click(function() {
+       var dialog = document.querySelector('#modal-study-info');
        dialog.close();     
     });
-
+    jQuery('#study-info-dialog-send').click(function() {
+         
+         // TODO: Send Study Info
+         var options = {
+             "action": "sendStudy",
+             "study": studyinstanceuid
+         };
+         jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
+             alert(JSON.stringify(data));
+         });
+         var dialog = document.querySelector('#modal-study-info');
+         dialog.close();     
+     });
+     jQuery('#series-info-dialog-cancel').click(function() {
+         var dialog = document.querySelector('#modal-series-info');
+         dialog.close();     
+     });
+         
 });
 
 </script>
