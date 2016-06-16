@@ -49,7 +49,7 @@ anonymize () {
   # we need to cache the connection information for this file, lets get the values first
   AETitleCalled=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCalled] | jq .[]`
   AETitleCaller=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCaller] | jq .[]`
-  CallerIP=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.CallerIP] | jq .[]`
+  CallerIP=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.CallerIP] | jq .[] | tr -d '"' | tr -d '\\'`
 
   # We need to processSingleFile again after the anonymization is done. First delete the previous cached json file
   echo "`date`: anonymize  - delete now /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
@@ -140,12 +140,13 @@ detect () {
       mkdir -p ${d}
       machineid=machine57080de9bbc3d
       SSDIR=${SDIR:4}
-      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SSDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &)" >> $log
-      id=$(docker run -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SSDIR}:/input ${machineid} /bin/bash -c "/root/work.sh /input /output" 2>&1 >> /tmp/watch.log)
+      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &)" >> $log
+      id=$(docker run -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output" 2>&1 >> /tmp/watch.log)
       echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log
 
       # lets do some cleanup and remove any unused docker containers
       $(docker rm -v $(docker ps -a -q -f status=exited))
+      echo "`date`: cleanup of unused containers done..." >> $log
 
       # we could run something at specific intervals, by compliance check should run every time
       # runAtInterval 10 machine57080de9bbc3d ${SDIR}
@@ -153,75 +154,89 @@ detect () {
   done
 
   # every file in this directory is a potential job, but we need to find some that are old enough, there could be more coming
+  echo "`date`: DIR to check for files is \"${DIR}\"" >> $log
   find "$DIR" -print0 | while read -d $'\0' file
   do
+      echo " -> \"$file\"    \n" >> $log
+  done
+  find "$DIR" -print0 | while read -d $'\0' file
+  do
+    valid=1
     if [ "$file" == "$DIR" ]; then
-       continue
+        echo "`date`: same dir $file == $DIR" >> $log
+        valid=0
     fi
+    echo " RUN2 \"$file\"  stat: \"`stat -c "%Y" "$file"`\"  \n" >> $log
+
     if [ "$(( $(date +"%s") - $(stat -c "%Y" "$file") ))" -lt "$oldtime" ]; then
-        continue
+        echo "`date`: too young $file" >> $log
+        valid=0
     fi
 
-    echo "`date`: Detected an old enough job \"$file\"" >> $log
-    fileName=$(basename "$file")
-    AETitleCaller=`echo "$fileName" | cut -d' ' -f1`
-    AETitleCalled=`echo "$fileName" | cut -d' ' -f2`
-    CallerIP=`echo "$fileName" | cut -d' ' -f3`
-    SDIR=`echo "$fileName" | cut -d' ' -f4`
-    SERIESDIR=`echo "$fileName" | cut -d' ' -f5`
-    if [[ ! "${SERIESDIR}" == "" ]]; then
-      # remove the first 4 characters 'scp_' to get the series instance uid
-      if [[ ${SERIESDIR} == scp_* ]]; then
-        SSERIESDIR=${SERIESDIR:4}
+    if [[ "$valid" == "1" ]]; then
+      echo "`date`: Detected an old enough job \"$file\"" >> $log
+      fileName=$(basename "$file")
+      AETitleCaller=`echo "$fileName" | cut -d' ' -f1`
+      AETitleCalled=`echo "$fileName" | cut -d' ' -f2`
+      CallerIP=`echo "$fileName" | cut -d' ' -f3`
+      SDIR=`echo "$fileName" | cut -d' ' -f4`
+      SERIESDIR=`echo "$fileName" | cut -d' ' -f5`
+      if [[ ! "${SERIESDIR}" == "" ]]; then
+        # remove the first 4 characters 'scp_' to get the series instance uid
+        if [[ ${SERIESDIR} == scp_* ]]; then
+          SSERIESDIR=${SERIESDIR:4}
+        else
+          SSERIESDIR=${SERIESDIR}
+        fi
+        # before we can do anything we need to anonymize this series (real file location, no symbolic links)
+        anonymize=1
+        if [[ -f /data/enabled ]]; then
+          anonymize=`cat /data/enabled | head -c 3 | tail -c 1`
+        fi
+        if [[ "$anonymize" == "1" ]]; then
+          echo "`date`: anonymize files linked to by /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log  
+   	  anonymize ${SDIR} ${SSERIESDIR}
+          echo "`date`: anonymization is done" >> $log
+        fi
+        echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR series: $SSERIESDIR" >> $log
+        runSeriesInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR $SSERIESDIR
+
+        # we have a series store it as a tar
+        mkdir -p /data/quarantine/
+        # allow the site user to write to this directory (from the scanner)
+        chmod 777 /data/quarantine
+        echo "`date`: write tar file /data/quarantine/${SSERIESDIR}.tar, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
+        out=/data/quarantine/${SDIR}_${SSERIESDIR}.tar
+        cd /data/site/raw
+        tar --dereference -cvf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json"
+        md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
+        echo "`date`: done with creating tar file and md5sum" >> $log
+        # now the user interface needs to display this as new data
+
       else
-        SSERIESDIR=${SERIESDIR}
-      fi
-      # before we can do anything we need to anonymize this series (real file location, no symbolic links)
-      anonymize=1
-      if [[ -f /data/enabled ]]; then
-        anonymize=`cat /data/enabled | head -c 3 | tail -c 1`
-      fi
-      if [[ "$anonymize" == "1" ]]; then
-        echo "`date`: anonymize files linked to by /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
- 	anonymize ${SDIR} ${SSERIESDIR}
-        echo "`date`: anonymization is done" >> $log
-      fi
-      echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR series: $SSERIESDIR" >> $log
-      runSeriesInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR $SSERIESDIR
+        echo "`date`: Study detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR" >> $log
 
-      # we have a series store it as a tar
-      mkdir -p /data/quarantine/
-      # allow the site user to write to this directory (from the scanner)
-      chmod 777 /data/quarantine
-      echo "`date`: write tar file /data/quarantine/${SSERIESDIR}.tar, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
-      out=/data/quarantine/${SDIR}_${SSERIESDIR}.tar
-      cd /data/site/raw
-      tar --dereference -cvf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json"
-      md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
-      echo "`date`: done with creating tar file and md5sum" >> $log
-      # now the user interface needs to display this as new data
+        runStudyInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR
 
-    else
-      echo "`date`: Study detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR" >> $log
-
-      runStudyInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR
-
-      # We have a study we can pack&go for sending it off to the DAIC.
-      # We should do this in two stages - first get all the DICOM files into a single tar file (add md5sum).
-      # Next store them in a to-be-send-of directory and ask the user on the interface if that is ok.
-      # Next send them using sendFiles.sh (looks into /data/<site>) for files. If they are all send over they end up in /data/DAIC/.
+        # We have a study we can pack&go for sending it off to the DAIC.
+        # We should do this in two stages - first get all the DICOM files into a single tar file (add md5sum).
+        # Next store them in a to-be-send-of directory and ask the user on the interface if that is ok.
+        # Next send them using sendFiles.sh (looks into /data/<site>) for files. If they are all send over they end up in /data/DAIC/.
       
-      # copy the study data to the $pfiledir directory (use tar without compression and resolve symbolic links)
-      if [[ -f ${pfiledir}/${SSERIESDIR}.tar ]]; then
-         # delete any previous file (we got new series data so file needs to be updated)
-         rm -f -- ${pfiledir}/${SSERIESDIR}.*
+        # copy the study data to the $pfiledir directory (use tar without compression and resolve symbolic links)
+       if [[ -f ${pfiledir}/${SSERIESDIR}.tar ]]; then
+           # delete any previous file (we got new series data so file needs to be updated)
+           rm -f -- ${pfiledir}/${SSERIESDIR}.*
+        fi
       fi
+      #
+      # /usr/bin/nohup /data/streams/bucket01/process.sh \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP "/data/site/archive/$SDIR" &
+      #
+      echo "`date`: delete \"$file\"" >> $log
+      /bin/rm -f -- "$file"
+    else 
+      echo "`date`: JOB NOT VALID \"$file\"" >> $log	
     fi
-    #
-    # /usr/bin/nohup /data/streams/bucket01/process.sh \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP "/data/site/archive/$SDIR" &
-    #
-    echo "`date`: delete \"$file\"" >> $log
-    /bin/rm -f -- "$file"
   done
 }
 
@@ -231,5 +246,6 @@ detect () {
 (
   flock -n 9 || exit 1
   # command executed under lock
+  echo "`date`: run another detectStudyArrival" >> $log
   detect
 ) 9>${SERVERDIR}/.pids/detectStudyArrival.lock
