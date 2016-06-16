@@ -23,6 +23,8 @@ fi
 AETitleCaller=$1
 AETitleCalled=$2
 CallerIP=$3
+sanitized=`echo $CallerIP | tr -d '"'`
+CallerIP=$sanitized
 DIR=$4
 SDIR=$(basename "$DIR")
 FILE=$5
