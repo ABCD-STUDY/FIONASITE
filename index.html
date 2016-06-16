@@ -235,9 +235,36 @@ loading configuration file...
     </div>
 	<div class="row">
       <div class="mdl-dialog__actions">
-        <button type="button" class="mdl-button" id="study-info-dialog-send">Send</button>
+        <!-- <button type="button" class="mdl-button" id="study-info-dialog-send">Send</button> -->
       </div>
     </div>
+	<div class="row">
+           <div class="mdl-cell mdl-cell--12-col"  id="identify-section">
+                  <div class="form-group">
+                    <label for="session-participant" class="control-label">Participant</label>
+                    <!-- <input type="text" class="form-control" placeholder="NDAR-#####" id="session-participant" required data-validation-required-message="Please enter the participant NDAR ID." autofocus> -->
+                    <select class="form-control" id="session-participant"></select>
+                    <p class="help-block text-danger"></p>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="session-name" class="control-label">Session name</label>
+                    <!-- <input type="text" class="form-control" placeholder="Baseline-01" id="session-name" required data-validation-required-message="Please enter the session ID."> -->
+                    <select class="form-control" id="session-name"></select>
+                    <p class="help-block text-danger"></p>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="session-run" class="control-label">Session run</label>
+                    <select class="form-control" id="session-run">
+                      <option value="01">01</option>
+                      <option value="02">02</option>
+                      <option value="03">03</option>
+                    </select>
+                    <p class="help-block text-danger"></p>
+                  </div>
+	   </div>
+        </div>
 	<div class="row">
       <div class="mdl-cell mdl-cell--12-col"  id="header-section"></div>
 	</div>
@@ -559,6 +586,28 @@ function displayAdditionalScans(data) {
          jQuery('#additional-scans').append(str);
 }
 
+// get valid session names                                                                                                                                                                  
+function getSessionNamesFromREDCap() {
+    jQuery.getJSON('/php/getRCEvents.php', function(data) {
+        for (var i = 0; i < data.length; i++) {
+            val = "";
+            if (i == 1) {
+                val = "selected=\"selected\"";
+            }
+            jQuery('#session-name').append("<option " + val + " value=\"" + data[i].unique_event_name + "\">" + data[i].event_name + "</option>");
+        }
+        getParticipantNamesFromREDCap();
+    });
+}
+
+function getParticipantNamesFromREDCap() {
+    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php', function(data) {
+        for (var i = 0; i < data.length; i++) {
+            jQuery('#session-participant').append("<option value=\"" + data[i] + "\">" + data[i] + "</option>");
+        }
+    });
+}
+
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
@@ -618,6 +667,9 @@ jQuery(document).ready(function() {
         console.log("clicked on study: ");
         var dialog = document.querySelector('#modal-study-info');
         dialog.showModal();
+
+	// get list of valid participant names from our database	
+        getSessionNamesFromREDCap();	 	
 
         studyinstanceuid = jQuery(this).attr('studyinstanceuid');
         console.log("studyinstanceuid: " + studyinstanceuid);
