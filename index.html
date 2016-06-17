@@ -1,4 +1,4 @@
-<!doctype html>
+s<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -47,8 +47,8 @@
      .green-background {
        background-color: lightgreen;
      }
-     .yellow-background {
-       background-color: lightyellow;
+     .red-background {
+       background-color: red;
      }
      .drop-down-item{
 
@@ -545,13 +545,13 @@ function displayHeaderSection(data) {
 
              if (!(Array.isArray(value)) && (typeof value === 'object')) {
                  var status = value["status"];
-                 var color = (status == 1) ? "green-background" : "yellow-background";
+                 var color = (status == 1) ? "green-background" : "red-background";
                  str = str.concat("<div class='row " + color + "'>" + keys[i] + " : " + value["status"] + " : " + value["message"] + "</div>");
              }
          }
 
          var status = data["status"];
-         var color = (status == 1) ? "green-background" : "yellow-background";
+         var color = (status == 1) ? "green-background" : "red-background";
          str = str.concat("<div class='row " + color + "'>status: " + data["status"] + "</div>");
          str = str.concat("<div class='row " + color + "'>message: " + data["message"] + "</div>");
          str = str.concat("<div class='row'>shortmessage: " + data["shortmessage"] + "</div>");
@@ -566,22 +566,77 @@ function displayHeaderSection(data) {
          jQuery('#header-section').append(str);
 }
 
-function displayDetectedScans(data) {
-
-         jQuery('#detected-scans').children().remove();
-         var str = "";
-
+function displayDetectedScans(data, StudyInstanceUID) {
+  
          var keys = Object.keys(data);
-         console.log("Keys: " + keys);
+         console.log("displayDetectedScans: keys: " + keys);
+         
+         var str = "<ul>";
          for (var i = 0; i < keys.length; i++) {
              var value = data[keys[i]];
+             
+             // check if this is a series or a block of series
+             if (value["SeriesNumber"] == null) {
 
-             if (!(Array.isArray(value)) && (typeof value === 'object')) {
-                 var status = value["status"];
-                 var color = (status == 1) ? "green-background" : "yellow-background";
-                 str = str.concat("<div class='row " + color + "'>" + keys[i] + " : " + value["status"] + " : " + value["message"] + "</div>");
+                 // SeriesNumber not found, this must be a block
+                 //displayDetectedScans(value, StudyInstanceUID);
+                 var keys = Object.keys(data);
+                 console.log("displayDetectedScans: keys: " + keys);
+                 var str = "<ul>";
+                 for (var i = 0; i < keys.length; i++) {
+                     var value = data[keys[i]];
+                     displaySeries(value, keys[i], StudyInstanceUID);
+                 } 
+                 str = str.concat("</ul>");
+
+             } else {
+                 // SeriesNumber found, this is a series
+                 displaySeries(value, keys[i], StudyInstanceUID);
              }
          }
+         jQuery('#detected-scans').append(str);
+}
+
+function displaySeries(series, seriesName, StudyInstanceUID) {
+         
+         if (series["status"] == null) {
+             console.log("ERROR: displaySeries: status not found");
+         }
+
+         if (series["SeriesNumber"] == null) {
+             console.log("ERROR: displaySeries: SeriesNumber not found");
+         }
+
+         if (series["SeriesInstanceUID"] == null) {
+             console.log("ERROR: displaySeries: SeriesInstanceUID not found");
+         }
+
+         if (series["SeriesInstanceUID"] == null) {
+             console.log("ERROR: displaySeries: SeriesInstanceUID not found");
+         }
+
+         if (series["message"] == null) {
+             console.log("ERROR: displaySeries: message not found");
+         }
+
+         var transferStatus = "readyToSend";
+         if (series["file"] == null) {
+             console.log("ERROR: displaySeries: file not found");
+         } else {
+             var filePath = series["file"]["path"];
+             transferStatus = filePath;
+         }
+
+         var str = "<ul>";
+         str = str.concat("<item>");
+         str = str.concat("<div class='SeriesNumber'>SeriesName: " + seriesName + "</div>");
+         str = str.concat("<div class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
+         str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + series["SeriesNumber"] + "</div>");
+         str = str.concat("<div class='message'>status: " + series["status"] + "</div>");
+         str = str.concat("<div class='message'>message: " + series["message"] + "</div>");
+         str = str.concat("<button type='button' class='mdl-button send-series-button' StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
+         str = str.concat("</item>");
+         str = str.concat("</ul>");
          jQuery('#detected-scans').append(str);
 }
 
@@ -696,7 +751,7 @@ jQuery(document).ready(function() {
             if (data.ok == 1) {
                 jQuery('#study-info-text').css({'background-color':'lightgreen'});
             } else {
-                jQuery('#study-info-text').css({'background-color':'lightyellow'});
+                jQuery('#study-info-text').css({'background-color':'red'});
             }
         });
          
@@ -724,9 +779,9 @@ jQuery(document).ready(function() {
                 }
             }
             console.log(dataSec1);
-            displayHeaderSection(dataSec1);
-            displayDetectedScans(dataSec2);
-            displayAdditionalScans(dataSec3);
+            //displayHeaderSection(dataSec1);
+            displayDetectedScans(dataSec2, 111);
+            //displayAdditionalScans(dataSec3);
 
         });
 
@@ -781,9 +836,14 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-study-info');
        dialog.close();     
     });
-    jQuery('#study-info-dialog-send').click(function() {
+         // onClick
+    jQuery('#detected-scans').on('click', '.send-series-button', function() {
          
          // TODO: Send Study Info
+         var StudyInstanceUID = jQuery(this).attr('StudyInstanceUID');
+         var SeriesInstanceUID = jQuery(this).attr('SeriesInstanceUID');
+         alert("send-series-button: StudyInstanceUID: " + StudyInstanceUID + " SeriesInstanceUID: " + SeriesInstanceUID);
+         /*
          var options = {
              "action": "sendStudy",
              "study": studyinstanceuid
@@ -791,6 +851,7 @@ jQuery(document).ready(function() {
          jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
              alert(JSON.stringify(data));
          });
+         */
          var dialog = document.querySelector('#modal-study-info');
          dialog.close();     
      });
