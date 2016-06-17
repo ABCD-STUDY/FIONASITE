@@ -87,10 +87,11 @@ elif [[ $action == "start" ]]; then
      # are there any options for this machine? Like what input it should get?
      opt=`cat "$1/$2" | jq -r ".opt"`
      link=''
+     linkq='-v /data/quarantine:/quarantine:ro'
      case $opt in
 	 all_data)
             echo "`date`: $id is asking for all_data" >> $log
-	    link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw:/input:ro -v /data/site/output:/output'
+	        link='-v /data/site/archive/:/data/site/archive:ro -v /data/site/raw:/input:ro -v /data/site/output:/output'
             echo "`date`: $id is asking for all_data with ${opt} (${link})" >> $log
 	    ;;
 	 random_study)
@@ -108,7 +109,7 @@ elif [[ $action == "start" ]]; then
      esac
 
      # we don't have that id in the list of running machines, start it now
-     containerid=$(docker run -d ${link} -p ${port}:4200 $id shellinaboxd -s /:LOGIN --disable-ssl --user-css Normal:+/etc/shellinabox-css/white-on-black.css,Reverse:-/etc/shellinabox-css/black-on-white.css  2>&1)
+     containerid=$(docker run -d ${link} ${linkq} -p ${port}:4200 $id shellinaboxd -s /:LOGIN --disable-ssl --user-css Normal:+/etc/shellinabox-css/white-on-black.css,Reverse:-/etc/shellinabox-css/black-on-white.css  2>&1)
      # check if the container is running now
      echo "`date`: start the container, got: $containerid" >> $log
      # We would like to know the info for this container as well
