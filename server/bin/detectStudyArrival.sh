@@ -79,7 +79,7 @@ runSeriesInventions () {
       # lets move the docker's info file as documentation in there
       dproc=ABCDPhantomQC
       $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
-      erg=$(docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output" 2>&1)
+      erg=$(docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
       echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
   fi
 }
@@ -140,8 +140,8 @@ detect () {
       mkdir -p ${d}
       machineid=machine57080de9bbc3d
       SSDIR=${SDIR:4}
-      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &)" >> $log
-      id=$(docker run -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output" 2>&1 >> /tmp/watch.log)
+      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
+      id=$(docker run -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
       echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log
 
       # lets do some cleanup and remove any unused docker containers

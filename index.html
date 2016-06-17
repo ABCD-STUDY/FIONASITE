@@ -67,6 +67,35 @@
         background-color: white;
         padding-top: 5px;
      }
+     #detected-scans {
+        height: 300px;
+        overflow-y: scroll;
+     }
+     .SeriesName {
+	 font-size: 20px;
+	 font-weight: 500;
+	 line-height: 1;
+	 letter-spacing: .02em;
+     }
+     li {
+	 border-bottom: 1px solid gray;
+	 margin-bottom: 10px;
+	 list-style-type: none;
+	 margin-left: 0px;
+	 padding: 5px;
+     }
+     #detected-scans {
+	 padding-left: 0px;
+     }
+     .send-series-button {
+	 margin-bottom: 10px;
+     }
+     .status0 {
+	 background: linear-gradient(to right, white, white 80%, red);
+     }
+     .status1 {
+	 background: linear-gradient(to right, white, white 80%, green);
+     }
     </style>
     <link rel="stylesheet" href="css/dialog-polyfill.min.css">
   </head>
@@ -282,7 +311,11 @@ loading configuration file...
       <div class="mdl-cell mdl-cell--12-col"  id="header-section"></div>
 	</div>
 	<div class="row">
-      <div class="mdl-cell mdl-cell--12-col"  id="detected-scans"></div>
+      <div class="mdl-cell mdl-cell--12-col">
+          <div id="detected-scans-summary"></div>
+          <ul id="detected-scans">
+          </ul>
+      </div>
 	</div>
 	<div class="row">
       <div class="mdl-cell mdl-cell--12-col"  id="additional-scans"></div>
@@ -619,24 +652,30 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
              console.log("ERROR: displaySeries: message not found");
          }
 
-         var transferStatus = "readyToSend";
+         // status workflow
+         // acquired  (not in /quarantine)
+         // readyToSend (in /quarantine)
+         // transit (in /outbox)
+         // transferred (in /DAIC)
+
+         var transferStatus = "acquired";
          if (series["file"] == null) {
              console.log("ERROR: displaySeries: file not found");
          } else {
-             var filePath = series["file"]["path"];
+             var filePath = series["file"][0]["path"];
              transferStatus = filePath;
          }
 
-         var str = "<ul>";
-         str = str.concat("<item>");
-         str = str.concat("<div class='SeriesNumber'>SeriesName: " + seriesName + "</div>");
+         var str = "";
+         str = str.concat("<li class=\"status"+series["status"]+"\">");
+         str = str.concat("<div class='SeriesName'>" + seriesName + "</div>");
+         str = str.concat("<div class='message'><p>" + series["message"] + "</p></div>");
          str = str.concat("<div class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
          str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + series["SeriesNumber"] + "</div>");
-         str = str.concat("<div class='message'>status: " + series["status"] + "</div>");
-         str = str.concat("<div class='message'>message: " + series["message"] + "</div>");
-         str = str.concat("<button type='button' class='mdl-button send-series-button' StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
-         str = str.concat("</item>");
-         str = str.concat("</ul>");
+         //str = str.concat("<div class='message'>status: " + series["status"] + "</div>");
+         str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
+         str = str.concat("</li>");
+         str = str.concat("");
          jQuery('#detected-scans').append(str);
 }
 
@@ -682,7 +721,7 @@ jQuery(document).ready(function() {
 
     loadSubjects();
     // TODO: temporarily disabled this until I am done debugging
-    //setTimeout(function() { loadSystem(); }, 100);
+    setTimeout(function() { loadSystem(); }, 100);
     //setInterval(function() { loadSystem(); }, 5000);
     createCalendar();
 
@@ -739,12 +778,15 @@ jQuery(document).ready(function() {
 	// get list of valid participant names from our database	
         getSessionNamesFromREDCap();	 	
 
-        studyinstanceuid = jQuery(this).attr('studyinstanceuid');
+        studyinstanceuid  = jQuery(this).attr('studyinstanceuid');
+        seriesinstanceuid = jQuery(this).attr('seriesinstanceuid');
         console.log("studyinstanceuid: " + studyinstanceuid);
+        console.log("seriesinstanceuid: " + seriesinstanceuid);
 
         var options = {
             "action": "getStudy",
-            "study": studyinstanceuid
+            "study": studyinstanceuid,
+	    "series": seriesinstanceuid
         };
         jQuery.getJSON('/php/fileStatus.php', options, function(data) {
             jQuery('#study-info-text').text(JSON.stringify(data.message));

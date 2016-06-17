@@ -1,7 +1,10 @@
 <?php
 
+// calculate what the status of the current scan is
+
 $action = "";
 $study = "";
+$series = "";
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
@@ -10,12 +13,25 @@ if (isset($_GET['action'])) {
     return;
 }
 
+if (isset($_GET['series'])) {
+   $series = $_GET['series'];
+} else {
+  echo ("{ \"ok\": 0, \"message\": \"ERROR: series not set\" }");
+  return;
+}
+
 if (isset($_GET['study'])) {
     $study = $_GET['study'];
 } else {
     echo ("{ \"ok\": 0, \"message\": \"ERROR: study not set\" }");
     return;
 }
+
+// we can find this study/series in three locations
+// we will assume that the naming convention is that the series instance uid is in the filename
+
+
+
 
 if ($handle = opendir('/data/quarantine')) {
     $found = false;
