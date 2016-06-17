@@ -7,15 +7,17 @@
   foreach ($results as $dd) {
     if ($dd === '.' or $dd === '..') 
       continue;
-    $dirs[filemtime($dd)] = $dd;
+    $dirs[$dd] = filemtime($d.DIRECTORY_SEPARATOR.$dd);
   }
-  ksort($dirs);
+  # newest one first  
+  arsort($dirs);
 
   $studies = array();
-  foreach ($dirs as $result) {
+  foreach ($dirs as $result => $key) {
      $files = glob($d . '/' . $result . '/*.json');
      foreach ($files as $f) {
        $data = json_decode(file_get_contents($f), True);
+       //$data['filemtime'] = $key;
        if (!array_key_exists($data['StudyInstanceUID'], $studies)) {
 	    $studies[$data['StudyInstanceUID']] = [];
        }
