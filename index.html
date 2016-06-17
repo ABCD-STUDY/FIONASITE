@@ -274,7 +274,7 @@ loading configuration file...
 <dialog class="mdl-dialog" id="modal-study-info">
   <div class="mdl-dialog__content">
     <div style="font-size: 32pt; margin-bottom: 20px;">
-      Study Information
+      Study Transfer
     </div>
     <div class="row">
       <div class="mdl-cell mdl-cell--12-col"  id="study-info-text"></div>
@@ -284,6 +284,11 @@ loading configuration file...
         <!-- <button type="button" class="mdl-button" id="study-info-dialog-send">Send</button> -->
       </div>
     </div>
+	<div class="row">
+      <div class="mdl-cell mdl-cell--12-col">
+        <div id="header-section"></div>
+      </div>
+	</div>
 	<div class="row">
            <div class="mdl-cell mdl-cell--12-col"  id="identify-section">
 	          <h4>Identify your imaging session</h4>
@@ -305,11 +310,8 @@ loading configuration file...
                       <option value="03">03</option>
                     </select>
                   </div>
-	   </div>
-        </div>
-	<div class="row">
-      <div class="mdl-cell mdl-cell--12-col"  id="header-section"></div>
-	</div>
+	       </div>
+    </div>
 	<div class="row">
       <div class="mdl-cell mdl-cell--12-col">
           <div id="detected-scans-summary"></div>
@@ -567,35 +569,69 @@ function changeSystemStatus() {
 }
 
 function displayHeaderSection(data) {
-
-         jQuery('#header-section').children().remove();
-         var str = "";
-
-         var keys = Object.keys(data);
-         console.log("Keys: " + keys);
-         for (var i = 0; i < keys.length; i++) {
-             var value = data[keys[i]];
-
-             if (!(Array.isArray(value)) && (typeof value === 'object')) {
-                 var status = value["status"];
-                 var color = (status == 1) ? "green-background" : "red-background";
-                 str = str.concat("<div class='row " + color + "'>" + keys[i] + " : " + value["status"] + " : " + value["message"] + "</div>");
-             }
+         
+         if (data["status"] == null) {
+             console.log("ERROR: displayHeaderSection: status not found");
          }
 
-         var status = data["status"];
-         var color = (status == 1) ? "green-background" : "red-background";
-         str = str.concat("<div class='row " + color + "'>status: " + data["status"] + "</div>");
-         str = str.concat("<div class='row " + color + "'>message: " + data["message"] + "</div>");
-         str = str.concat("<div class='row'>shortmessage: " + data["shortmessage"] + "</div>");
-         str = str.concat("<div class='row'>PatientID: " + data["PatientID"] + "</div>");
-         str = str.concat("<div class='row'>PatientName: " + data["PatientName"] + "</div>");
-         str = str.concat("<div class='row'>StudyDate: " + data["StudyDate"] + "</div>");
-         str = str.concat("<div class='row'>StudyTime: " + data["StudyTime"] + "</div>");
-         str = str.concat("<div class='row'>StudyInstanceUID: " + data["StudyInstanceUID"] + "</div>");
-         str = str.concat("<div class='row'>Manufacturer: " + data["Manufacturer"] + "</div>");
-         str = str.concat("<div class='row'>ManufacturerModelName: " + data["ManufacturerModelName"] + "</div>");
+         if (data["message"] == null) {
+             console.log("ERROR: displayHeaderSection: message not found");
+         }
 
+         if (data["shortmessage"] == null) {
+             console.log("ERROR: displayHeaderSection: shortmessage not found");
+         }
+
+         if (data["PatientID"] == null) {
+             console.log("ERROR: displayHeaderSection: PatientID not found");
+         }
+
+         if (data["PatientName"] == null) {
+             console.log("ERROR: displayHeaderSection: PatientName not found");
+         }
+
+         if (data["StudyDate"] == null) {
+             console.log("ERROR: displayHeaderSection: StudyDate not found");
+         }
+
+         if (data["StudyTime"] == null) {
+             console.log("ERROR: displayHeaderSection: StudyTime not found");
+         }
+
+         if (data["StudyInstanceUID"] == null) {
+             console.log("ERROR: displayHeaderSection: StudyInstanceUID not found");
+         }
+
+         if (data["Manufacturer"] == null) {
+             console.log("ERROR: displayHeaderSection: Manufacturer not found");
+         }
+
+         if (data["ManufacturerModelName"] == null) {
+             console.log("ERROR: displayHeaderSection: ManufacturerModelName not found");
+         }
+
+         jQuery('#study-info-text').text(JSON.stringify(data["message"]));
+         if (data["status"] == 1) {
+             jQuery('#study-info-text').css({'background-color':'lightgreen'});
+         } else {
+             jQuery('#study-info-text').css({'background-color':'red'});
+         }
+
+         jQuery('#header-section').children().remove();
+         //jQuery('#header-section').text("");
+         var str = "";
+         str = str.concat("<li class=\"status"+data["status"]+"\">");
+         str = str.concat("<div class='SeriesName'>Header Information</div>");
+         str = str.concat("<div class='shortmessage'>Short Message: " + data["shortmessage"] + "</div>");
+         str = str.concat("<div class='PatientID'>Patient ID: " + data["PatientID"] + "</div>");
+         str = str.concat("<div class='PatientName'>Patient Name: " + data["PatientName"] + "</div>");
+         str = str.concat("<div class='StudyDate'>Study Date: " + data["StudyDate"] + "</div>");
+         str = str.concat("<div class='StudyTime'>Study Time: " + data["StudyTime"] + "</div>");
+         str = str.concat("<div class='StudyInstanceUID'>Study Instance UID: " + data["StudyInstanceUID"] + "</div>");
+         str = str.concat("<div class='Manufacturer'>Manufacturer: " + data["Manufacturer"] + "</div>");
+         str = str.concat("<div class='ManufacturerModelName'>ManufacturerModelName: " + data["ManufacturerModelName"] + "</div>");
+         str = str.concat("</li>");
+         str = str.concat("");
          jQuery('#header-section').append(str);
 }
 
@@ -785,20 +821,6 @@ jQuery(document).ready(function() {
 
         var options = {
             "action": "getStudy",
-            "study": studyinstanceuid,
-	    "series": seriesinstanceuid
-        };
-        jQuery.getJSON('/php/fileStatus.php', options, function(data) {
-            jQuery('#study-info-text').text(JSON.stringify(data.message));
-            if (data.ok == 1) {
-                jQuery('#study-info-text').css({'background-color':'lightgreen'});
-            } else {
-                jQuery('#study-info-text').css({'background-color':'red'});
-            }
-        });
-         
-        var options = {
-            "action": "getStudy",
             "study": studyinstanceuid
         };
         jQuery.getJSON('/php/existingData.php', options, function(data) {
@@ -821,9 +843,9 @@ jQuery(document).ready(function() {
                 }
             }
             console.log(dataSec1);
-            //displayHeaderSection(dataSec1);
+            displayHeaderSection(dataSec1);
             displayDetectedScans(dataSec2, 111);
-            //displayAdditionalScans(dataSec3);
+            displayAdditionalScans(dataSec3);
 
         });
 
