@@ -2,16 +2,8 @@
 
 // calculate what the status of the current scan is
 
-$action = "";
 $study = "";
 $series = "";
-
-if (isset($_GET['action'])) {
-    $action = $_GET['action'];
-} else {
-    echo ("{ \"ok\": 0, \"message\": \"ERROR: action not set\" }");
-    return;
-}
 
 if (isset($_GET['series'])) {
    $series = $_GET['series'];
@@ -20,18 +12,60 @@ if (isset($_GET['series'])) {
   return;
 }
 
-if (isset($_GET['study'])) {
-    $study = $_GET['study'];
-} else {
-    echo ("{ \"ok\": 0, \"message\": \"ERROR: study not set\" }");
-    return;
+// we can find this study/series in three locations
+// we will assume that the naming convention ensures that the series instance uid is in the filename
+$q = glob('/data/quarantine/*'.$series.'*.tgz');
+$o = glob('/data/outbox/*'.$series.'*.tgz');
+$d = glob('/data/DAIC/*'.$series.'*.tgz');
+
+// we should check if we have an md5sum file for each one
+$qvalid = array();
+foreach($q as $f) {
+   $path_parts = pathinfo($f);
+   // lets see if we have an md5sum file here
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   $jsonfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.json';
+   if (file_exists($md5sumfname)) {
+       $qvalid[] = $f;
+   }
 }
 
-// we can find this study/series in three locations
-// we will assume that the naming convention is that the series instance uid is in the filename
+$ovalid = array();
+foreach($o as $f) {
+   $path_parts = pathinfo($f);
+   // lets see if we have an md5sum file here
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   $jsonfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.json';
+   if (file_exists($md5sumfname)) {
+       $ovalid[] = $f;
+   }
+}
 
+$dvalid = array();
+foreach($d as $f) {
+   $path_parts = pathinfo($f);
+   // lets see if we have an md5sum file here
+   $md5sumfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.md5sum';
+   $jsonfname = $path_parts['dirname'].DIRECTORY_SEPARATOR.$path_parts['filename'].'.json';
+   if (file_exists($md5sumfname)) {
+       $dvalid[] = $f;
+   }
+}
 
+$status = "acquired"; // everything we are asked for is acquired
+if (count($qvalid) > 0) {
+   $status = "readyToSend"; // we got a file in quarantine
+}
+if (count($ovalid) > 0) {
+   $status = "transit";
+}
+if (count($dvalid) > 0) {
+   $status = "transferred";
+}
 
+echo ("{ \"ok\": 1, \"message\": \"".$status."\" }");
+
+return;
 
 if ($handle = opendir('/data/quarantine')) {
     $found = false;

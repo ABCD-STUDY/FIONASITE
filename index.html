@@ -629,7 +629,7 @@ function displayHeaderSection(data) {
          str = str.concat("<div class='StudyTime'>Study Time: " + data["StudyTime"] + "</div>");
          str = str.concat("<div class='StudyInstanceUID'>Study Instance UID: " + data["StudyInstanceUID"] + "</div>");
          str = str.concat("<div class='Manufacturer'>Manufacturer: " + data["Manufacturer"] + "</div>");
-         str = str.concat("<div class='ManufacturerModelName'>ManufacturerModelName: " + data["ManufacturerModelName"] + "</div>");
+         str = str.concat("<div class='ManufacturerModelName'>Manufacturer Model Name: " + data["ManufacturerModelName"] + "</div>");
          str = str.concat("</li>");
          str = str.concat("");
          jQuery('#header-section').append(str);
@@ -645,16 +645,18 @@ function displayDetectedScans(data, StudyInstanceUID) {
              var value = data[keys[i]];
              
              // check if this is a series or a block of series
-             if (value["SeriesNumber"] == null) {
+             if (value["file"] == null) {
 
-                 // SeriesNumber not found, this must be a block
-                 //displayDetectedScans(value, StudyInstanceUID);
-                 var keys = Object.keys(data);
-                 console.log("displayDetectedScans: keys: " + keys);
+                 // this JSON object does not contain the "file" field,
+                 // so it must be a block
+                 var keys2 = Object.keys(value);
+                 console.log("displayDetectedScans: keys2: " + keys2);
                  var str = "<ul>";
-                 for (var i = 0; i < keys.length; i++) {
-                     var value = data[keys[i]];
-                     displaySeries(value, keys[i], StudyInstanceUID);
+                 for (var i = 0; i < keys2.length; i++) {
+                     var value2 = value[keys2[i]];
+                     if (value2["file"] != null) {
+                         displaySeries(value2, keys2[i], StudyInstanceUID);
+                     }
                  } 
                  str = str.concat("</ul>");
 
@@ -680,9 +682,9 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
              console.log("ERROR: displaySeries: SeriesInstanceUID not found");
          }
 
-         if (series["SeriesInstanceUID"] == null) {
-             console.log("ERROR: displaySeries: SeriesInstanceUID not found");
-         }
+         //if (series["SeriesInstanceUID"] == null) {
+         //    console.log("ERROR: displaySeries: SeriesInstanceUID not found");
+         //}
 
          if (series["message"] == null) {
              console.log("ERROR: displaySeries: message not found");
@@ -706,27 +708,40 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          str = str.concat("<li class=\"status"+series["status"]+"\">");
          str = str.concat("<div class='SeriesName'>" + seriesName + "</div>");
          str = str.concat("<div class='message'><p>" + series["message"] + "</p></div>");
-         str = str.concat("<div class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
+         str = str.concat("<div id=\"transferStatus"+series['SeriesInstanceUID']+"\" class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
          str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + series["SeriesNumber"] + "</div>");
-         //str = str.concat("<div class='message'>status: " + series["status"] + "</div>");
          str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          str = str.concat("</li>");
          str = str.concat("");
          jQuery('#detected-scans').append(str);
+
+         // update transfer status
+         jQuery.getJSON('/code/php/fileStatus.php?series=' + series['SeriesInstanceUID'], function(data) {
+	     
+         });
 }
 
 function displayAdditionalScans(data) {
 
-         jQuery('#additional-scans').children().remove();
          var str = "";
+         str = str.concat("<li>");
+         str = str.concat("<div class='SeriesName'>Additional Series</div>");
+         str = str.concat("</li>");
+         str = str.concat("");
 
          var item;
          var array = data["AdditionalSeries"];
          for (item of array) {
              console.log("item[ClassifyType]: " + JSON.stringify(item["ClassifyType"]));
-             str = str.concat("<div class='row'>" + JSON.stringify(item["ClassifyType"]) + " SeriesNumber: " + item["SeriesNumber"] + "</div>");
+             str = str.concat("<li>");
+             var classifyType = item["ClassifyType"];
+             str = str.concat("<div class='ClassifyType'>ClassifyType: " + JSON.stringify(classifyType) + "</div>");
+             str = str.concat("<div class='SeriesInstanceUID'>SeriesInstanceUID: " + item["SeriesInstanceUID"] + "</div>");
+             str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + item["SeriesNumber"] + "</div>");
+             str = str.concat("</li>");
+             str = str.concat("");
          }
-         jQuery('#additional-scans').append(str);
+         jQuery('#detected-scans').append(str);
 }
 
 // get valid session names                                                                                                                                                                  
