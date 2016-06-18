@@ -618,7 +618,6 @@ function displayHeaderSection(data) {
          }
 
          jQuery('#header-section').children().remove();
-         //jQuery('#header-section').text("");
          var str = "";
          str = str.concat("<li class=\"status"+data["status"]+"\">");
          str = str.concat("<div class='SeriesName'>Header Information</div>");
@@ -647,24 +646,33 @@ function displayDetectedScans(data, StudyInstanceUID) {
              // check if this is a series or a block of series
              if (value["file"] == null) {
 
-                 // this JSON object does not contain the "file" field,
-                 // so it must be a block
+                 // this JSON object does not contain the "file" field, so it must be a block
+                 // iterate through the JSON objects contained within this block.
                  var keys2 = Object.keys(value);
                  console.log("displayDetectedScans: keys2: " + keys2);
-                 var str = "<ul>";
+
+                 str = str.concat("<li class=\"status" + value["status"] + "\">");
+                 str = str.concat("<div class='SeriesName'>" + keys[i] + "</div>");
+                 str = str.concat("<div class='message'>" + value["message"] + "</div>");
+                 str = str.concat("</li>");
+                 str = str.concat("");
+
+                 str = str.concat("<ul>");
                  for (var i = 0; i < keys2.length; i++) {
                      var value2 = value[keys2[i]];
                      if (value2["file"] != null) {
-                         displaySeries(value2, keys2[i], StudyInstanceUID);
+                         // found a series inside a block
+                         str = str.concat(displaySeries(value2, keys2[i], StudyInstanceUID));
                      }
                  } 
                  str = str.concat("</ul>");
 
              } else {
                  // SeriesNumber found, this is a series
-                 displaySeries(value, keys[i], StudyInstanceUID);
+                 str = str.concat(displaySeries(value, keys[i], StudyInstanceUID));
              }
          }
+         str = str.concat("</ul>");
          jQuery('#detected-scans').append(str);
 }
 
@@ -713,12 +721,18 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          str = str.concat("</li>");
          str = str.concat("");
-         jQuery('#detected-scans').append(str);
+         //jQuery('#detected-scans').append(str);
 
-         // update transfer status
-         jQuery.getJSON('/code/php/fileStatus.php?series=' + series['SeriesInstanceUID'], function(data) {
-	     
-         });
+         // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
+         jQuery.getJSON('/php/fileStatus.php?series=' + series['SeriesInstanceUID'], (function(series) {
+             // return a function that knows about our series Instance UID variable
+             return function(data) {
+	         console.log("series instance uid: " + series);
+		 jQuery('#transferStatus'+series).text("TransferStatus: " + data.message);
+             };
+           })(series['SeriesInstanceUID'])
+         );
+         return str;
 }
 
 function displayAdditionalScans(data) {
@@ -931,8 +945,8 @@ jQuery(document).ready(function() {
              alert(JSON.stringify(data));
          });
          */
-         var dialog = document.querySelector('#modal-study-info');
-         dialog.close();     
+         //var dialog = document.querySelector('#modal-study-info');
+         //dialog.close();     
      });
      jQuery('#series-info-dialog-cancel').click(function() {
          var dialog = document.querySelector('#modal-series-info');
