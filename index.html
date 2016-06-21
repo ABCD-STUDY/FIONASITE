@@ -137,17 +137,19 @@
             <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
               <li class="mdl-menu__item" id="load-subjects">Patients</li>
               <li class="mdl-menu__item" id="load-studies">Studies</li>
+              <li class="mdl-menu__item" id="load-scanner">Scanner</li>
             </ul>
           </div>
         </header>
+        <nav class="demo-navigation  mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
+           <center><span id="view-name"></span></center>
+           <div class="mdl-layout-spacer"></div>
+        </nav>
         <nav id="list-of-subjects" class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
            <div class="mdl-layout-spacer"></div>
           <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">help_outline</i><span class="visuallyhidden">Help</span></a>
         </nav>
       </div>
-
-
-
 
       <main class="mdl-layout__content mdl-color--grey-100">
         <div class="mdl-grid demo-content">
@@ -394,8 +396,10 @@ loading information...
 var subjectData = [];
 function loadSubjects() {
     console.log("loadSubjects");
+    jQuery('#list-of-subjects').find('.data').remove();
+    jQuery('#view-name').text('Subjects');
     jQuery.getJSON('/php/subjects.php', function(data) {
-	jQuery('#list-of-subjects').find('.data').remove();
+        
         subjectData = data; // we can re-use those
         var l = 20;
 	for (var i = 0; i < data.length; i++) {
@@ -417,10 +421,11 @@ function shortenName( name ) {
 }
 var studyData = [];
 function loadStudies() {
+    jQuery('#list-of-subjects').find('.data').remove();
+    jQuery('#view-name').text("Studies");
     jQuery.getJSON('/php/series.php', function(data) {
         studyData = data;
 	// here we get all series below each study, need a tree view, get rid of stuff already on display
-	jQuery('#list-of-subjects').find('.data').remove();
         // create a nested list for bonsai
 	str = "<ul id=\"study-list-bonsai\" class=\"data\">";
         var studies = Object.keys(data);
@@ -434,6 +439,25 @@ function loadStudies() {
         str = str + "</ul>";
         jQuery('#list-of-subjects').prepend(str);
         jQuery('#study-list-bonsai').bonsai();
+    });
+}
+
+// load the list of scans from the scanner
+function loadScanner() {
+    jQuery('#list-of-subjects').find('.data').remove();
+    jQuery('#view-name').text("Scanner");
+    jQuery.getJSON('/php/scanner.php', function(data) {
+	str = "<ul id=\"scanner-list-bonsai\" class=\"data\">";
+	for (var i = 0; i < data.length; i++) {
+	   str = str + "<li>" + data[i].PatientID + "<br/><small style=\"padding-top: -10px;\">"+data[i].StudyDate+" "+data[i].StudyTime+"</small>&nbsp;&nbsp;<button style=\"margin-top: -20px;\" class=\"mdl-button mdl-js-button mdl-button--icon pull-study\" study=\""+data[i].StudyInstanceUID+"\" title=\"Downlaod to FIONA\"><i class=\"material-icons\">touch_app</i></button><ul>";
+	   for (var j = 0; j < data[i].Series.length; j++) {
+	      str = str + "<li class=\"open-scanner-series-info\" key=\"" + data[i].Series[j].SeriesInstanceUID + "\" title=\""+data[i].Series[j].SeriesDescription + " [" + data[i].Series[j].ImagesInAcquisition +"]\">" + shortenName(data[i].Series[j].SeriesDescription) + "</li>";
+           }
+           str = str + "</ul></li>";
+        }
+        str = str + "</ul>";
+        jQuery('#list-of-subjects').prepend(str);
+        jQuery('#scanner-list-bonsai').bonsai();
     });
 }
 
@@ -784,6 +808,15 @@ var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
+    jQuery('#list-of-subjects').on('click', '.pull-study', function() {
+       // pull this study over from FIONA
+       var study = jQuery(this).attr('study');
+       if (study != "") {
+	  // ask the scanner to send us this study
+	  jQuery.get('/php/scanner.php?action=get&study=' + study);
+       }
+    });
+
     loadSubjects();
     // TODO: temporarily disabled this until I am done debugging
     setTimeout(function() { loadSystem(); }, 100);
@@ -798,6 +831,9 @@ jQuery(document).ready(function() {
     });
     jQuery('#load-studies').click(function() {
 	loadStudies();
+    });
+    jQuery('#load-scanner').click(function() {
+	loadScanner();
     });
 
     jQuery('#receive-dicom-label').change(function() {
