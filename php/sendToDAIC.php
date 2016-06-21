@@ -1,21 +1,23 @@
 <?php
 
-$action = "";
-$study = "";
+$series = "";
+$log = '/var/www/html/server/log/sendToDAIC.log';
 
-if (isset($_GET['action'])) {
-    $action = $_GET['action'];
+if (isset($_GET['series'])) {
+    $series = $_GET['series'];
 } else {
-    echo ("{ \"ok\": 0, \"message\": \"action not set\" }");
+    echo ("{ \"ok\": 0, \"message\": \"series not set\" }");
     return;
 }
 
-if (isset($_GET['study'])) {
-    $study = $_GET['study'];
-} else {
-    echo ("{ \"ok\": 0, \"message\": \"study not set\" }");
-    return;
+$f = glob('/data/quarantine/*'.$series.'*');
+foreach($f as $fi) {
+  $path_parts = path_info($fi);
+  file_put_contents($log, date(DATE_ATOM)." Move file to /data/output now ".$fi, FILE_APPEND); 
+  rename($fi, '/data/outbox'.DIRECTORY_SEPARATOR.$path_parts['filename'].'.'.$path_parts['extension']);
 }
+
+return;
 
 if ($handle = opendir('/data/quarantine')) {
     $found = false;
