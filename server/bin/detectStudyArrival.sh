@@ -208,8 +208,9 @@ detect () {
         echo "`date`: write tar file /data/quarantine/${SSERIESDIR}.tar, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
         out=/data/quarantine/${SDIR}_${SSERIESDIR}.tar
         cd /data/site/raw
-        tar --dereference -cvf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json"
+        tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json"
         md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
+        cp "${SDIR}/${SSERIESDIR}.json" /data/quarantine/${SDIR}_${SSERIESDIR}.json
         echo "`date`: done with creating tar file and md5sum" >> $log
         # now the user interface needs to display this as new data
 
