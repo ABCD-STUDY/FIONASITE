@@ -425,12 +425,14 @@ function loadStudies() {
     jQuery('#view-name').text("Studies");
     jQuery.getJSON('/php/series.php', function(data) {
         studyData = data;
+	// sort those by date
+
 	// here we get all series below each study, need a tree view, get rid of stuff already on display
         // create a nested list for bonsai
 	str = "<ul id=\"study-list-bonsai\" class=\"data\">";
         var studies = Object.keys(data);
         for (var i = 0; i < studies.length; i++) {
-	   str = str + "<li>" + data[studies[i]][0]['PatientName'] + "<ul>";
+	   str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientID'] + "<ul>";
            for (var j = 0; j < data[studies[i]].length; j++) {
 	       str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\">" + shortenName(data[studies[i]][j]['SeriesDescription']) + "</li>";
            }
@@ -812,8 +814,13 @@ jQuery(document).ready(function() {
        // pull this study over from FIONA
        var study = jQuery(this).attr('study');
        if (study != "") {
-	  // ask the scanner to send us this study
-	  jQuery.get('/php/scanner.php?action=get&study=' + study);
+	  // ask the scanner to send us this studies series
+          jQuery(this).parent().find("li").each(function() {
+	    var series = jQuery(this).attr('key');
+            if (series != "") {
+     	      jQuery.get('/php/scanner.php?action=get&series=' + series);
+            }
+          });
        }
     });
 
@@ -972,15 +979,12 @@ jQuery(document).ready(function() {
          var StudyInstanceUID = jQuery(this).attr('StudyInstanceUID');
          var SeriesInstanceUID = jQuery(this).attr('SeriesInstanceUID');
          alert("send-series-button: StudyInstanceUID: " + StudyInstanceUID + " SeriesInstanceUID: " + SeriesInstanceUID);
-         /*
          var options = {
-             "action": "sendStudy",
-             "study": studyinstanceuid
+             "series": SeriesInstanceUID
          };
          jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
              alert(JSON.stringify(data));
          });
-         */
          //var dialog = document.querySelector('#modal-study-info');
          //dialog.close();     
      });
