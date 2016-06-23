@@ -26,6 +26,16 @@
      }
   }
   
+  // sort by date and time
+  usort($subjects, function($a, $b) {
+     $ad = DateTime::createFromFormat( "Ymd His", $a['StudyDate']." ".$a['StudyTime'] );
+     $bd = DateTime::createFromFormat( "Ymd His", $b['StudyDate']." ".$b['StudyTime'] );
+     if ($ad == $bd) {
+       return 0;
+     }
+     return $ad < $bd ? -1 : 1;
+  });
+
   echo(json_encode($subjects, JSON_PRETTY_PRINT));
 
 ?>
