@@ -171,13 +171,13 @@
           <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
 	      <div id="calendar-loc"></div>
           </div>
-          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col" style="display: none;">
               <div style="position: relative;">
                 <div style="font-size: 22pt; position: absolute; top: 20px;color: #757575; left: 10pt;">Studies present on this system</div>
 	        <div id="circles"></div>
               </div>
           </div>
-          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col">
+          <div class="demo-graphs mdl-shadow--2dp mdl-color--white mdl-cell mdl-cell--12-col" style="display: none;">
               <div style="position: relative;">
                 <div style="font-size: 22pt; position: absolute; bottom: 20px;color: #757575; left: 10pt;">Studies present on this system</div>
 	        <div id="bars"></div>
@@ -614,11 +614,11 @@ function displayDetectedScans(data, StudyInstanceUID) {
                  str = str.concat("");
 
                  str = str.concat("<ul>");
-                 for (var i = 0; i < keys2.length; i++) {
-                     var value2 = value[keys2[i]];
+                 for (var j = 0; j < keys2.length; j++) {
+                     var value2 = value[keys2[j]];
                      if (value2["file"] != null) {
                          // found a series inside a block
-                         str = str.concat(displaySeries(value2, keys2[i], StudyInstanceUID));
+                         str = str.concat(displaySeries(value2, keys2[j], StudyInstanceUID));
                      }
                  } 
                  str = str.concat("</ul>");
@@ -764,8 +764,10 @@ jQuery(document).ready(function() {
     //setInterval(function() { loadSystem(); }, 5000);
     createCalendar();
 
-    createCircles();
-    createBars();
+    // disable the circles for now
+    //createCircles();
+    // disable the bars for now			
+    //createBars();
 
     jQuery('#load-subjects').click(function() {
 	loadSubjects();
