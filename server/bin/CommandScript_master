@@ -1,4 +1,4 @@
 cd fiona
 # this has to be done only once
-# mkdir <SITE>
-get <SITE>/*.md5sum_server
+# mkdir UCSD
+put -r /data/outbox
