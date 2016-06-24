@@ -805,6 +805,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['Private0019_105a'] = str(dataset[0x19,0x105a].value)
+                                except:
+                                        pass
+                                try:
                                         data['SliceLocation'] = str(dataset[0x20,0x1041].value)
                                 except:
                                         pass
