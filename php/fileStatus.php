@@ -12,6 +12,11 @@ if (isset($_GET['series'])) {
   return;
 }
 
+if ($series == "") {
+  echo ("{ \"ok\": 0, \"message\": \"ERROR: series not set\" }");
+  return;
+}
+
 // we can find this study/series in three locations
 // we will assume that the naming convention ensures that the series instance uid is in the filename
 $q = glob('/data/quarantine/*'.$series.'*.tgz');
