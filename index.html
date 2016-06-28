@@ -667,7 +667,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
              console.log("ERROR: displaySeries: file not found");
          } else {
              filePath = series["file"][0]["path"];
-             transferStatus = filePath;
+             transferStatus = filePath.substring(0,filePath.lastIndexOf("/")+1);
          }
 
          var str = "";
@@ -677,7 +677,9 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          var id = "transferStatus"+createUUID();
          str = str.concat("<div id=\""+id+"\" class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
          str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + series["SeriesNumber"] + "</div>");
-         str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
+         if (transferStatus == "/quarantine/") {
+             str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
+         }
          str = str.concat("</li>");
          str = str.concat("");
          //jQuery('#detected-scans').append(str);
