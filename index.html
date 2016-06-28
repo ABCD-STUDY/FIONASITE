@@ -594,6 +594,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
   
          var keys = Object.keys(data);
          console.log("displayDetectedScans: keys: " + keys);
+         jQuery('#detected-scans').children().remove();
          
          var str = "<ul>";
          for (var i = 0; i < keys.length; i++) {
@@ -661,10 +662,11 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          // transferred (in /DAIC)
 
          var transferStatus = "acquired";
+         var filePath = null;
          if (series["file"] == null) {
              console.log("ERROR: displaySeries: file not found");
          } else {
-             var filePath = series["file"][0]["path"];
+             filePath = series["file"][0]["path"];
              transferStatus = filePath;
          }
 
@@ -672,23 +674,44 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          str = str.concat("<li class=\"status"+series["status"]+"\">");
          str = str.concat("<div class='SeriesName'>" + seriesName + "</div>");
          str = str.concat("<div class='message'><p>" + series["message"] + "</p></div>");
-         str = str.concat("<div id=\"transferStatus"+series['SeriesInstanceUID']+"\" class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
+         var id = "transferStatus"+createUUID();
+         str = str.concat("<div id=\""+id+"\" class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
          str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + series["SeriesNumber"] + "</div>");
-         str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
+         str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          str = str.concat("</li>");
          str = str.concat("");
          //jQuery('#detected-scans').append(str);
 
          // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
-         jQuery.getJSON('/php/fileStatus.php?series=' + series['SeriesInstanceUID'], (function(series) {
+         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath, (function(id) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
-	         console.log("series instance uid: " + series);
-		 jQuery('#transferStatus'+series).text("TransferStatus: " + data.message);
+	         if (data.length == 0) {
+		   jQuery('#'+id).text("TransferStatus: FILE_NOT_FOUND_ERROR");
+                 }
+		 for (var i = 0; i < data.length; i++) {
+	           console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
+		   jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >(path)</span>");
+                 }
              };
-           })(series['SeriesInstanceUID'])
+           })(id)
          );
          return str;
+}
+
+function createUUID() {
+    // http://www.ietf.org/rfc/rfc4122.txt
+    var s = [];
+    var hexDigits = "0123456789abcdef";
+    for (var i = 0; i < 36; i++) {
+        s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+    }
+    s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = "-";
+
+    var uuid = s.join("");
+    return uuid;
 }
 
 function displayAdditionalScans(data) {
@@ -916,6 +939,7 @@ jQuery(document).ready(function() {
          // TODO: Send Study Info
          var StudyInstanceUID = jQuery(this).attr('StudyInstanceUID');
          var SeriesInstanceUID = jQuery(this).attr('SeriesInstanceUID');
+         var filename = jQuery(this).attr('filename');
          // alert("send-series-button: StudyInstanceUID: " + StudyInstanceUID + " SeriesInstanceUID: " + SeriesInstanceUID);
 	 if (jQuery('#session-participant').val() == null || jQuery('#session-name').val() == null || jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant before uploading data");
@@ -923,7 +947,7 @@ jQuery(document).ready(function() {
          }
 				
          var options = {
-             "series": SeriesInstanceUID,
+             "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
 	     "redcap_event_name": jQuery('#session-name').val(),
              "run": jQuery('#session-run').val()

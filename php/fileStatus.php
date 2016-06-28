@@ -1,27 +1,26 @@
 <?php
 
 // calculate what the status of the current scan is
+// series instance uid can identify more than one scan
+// return an array of detected scans
 
-$study = "";
-$series = "";
+$filename = "";
 
-if (isset($_GET['series'])) {
-   $series = $_GET['series'];
+if (isset($_GET['filename'])) {
+   $filename = $_GET['filename'];
 } else {
-  echo ("{ \"ok\": 0, \"message\": \"ERROR: series not set\" }");
+  echo ("{ \"ok\": 0, \"message\": \"ERROR: filename not set\" }");
   return;
 }
 
-if ($series == "") {
-  echo ("{ \"ok\": 0, \"message\": \"ERROR: series not set\" }");
-  return;
-}
+$fn = $filename;
+$path_info = pathinfo($filename);
 
 // we can find this study/series in three locations
 // we will assume that the naming convention ensures that the series instance uid is in the filename
-$q = glob('/data/quarantine/*'.$series.'*.tgz');
-$o = glob('/data/outbox/*'.$series.'*.tgz');
-$d = glob('/data/DAIC/*'.$series.'*.tgz');
+$q = glob('/data/quarantine/'.$path_info['filename'].".".$path_info['extension']);
+$o = glob('/data/outbox/'.$path_info['filename'].".".$path_info['extension']);
+$d = glob('/data/DAIC/'.$path_info['filename'].".".$path_info['extension']);
 
 // we should check if we have an md5sum file for each one
 $qvalid = array();
@@ -57,18 +56,18 @@ foreach($d as $f) {
    }
 }
 
-$status = "acquired"; // everything we are asked for is acquired
-if (count($qvalid) > 0) {
-   $status = "readyToSend"; // we got a file in quarantine
+$val = array();
+foreach($qvalid as $qv) {
+   $val[] = array( "ok" => 1, "message" => "readyToSend", "filename" => $qv );
 }
-if (count($ovalid) > 0) {
-   $status = "transit";
+foreach($ovalid as $qv) {
+   $val[] = array( "ok" => 1, "message" => "transit", "filename" => $qv );
 }
-if (count($dvalid) > 0) {
-   $status = "transferred";
+foreach($dvalid as $qv) {
+   $val[] = array( "ok" => 1, "message" => "transferred", "filename" => $qv );
 }
 
-echo ("{ \"ok\": 1, \"message\": \"".$status."\" }");
+echo(json_encode($val));
 
 return;
 
