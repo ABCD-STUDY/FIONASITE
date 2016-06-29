@@ -26,7 +26,9 @@ Configuration
 │   ├── archive                 // receives incoming DICOM, sorted by StudyInstanceUID
 │   ├── participants            // receives incoming DICOM, sorted by PatientID/Date_Time
 │   └── raw                     // receives incoming DICOM, sorted by Study/Series/
-└── UCSD                        // receives p-files+MD5SUM by scp from scanner
+├── DAIC                        // files that could be send successfully to the DAIC
+├── outbox                      // files submitted by the user for send to DAIC
+└── quarantine                  // receives p-files+MD5SUM by scp from scanner + tgz'ed DICOM
 ```
 
 (/data/config/config.json)
@@ -42,7 +44,8 @@ Configuration
   "SERVERUSER":         "<Name of the user account on the DAIC server system>",
   "DAICSERVER":         "137.110.181.166",
   "PFILEDIR":           "/data/<site>",
-  "MPPSMODE":           "mppson" | "mppsoff"
+  "MPPSMODE":           "mppson" | "mppsoff",
+  "CONNECTION":         "<REDCap token for participant list>"
 }
 ```
 
