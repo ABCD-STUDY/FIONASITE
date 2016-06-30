@@ -144,9 +144,7 @@ function loadStudy(studyViewer, viewportModel, studyInstanceUID) {
 
             // Have cornerstone load the thumbnail image
 
-console.log("trying to loadAndCacheImage for " + imageViewer.stacks[stack.seriesIndex].imageIds[0]);
             cornerstone.loadAndCacheImage(imageViewer.stacks[stack.seriesIndex].imageIds[0]).then(function(image) {
-console.log("loadAndCacheImage done: " + imageViewer.stacks[stack.seriesIndex].imageIds[0] );
                 // Make the first thumbnail active
                 if (stack.seriesIndex === 0) {
                     $(seriesElement).addClass('active');

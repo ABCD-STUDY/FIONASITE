@@ -22,6 +22,15 @@
   <!-- Cornerstone Demo CSS -->
   <link href="css/cornerstoneDemo.css" rel="stylesheet">
 
+  <style rel="stylesheet">
+     .back-button {
+         border-radius: 32px; border: 1px solid black; margin: 10px; position: fixed; background-color: #000;
+     }
+     .back-button:hover {
+         background-color: #222;
+     }
+  </style>
+
 <?php
   $series = "1.2.840.113619.2.374.15512023.5825816.13963.1461873929.18";
   if (isset($_GET['series'])) {
@@ -40,6 +49,10 @@
     <nav class="myNav navbar navbar-default" role="navigation">
       <div class="container-fluid">
         <div class="navbar-header">
+            <!-- <img class="demo-avatar" src="../../images/user.jpg" width=32>       -->
+            <button class="back-button">
+              <span class="glyphicon glyphicon-menu-left" aria-hidden="true" style="color: gray; font-size: 52px; margin-top: 5px;"></span>
+            </button>
         </div>
         <ul class="nav navbar-nav navbar-right">
           <!-- <li><a id="help" href="#" class="button hidden-xs">Help</a></li>
@@ -61,7 +74,7 @@
         <!-- Study list -->
         <div id="studyList" class="tab-pane active">
           <div class="row">
-            <table class="col-md-12 table table-striped" style="margin-left: 5px;">
+            <table class="col-md-12 table table-striped" style="margin-left: 5px; background-color: black;">
               <thead>
                 <tr>
                   <th>Patient Name</th>
@@ -78,9 +91,9 @@
               </tbody>
             </table>
           </div>
-    <div style="margin-bottom: 20px;">
-       <i style="margin: 20px;">A service provided by the Data Analysis and Informatics Core of ABCD.</i>
-    </div>
+          <div style="margin-bottom: 20px;">
+            <i style="margin: 20px;">A service provided by the Data Analysis and Informatics Core of ABCD.</i>
+          </div>
         </div>
       </div>
 
@@ -143,9 +156,14 @@
 
 jQuery(document).ready(function() {
 
+   jQuery('.back-button').click(function() {
+      window.location.replace("/");
+   });
+
    jQuery('#tabs').on('click', '.close', function() {
       jQuery(this).parent().remove();
       // studyList should be opened again
+      jQuery(jQuery('#tabs').children()[0]).find('a').click();
    });
 });
 
