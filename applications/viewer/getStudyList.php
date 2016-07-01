@@ -1,6 +1,6 @@
 <?php
 
-   $path = "../../php/data/site/raw";
+   $path = "../../php/raw";
    $files = glob($path. DIRECTORY_SEPARATOR . "*");
    $studyList = array();
    $studyList['studyList'] = array();
