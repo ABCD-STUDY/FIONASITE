@@ -5,7 +5,7 @@
 #
 
 if [ "$#" -ne 1 ]; then
-   echo "Usage: <study instance uid>"
+   echo "Usage: scp_study instance uid>"
    exit;
 fi
 
@@ -17,7 +17,7 @@ log=${SERVERDIR}/logs/detectStudyArrival.log
 
 d=/data/site/output/${SDIR}/series_compliance
 mkdir -p ${d}
-machineid=machine57080de9bbc3d
+machineid=compliance_check
 SSDIR=${SDIR:4}
 echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
 id=$(docker run -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
