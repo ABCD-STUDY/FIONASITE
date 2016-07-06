@@ -45,7 +45,9 @@ Configuration
   "DAICSERVER":         "137.110.181.166",
   "PFILEDIR":           "/data/<site>",
   "MPPSMODE":           "mppson" | "mppsoff",
-  "CONNECTION":         "<REDCap token for participant list>"
+  "CONNECTION":         "<REDCap token for participant list>",
+  "WEBPROXY":           "<web proxy IP if one is used to connect to the internet>",
+  "WEBPROXYPORT":       "<port of the web proxy>"
 }
 ```
 

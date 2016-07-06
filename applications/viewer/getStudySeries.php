@@ -21,7 +21,7 @@
       //return;
    }
 
-   $path = "../../php/data/site/raw";
+   $path = "../../php/raw";
    $files = glob($path. DIRECTORY_SEPARATOR . $studyinstanceuid . "/*.json");
    $seriesList = array();
    $seriesList['modality'] = "MR";

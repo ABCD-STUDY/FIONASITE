@@ -5,7 +5,7 @@
 #
 
 if [ "$#" -ne 1 ]; then
-   echo "Usage: <study instance uid>"
+   echo "Usage: scp_study instance uid>"
    exit;
 fi
 
@@ -18,7 +18,7 @@ echo "`date`: compliance check started ${SDIR}" >> $log
 
 d=/data/site/output/${SDIR}/series_compliance
 mkdir -p ${d}
-machineid=machine57080de9bbc3d
+machineid=compliance_check
 SSDIR=${SDIR:4}
 # remove the input file (for next time)
 echo "`date`: remove the input file /var/www/html/php/request_compliance_check/$1" >> $log
