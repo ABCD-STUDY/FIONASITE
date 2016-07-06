@@ -3,6 +3,9 @@
 #
 # run protocol compliance check
 #
+# This script will be called by incrond, install by adding to processing users incron
+#   /var/www/html/php/request_compliance_check IN_CREATE,IN_MOVED_TO /var/www/html/server/bin/complianceCheck.sh $#
+#
 
 if [ "$#" -ne 1 ]; then
    echo "Usage: scp_study instance uid>"
