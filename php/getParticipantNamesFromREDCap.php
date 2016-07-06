@@ -17,6 +17,13 @@ if ($token == "") {
    return;
 }
 
+$proxy = "";
+$proxyport = 3128;
+if (isset($configs['WEBPROXY'])) {
+  $proxy=$configs['WEBPROXY'];
+  $proxyport=$configs['WEBPROXYPORT'];
+}
+
 $data = array(
     'token' => $token,
     'content' => 'record',
@@ -38,6 +45,11 @@ curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 curl_setopt($ch, CURLOPT_VERBOSE, 0);
 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 curl_setopt($ch, CURLOPT_AUTOREFERER, true);
+if ($proxy != "") {
+   curl_setopt($ch, CURLOPT_PROXY, $proxy);
+   curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+   curl_setopt($ch, CURLOPT_PROXYPORT, $proxyport);
+}
 curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
 curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
