@@ -134,7 +134,7 @@
     ]
   },
   { 
-    "type" : "ABCD-Diffusion-FM",
+    "type" : "ABCD-Diffusion-FM-PA",
     "description" : "Field Maps for ABCD Diffusion scan",
     "rules" : [
       {
@@ -153,6 +153,37 @@
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "ep_b0"
+      },{ 
+        "tag": [ "PhaseEncodingDirectionPositive" ],
+        "operator": "==",
+        "value": "0" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-Diffusion-FM-AP",
+    "description" : "Field Maps for ABCD Diffusion scan",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "140"
+      }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "105" 
+      },{ 
+        "tag": [ "0x18", "0x24" ],
+        "value": "ep_b0"
+      },{ 
+        "tag": [ "PhaseEncodingDirectionPositive" ],
+        "operator": "==",
+        "value": "1" 
       }
     ]
   },
@@ -177,13 +208,13 @@
         "value": "105" 
       },{ 
         "tag": [ "0x18", "0x24" ],
-        "value": "ep_b0"
+        "value": "ep_b"
       }
     ]
   },
   { 
     "type" : "ABCD-rsfMRI",
-    "description" : "ABCD Nback fMRI scan",
+    "description" : "ABCD Resting State fMRI scan",
     "rules" : [
       {
 	"rule" : "SIEMENSBYMANUFACTURER"
@@ -203,7 +234,7 @@
         "value": "epfSM2d1_104"
       },{ 
         "tag": [ "AcquisitionLength" ],
-        "value": "TA 05:12"
+        "value": "TA 05:30"
       }
     ]
   }, 
@@ -232,10 +263,88 @@
         "value": "TA 05:19"
       }
     ]
+  }, 
+  { 
+    "type" : "ABCD-MID-fMRI",
+    "description" : "ABCD MID fMRI scan",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "936"
+      }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "91" 
+      },{ 
+        "tag": [ "SequenceName" ],
+        "value": "epfSM2d1_104"
+      },{ 
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 06:17"
+      }
+    ]
+  }, 
+  { 
+    "type" : "ABCD-SST-fMRI",
+    "description" : "ABCD SST fMRI scan",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "936"
+      }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "91" 
+      },{ 
+        "tag": [ "SequenceName" ],
+        "value": "epfSM2d1_104"
+      },{ 
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 06:34"
+      }
+    ]
+  }, 
+  { 
+    "type" : "ABCD-nBack-fMRI",
+    "description" : "ABCD nBack fMRI scan",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "936"
+      }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "91" 
+      },{ 
+        "tag": [ "SequenceName" ],
+        "value": "epfSM2d1_104"
+      },{ 
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 05:53"
+      }
+    ]
   },   
   { 
-    "type" : "ABCD-fMRI-FM",
-    "description" : "Field Maps for ABCD Diffusion scan",
+    "type" : "ABCD-fMRI-FM-PA",
+    "description" : "Field Maps for ABCD fMRI scans",
     "rules" : [
       {
 	"rule" : "SIEMENSBYMANUFACTURER"
@@ -253,6 +362,37 @@
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "epse2d1_104"
+      },{ 
+        "tag": [ "PhaseEncodingDirectionPositive" ],
+        "operator": "==",
+        "value": "0" 
+      }
+    ]
+  },   
+  { 
+    "type" : "ABCD-fMRI-FM-AP",
+    "description" : "Field Maps for ABCD fMRI scans",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "104"
+      }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "91" 
+      },{ 
+        "tag": [ "0x18", "0x24" ],
+        "value": "epse2d1_104"
+      },{ 
+        "tag": [ "PhaseEncodingDirectionPositive" ],
+        "operator": "==",
+        "value": "1" 
       }
     ]
   },
