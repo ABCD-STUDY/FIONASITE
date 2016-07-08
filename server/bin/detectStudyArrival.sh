@@ -75,12 +75,18 @@ runSeriesInventions () {
   if [[ ! "$erg" == "" ]]; then
       # run the phantom QC on this series, create an output directory first
       d=${SDIR}/${SSERIESDIR}_`date | tr ' ' '_'`
-      mkdir -p ${d}
       # lets move the docker's info file as documentation in there
       dproc=ABCDPhantomQC
-      $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
-      erg=$(docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
-      echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
+      # 
+      # check first if the docker container actually exist
+      #
+      docker images | grep ${dproc}
+      if [ $? == "1" ]; then
+        mkdir -p ${d}
+        $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
+        erg=$(docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
+        echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
+      fi
   fi
 }
 
@@ -96,10 +102,10 @@ runStudyInventions () {
   d=/data/site/output/${SDIR}/series_compliance_`date | tr ' ' '_' | tr ':' '_'`
   mkdir -p ${d}
   # lets move the docker's info file as documentation in there
-  dproc=machine57080de9bbc3d
+  dproc=compliance_check
   $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
   echo "`date`: ${SDIR} -> docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v ${SDIR}:/input ${dproc} /bin/bash -c \"/root/work.sh /input /output\"" >> $log
-  erg=$(docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v ${SDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output" 2>&1)
+  erg=$(docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SSDIR}:/input:ro ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
   echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
 }
 
@@ -145,7 +151,8 @@ detect () {
       echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log
 
       # lets do some cleanup and remove any unused docker containers
-      $(docker rm -v $(docker ps -a -q -f status=exited))
+      docker ps -aq --filter status=exited | xargs --no-run-if-empty docker rm
+      #$(docker rm -v $(docker ps -a -q -f status=exited))
       echo "`date`: cleanup of unused containers done..." >> $log
 
       # we could run something at specific intervals, by compliance check should run every time

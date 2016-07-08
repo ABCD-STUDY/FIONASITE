@@ -15,6 +15,13 @@
       // look for one json file inside
       $j = glob($f. DIRECTORY_SEPARATOR . "/*.json");
       if (count($j) > 0) {
+        $numImages = 0;
+        foreach($j as $jf) {
+          $data = json_decode(file_get_contents($jf), True);
+          if (isset($data['NumFiles'])) {
+	     $numImages = $numImages + $data['NumFiles'];
+          }
+        }
         $data = json_decode(file_get_contents($j[0]), True);
         //echo ("   found study information" . $data['PatientID']);
         $studyList['studyList'][] = array( "patientName" => $data['PatientName'], 
@@ -22,7 +29,7 @@
 					   "studyDate" => $data['StudyDate'], 
 					   "modality" => $data['Modality'], 
 					   "studyDescription" => $data['StudyDescription'], 
-					   'numImages' => $data['NumFiles'], 
+					   'numImages' => $numImages, 
 					   'studyId' => $data['StudyInstanceUID']);
       }
    }

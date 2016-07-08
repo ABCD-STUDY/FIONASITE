@@ -18,6 +18,16 @@ if (isset($_GET['study'])) {
 }
 
 if ( $action == "getStudy" ) {
+
+    // run compliance check here
+    file_put_contents('/tmp/'.$study, "study: ".$study." please run compliance check now");
+    chmod ('/tmp/'.$study, 0777);
+    $cpath = 'request_compliance_check';
+    if(!is_dir($cpath)) {
+       mkdir($cpath, 0777);
+    }
+    rename('/tmp/'.$study, $cpath.DIRECTORY_SEPARATOR.$study);    
+
     $d = 'output/scp_'.$study.'/series_compliance/compliance_output.json';
     if (!file_exists($d)) {
         echo ("{ \"ok\": 0, \"message\": \"file could not be found\" }");

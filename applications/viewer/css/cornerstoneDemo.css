@@ -158,3 +158,6 @@ a.list-group-item.active, a.list-group-item.active:hover, a.list-group-item.acti
 .dropdown-menu {
   min-width: 40px;
 }
+tr {
+    cursor: pointer;
+}
