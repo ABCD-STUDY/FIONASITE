@@ -12,7 +12,7 @@
      $action = $_GET['action'];
   }
 
-  // get all images from a specific study
+  // get images for a specific series
   if ($action == "get") {
      $series = "";
      if (isset($_GET['series'])) {
@@ -24,6 +24,23 @@
      }
      $fname = tempnam('/tmp/', 'movescu');
      file_put_contents( $fname , "# request all images for the seriesinstanceuid\n#\n(0008,0052) CS [SERIES]     # QueryRetrieveLevel\n(0020,000e) UI [".$series."]    # SeriesInstanceUID\n");
+     exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/dump2dcm +te '.$fname.' '.$fname.'.dcm');
+     exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/movescu -aet '.$DICOMAETITLE." -aec ".$SCANNERAETITLE." --study -aem ".$DICOMAETITLE." ".$SCANNERIP." ".$SCANNERPORT." ".$fname.".dcm");
+     // hopefully that will do it
+     return;
+  }
+  // 
+  if ($action == "getStudy") {
+     $series = "";
+     if (isset($_GET['study'])) {
+         $study = $_GET['study'];
+     }
+     if ($study == "" ) {
+        echo ("{ \"message\": \"Error, requires study instance uid to work\", \"ok\": \"0\" }");
+        return;
+     }
+     $fname = tempnam('/tmp/', 'movescu');
+     file_put_contents( $fname , "# request all images for the studyinstanceuid\n#\n(0008,0052) CS [STUDY]     # QueryRetrieveLevel\n(0020,000d) UI [".$tudy."]    # StudyInstanceUID\n");
      exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/dump2dcm +te '.$fname.' '.$fname.'.dcm');
      exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/movescu -aet '.$DICOMAETITLE." -aec ".$SCANNERAETITLE." --study -aem ".$DICOMAETITLE." ".$SCANNERIP." ".$SCANNERPORT." ".$fname.".dcm");
      // hopefully that will do it
