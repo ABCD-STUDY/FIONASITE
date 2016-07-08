@@ -138,7 +138,7 @@ detect () {
       # we have a study instance uid in SDIR, start the study compliance check
       d=/data/site/output/${SDIR}/series_compliance
       mkdir -p ${d}
-      machineid=machine57080de9bbc3d
+      machineid=compliance_check
       SSDIR=${SDIR:4}
       echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
       id=$(docker run -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
@@ -205,8 +205,8 @@ detect () {
         mkdir -p /data/quarantine/
         # allow the site user to write to this directory (from the scanner)
         chmod 777 /data/quarantine
-        echo "`date`: write tar file /data/quarantine/${SSERIESDIR}.tar, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
-        out=/data/quarantine/${SDIR}_${SSERIESDIR}.tar
+        echo "`date`: write tar file /data/quarantine/${SDIR}_${SSERIESDIR}.tgz, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
+        out=/data/quarantine/${SDIR}_${SSERIESDIR}.tgz
         cd /data/site/raw
         tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json"
         md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
