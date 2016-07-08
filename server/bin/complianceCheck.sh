@@ -25,7 +25,7 @@ machineid=compliance_check
 SSDIR=${SDIR:4}
 # remove the input file (for next time)
 echo "`date`: remove the input file /var/www/html/php/request_compliance_check/$1" >> $log
-rm "/var/www/html/php/request_compliance_check/$1"
+rm -f "/var/www/html/php/request_compliance_check/$1"
 
 echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
 id=$(docker run -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
