@@ -774,13 +774,14 @@ jQuery(document).ready(function() {
        // pull this study over from FIONA
        var study = jQuery(this).attr('study');
        if (study != "") {
-	  // ask the scanner to send us this studies series
-          jQuery(this).parent().find("li").each(function() {
+	  // ask the scanner to send us this studies images
+	  jQuery.get('/php/scanner.php?action=getStudy&study=' + study);
+          /*jQuery(this).parent().find("li").each(function() {
 	    var series = jQuery(this).attr('key');
             if (series != "") {
      	      jQuery.get('/php/scanner.php?action=get&series=' + series);
             }
-          });
+          }); */
        }
     });
 
