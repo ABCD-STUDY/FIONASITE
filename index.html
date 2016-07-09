@@ -726,6 +726,9 @@ function displayAdditionalScans(data) {
          str = str.concat("");
 
          var item;
+         if (typeof data["AdditionalSeries"] == 'undefined') {
+	    return;
+         }
          var array = data["AdditionalSeries"];
          for (var i = 0; i < array.length; i++) {
              var item = array[i];
