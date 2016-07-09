@@ -33,6 +33,7 @@
 					   'studyId' => $data['StudyInstanceUID']);
       }
    }
+   // todo: sort by StudyDate and StudyTime
    usort($studyList['studyList'], function($a, $b) {
       if ($a['studyDate'] == $b['studyDate']) {
          return 0;
