@@ -292,7 +292,7 @@ class ProcessSingleFile(Daemon):
                 format = ('<' if little_endian else '>') + format
                 size = struct.calcsize(format)
                 chunks = struct.unpack(format, tag[index:index + size])
-                
+
                 chunks = [self._scrub(item) for item in chunks]
         
                 return (size, chunks)
@@ -649,7 +649,11 @@ class ProcessSingleFile(Daemon):
                                                 break
                                                 
                                 if tag_data:
-                                        ptag_img = self._parse_csa_header(tag_data)
+                                        try:
+                                                ptag_img = self._parse_csa_header(tag_data)
+                                        except:
+                                                ptag_img = None
+                                                pass
 
                                 # [IDL] Access the SERIES Shadow Data
                                 # [PS] I don't know what makes this "shadow" data.
@@ -659,7 +663,11 @@ class ProcessSingleFile(Daemon):
                                                 break
                                         
                                 if tag_data:
-                                        ptag_ser = self._parse_csa_header(tag_data)
+                                        try:
+                                                ptag_ser = self._parse_csa_header(tag_data)
+                                        except:
+                                                ptag_ser = None
+                                                pass
 
                                 arriveddir = '/data/site/.arrived'
                                 if not os.path.exists(arriveddir):
@@ -887,7 +895,8 @@ class ProcessSingleFile(Daemon):
                                         if not 'siemensDiffusionInformation' in data:
                                                 data['siemensDiffusionInformation'] = []
                                         try:
-                                                data['siemensDiffusionInformation'].append( siemensDiffusionInformation )
+                                                if siemensDiffusionInformation['DiffusionDirectionality'] != '':
+                                                        data['siemensDiffusionInformation'].append( siemensDiffusionInformation )
                                         except:
                                                 pass
 
