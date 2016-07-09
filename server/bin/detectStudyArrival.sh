@@ -162,18 +162,18 @@ detect () {
 
   # every file in this directory is a potential job, but we need to find some that are old enough, there could be more coming
   echo "`date`: DIR to check for files is \"${DIR}\"" >> $log
-  find "$DIR" -print0 | while read -d $'\0' file
-  do
-      echo " -> \"$file\"    \n" >> $log
-  done
+  #find "$DIR" -print0 | while read -d $'\0' file
+  #do
+  #    echo " -> \"$file\"    \n" >> $log
+  #done
   find "$DIR" -print0 | while read -d $'\0' file
   do
     valid=1
     if [ "$file" == "$DIR" ]; then
-        echo "`date`: same dir $file == $DIR" >> $log
+        #echo "`date`: same dir $file == $DIR" >> $log
         valid=0
     fi
-    echo " RUN2 \"$file\"  stat: \"`stat -c "%Y" "$file"`\"  \n" >> $log
+    #echo " RUN2 \"$file\"  stat: \"`stat -c "%Y" "$file"`\"  \n" >> $log
 
     if [ "$(( $(date +"%s") - $(stat -c "%Y" "$file") ))" -lt "$oldtime" ]; then
         echo "`date`: too young $file" >> $log
