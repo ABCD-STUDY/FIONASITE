@@ -28,8 +28,8 @@
   
   // sort by date and time
   usort($subjects, function($a, $b) {
-     $ad = DateTime::createFromFormat( "Ymd His", $a['StudyDate']." ".$a['StudyTime'] );
-     $bd = DateTime::createFromFormat( "Ymd His", $b['StudyDate']." ".$b['StudyTime'] );
+     $ad = DateTime::createFromFormat( "Ymd His", $a['StudyDate']." ".explode(".",$a['StudyTime'])[0] );
+     $bd = DateTime::createFromFormat( "Ymd His", $b['StudyDate']." ".explode(".",$b['StudyTime'])[0] );
      if ($ad == $bd) {
        return 0;
      }
