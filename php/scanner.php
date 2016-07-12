@@ -6,6 +6,7 @@
   $SCANNERAETITLE = $config['SCANNERAETITLE'];
   $SCANNERPORT= $config['SCANNERPORT'];
   $DICOMAETITLE = $config['DICOMAETITLE'];
+  $SCANNERTYPE = $config['SCANNERTYPE'];
 
   $action = "";
   if (isset($_GET['action'])) {
@@ -49,11 +50,18 @@
 
 
   function getSeries( $studyinstanceuid ) {
-     global $SCANNERIP, $SCANNERAETITLE, $SCANNERPORT, $DICOMAETITLE;  
+     global $SCANNERIP, $SCANNERAETITLE, $SCANNERPORT, $DICOMAETITLE, $SCANNERTYPE;  
 
      //findscu -v -aet DAICFIONA -aec CTIPMUCSD2 --study -k 0008,0052=SERIES -k "(0020,000d)=1.2.840.113619.6.374.194029215235239011834696280337568647621"  172.16.132.126 4006
      $lines = array();
-     exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/findscu -aet '.$DICOMAETITLE.' -aec '.$SCANNERAETITLE.' --study -k 0008,0052=SERIES -k "(0020,000d)='.$studyinstanceuid.'" '.$SCANNERIP.' '.$SCANNERPORT.' 2>&1', $lines);
+     if ($SCANNERTYPE == "SIEMENS") {
+       // works for Siemens
+       // DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/findscu -aet MGHFIONA -aec BAY4OC --study -k 0008,0052=SERIES -k "(0020,000e)" -k "SeriesDescription" -k "(0020,1002)" -k "(0020,1002)" -k "(0020,000d)=1.3.12.2.1107.5.2.43.67026.30000016070618301156000000113"  172.21.16.64 104
+       // 
+       exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/findscu -aet '.$DICOMAETITLE.' -aec '.$SCANNERAETITLE.' --study -k 0008,0052=SERIES -k "(0020,000e)=*" -k "SeriesDescription" -k "(0020,1002)" -k "(0020,000d)='.$studyinstanceuid.'" '.$SCANNERIP.' '.$SCANNERPORT.' 2>&1', $lines);
+     } elseif ($SCANNERTYPE == "GE") {
+       exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/findscu -aet '.$DICOMAETITLE.' -aec '.$SCANNERAETITLE.' --study -k 0008,0052=SERIES -k "(0020,000d)='.$studyinstanceuid.'" '.$SCANNERIP.' '.$SCANNERPORT.' 2>&1', $lines);
+     }
      $SeriesInstanceUID = "";
      $ImagesInAcquisition = "";
      $SeriesDescription = "";
@@ -65,6 +73,10 @@
            // we got a value
 	   if (strpos($line, "SeriesInstanceUID") != FALSE) {
               $SeriesInstanceUID = $matches[1];
+              if ($SCANNERTYPE	== "SIEMENS") {
+	        // last	entry is series	instance uid, cannot get ImagesInAcquisition for Siemens
+                $data[] = array( "ImagesInAcquisition" => $ImagesInAcquisition, "SeriesDescription" => $SeriesDescription, "SeriesInstanceUID" => $SeriesInstanceUID );
+      	      }
            }
 	   if (strpos($line, "SeriesDescription") != FALSE) {
               $SeriesDescription = $matches[1];
@@ -82,8 +94,10 @@
 
   // call findscu with the scanner information  
   //echo ('findscu -v -aet DAICFIONA -aec CTIPMUCSD2 --study -k 0008,0052=STUDY 172.16.132.126 4006');
+  // --study -k 0008,0052=SERIES -k "(0020,000D)=*" -k "(0020,000E)" -k "(0010,0010)" -k 0008,103E -k "(0010,0020)" -k 0020,0010 -k 0008,0020 -k 0008,0030 -k 0020,1002 
+
   $lines = array();
-  exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/findscu -aet '.$DICOMAETITLE.' -aec '.$SCANNERAETITLE.' --study -k 0008,0052=STUDY '.$SCANNERIP.' '.$SCANNERPORT.' 2>&1', $lines);
+  exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/findscu -aet '.$DICOMAETITLE.' -aec '.$SCANNERAETITLE.' --study -k 0008,0052=STUDY -k 0008,0030 -k 0020,1002 -k \(0020,000D\)=* -k 0020,0010 -k 0008,0020 -k 0008,0030 -k 0010,0020 -k 0010,0010 '.$SCANNERIP.' '.$SCANNERPORT.' 2>&1', $lines);
 
   // echo $studies
   // lets scan through all lines and collect information for the current study
