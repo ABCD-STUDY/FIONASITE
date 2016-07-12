@@ -382,7 +382,10 @@ function loadScanner() {
     jQuery.getJSON('/php/scanner.php', function(data) {
 	str = "<ul id=\"scanner-list-bonsai\" class=\"data\">";
 	for (var i = 0; i < data.length; i++) {
-	   str = str + "<li>" + data[i].PatientID + "<br/><small style=\"padding-top: -10px;\">"+data[i].StudyDate+" "+data[i].StudyTime+"</small>&nbsp;&nbsp;<button style=\"margin-top: -20px;\" class=\"mdl-button mdl-js-button mdl-button--icon pull-study\" study=\""+data[i].StudyInstanceUID+"\" title=\"Downlaod to FIONA\"><i class=\"material-icons\">touch_app</i></button><ul>";
+           if (data[i].PatientName == "") {
+	      data[i].PatientName = data[i].PatientID;
+           }
+	   str = str + "<li><span title=\"" + data[i].PatientID + "\">" + data[i].PatientName + "</span><br/><small style=\"padding-top: -10px;\">"+data[i].StudyDate+" "+data[i].StudyTime+"</small>&nbsp;&nbsp;<button style=\"margin-top: -20px;\" class=\"mdl-button mdl-js-button mdl-button--icon pull-study\" study=\""+data[i].StudyInstanceUID+"\" title=\"Downlaod to FIONA\"><i class=\"material-icons\">touch_app</i></button><ul>";
 	   for (var j = 0; j < data[i].Series.length; j++) {
 	      str = str + "<li class=\"open-scanner-series-info\" key=\"" + data[i].Series[j].SeriesInstanceUID + "\" title=\""+data[i].Series[j].SeriesDescription + " [" + data[i].Series[j].ImagesInAcquisition +"]\">" + shortenName(data[i].Series[j].SeriesDescription) + "</li>";
            }
