@@ -12,7 +12,7 @@
 od=/data/site/archive
 pipe=/tmp/.processSingleFilePipe
 
-port=`cat /data/config/config.json | jq -r ".SCANNERPORT"`
+port=`cat /data/config/config.json | jq -r ".DICOMPORT"`
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 pidfile=${SERVERDIR}/.pids/storescpd.pid
 scriptfile=${SERVERDIR}/bin/receiveSingleFile.sh
