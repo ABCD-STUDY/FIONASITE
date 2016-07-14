@@ -23,11 +23,13 @@
         echo ("{ \"message\": \"Error, requires series instance uid to work\", \"ok\": \"0\" }");
         return;
      }
-     $fname = tempnam('/tmp/', 'movescu');
+     $fname = tempnam(sys_get_temp_dir(), 'movescu');
      file_put_contents( $fname , "# request all images for the seriesinstanceuid\n#\n(0008,0052) CS [SERIES]     # QueryRetrieveLevel\n(0020,000e) UI [".$series."]    # SeriesInstanceUID\n");
-     exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/dump2dcm +te '.$fname.' '.$fname.'.dcm');
-     exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/movescu -aet '.$DICOMAETITLE." -aec ".$SCANNERAETITLE." --study -aem ".$DICOMAETITLE." ".$SCANNERIP." ".$SCANNERPORT." ".$fname.".dcm");
-     // hopefully that will do it
+     if (file_exists($fname)) {
+       exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/dump2dcm +te '.$fname.' '.$fname.'.dcm');
+       exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/movescu -aet '.$DICOMAETITLE." -aec ".$SCANNERAETITLE." --study -aem ".$DICOMAETITLE." ".$SCANNERIP." ".$SCANNERPORT." ".$fname.".dcm");
+       // hopefully that will do it
+     }
      return;
   }
   // 
@@ -40,11 +42,13 @@
         echo ("{ \"message\": \"Error, requires study instance uid to work\", \"ok\": \"0\" }");
         return;
      }
-     $fname = tempnam('/tmp/', 'movescu');
-     file_put_contents( $fname , "# request all images for the studyinstanceuid\n#\n(0008,0052) CS [STUDY]     # QueryRetrieveLevel\n(0020,000d) UI [".$tudy."]    # StudyInstanceUID\n");
-     exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/dump2dcm +te '.$fname.' '.$fname.'.dcm');
-     exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/movescu -aet '.$DICOMAETITLE." -aec ".$SCANNERAETITLE." --study -aem ".$DICOMAETITLE." ".$SCANNERIP." ".$SCANNERPORT." ".$fname.".dcm");
-     // hopefully that will do it
+     $fname = tempnam(sys_get_temp_dir(), 'movescu');
+     file_put_contents( $fname , "# request all images for the studyinstanceuid\n#\n(0008,0052) CS [STUDY]     # QueryRetrieveLevel\n(0020,000d) UI [".$study."]    # StudyInstanceUID\n");
+     if (file_exists($fname)) {
+       exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/dump2dcm +te '.$fname.' '.$fname.'.dcm');
+       exec('DCMDICTPATH=/usr/share/dcmtk/dicom.dic /usr/bin/movescu -aet '.$DICOMAETITLE." -aec ".$SCANNERAETITLE." --study -aem ".$DICOMAETITLE." ".$SCANNERIP." ".$SCANNERPORT." ".$fname.".dcm");
+       // hopefully that will do it
+     }
      return;
   }
 
