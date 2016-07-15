@@ -414,7 +414,7 @@ function loadSubjects() {
 }
 function shortenName( name ) {
    var l = 20;
-   if (name.length > l) {
+   if (name !== null && name.length > l) {
        // take the first part
        return name.substring(0,5) + "..." + name.substring(name.length -15, name.length);
    }
