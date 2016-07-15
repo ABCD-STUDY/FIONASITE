@@ -3,7 +3,8 @@
 As DICOM images arrive they are sorted into different series. Each DICOM images header is evaluated by a system service processSingleFile.py that is using classification rules defined in classifyRules.json. Here an example of the structure of these rules:
 
 ```
-{ "type" : "GE",
+{ 
+    "type" : "GE",
     "id" : "GEBYMANUFACTURER",
     "description" : "This scan is from GE",
     "rules" : [
@@ -90,4 +91,4 @@ In case a rule needs to be negated you can add the key "negate" with the value "
 
 In the above example types already classified by previous rules (sagittal) are used to calculate and add further types (oblique).
 
-There is currently no access to 
+Note: There is currently no get access to sub-tags. Arrays are represented as single strings so regular expressions can be used to parse them.
