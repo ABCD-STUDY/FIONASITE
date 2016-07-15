@@ -800,7 +800,7 @@ function displayAdditionalScans(data, StudyInstanceUID) {
 
          var item;
          if (typeof data["AdditionalSeries"] == 'undefined') {
-	    return;
+	         return;
          }
          var array = data["AdditionalSeries"];
          for (var i = 0; i < array.length; i++) {
@@ -809,37 +809,9 @@ function displayAdditionalScans(data, StudyInstanceUID) {
              var classifyType = item["ClassifyType"];
              var seriesName = "ClassifyType: " + JSON.stringify(classifyType)
              str = str.concat(displaySeries(item, seriesName, StudyInstanceUID));
-
-             /* OLD CODE:
-             str = str.concat("<li>");
-             var classifyType = item["ClassifyType"];
-             str = str.concat("<div class='ClassifyType'>ClassifyType: " + JSON.stringify(classifyType) + "</div>");
-             str = str.concat("<div class='SeriesInstanceUID'>SeriesInstanceUID: " + item["SeriesInstanceUID"] + "</div>");
-             str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + item["SeriesNumber"] + "</div>");
-             str = str.concat("</li>");
-             str = str.concat("");
-             */
          }
          jQuery('#detected-scans').append(str);
-
-
-         /* OLD CODE:
-         var keys = Object.keys(data);
-         console.log("displayDetectedScans: keys: " + keys);
-         //jQuery('#detected-scans').children().remove();
-         
-         var str = "<ul>";
-         for (var i = 0; i < keys.length; i++) {
-             var value = data[keys[i]];
-             
-             // SeriesNumber found, this is a series
-             str = str.concat(displaySeries(value, "NO NAME", StudyInstanceUID));
-         }
-         str = str.concat("</ul>");
-         jQuery('#detected-scans').append(str);
-         */
-
-}
+     }
 
 // get valid session names                                                                                                                                                                  
 function getSessionNamesFromREDCap() {
