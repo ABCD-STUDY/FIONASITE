@@ -790,7 +790,7 @@ function createUUID() {
     return uuid;
 }
 
-function displayAdditionalScans(data) {
+function displayAdditionalScans(data, StudyInstanceUID) {
 
          var str = "";
          str = str.concat("<li>");
@@ -806,6 +806,11 @@ function displayAdditionalScans(data) {
          for (var i = 0; i < array.length; i++) {
              var item = array[i];
              console.log("item[ClassifyType]: " + JSON.stringify(item["ClassifyType"]));
+             var classifyType = item["ClassifyType"];
+             var seriesName = "ClassifyType: " + JSON.stringify(classifyType)
+             str = str.concat(displaySeries(item, seriesName, StudyInstanceUID));
+
+             /* OLD CODE:
              str = str.concat("<li>");
              var classifyType = item["ClassifyType"];
              str = str.concat("<div class='ClassifyType'>ClassifyType: " + JSON.stringify(classifyType) + "</div>");
@@ -813,8 +818,27 @@ function displayAdditionalScans(data) {
              str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + item["SeriesNumber"] + "</div>");
              str = str.concat("</li>");
              str = str.concat("");
+             */
          }
          jQuery('#detected-scans').append(str);
+
+
+         /* OLD CODE:
+         var keys = Object.keys(data);
+         console.log("displayDetectedScans: keys: " + keys);
+         //jQuery('#detected-scans').children().remove();
+         
+         var str = "<ul>";
+         for (var i = 0; i < keys.length; i++) {
+             var value = data[keys[i]];
+             
+             // SeriesNumber found, this is a series
+             str = str.concat(displaySeries(value, "NO NAME", StudyInstanceUID));
+         }
+         str = str.concat("</ul>");
+         jQuery('#detected-scans').append(str);
+         */
+
 }
 
 // get valid session names                                                                                                                                                                  
@@ -957,8 +981,8 @@ jQuery(document).ready(function() {
             }
             console.log(dataSec1);
             displayHeaderSection(dataSec1);
-            displayDetectedScans(dataSec2, 111);
-            displayAdditionalScans(dataSec3);
+            displayDetectedScans(dataSec2, studyinstanceuid);
+            displayAdditionalScans(dataSec3, studyinstanceuid);
 
         });
 
