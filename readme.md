@@ -58,9 +58,13 @@ Configuration
 
 In order to provide secure access to the web-interface the following permission levels are supported:
 
+#### Permission level "abcd-data-entry"
+
+Default user level that allows for ABCD data uploads.
+
 #### User "admin"
 
-Only the "admin" user is able to create new user accounts on the system.
+Only the "admin" user is able to create new user accounts on the system and change the system setup.
 
 #### Permission level "see-scanner"
 
