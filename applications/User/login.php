@@ -43,7 +43,7 @@ if (array_key_exists($_SESSION["logged"],$USERS)) {
 	<link href="css/bootstrap-responsive.min.css" rel="stylesheet">
 	<link href="css/font-awesome.min.css" rel="stylesheet">
 	<link href="css/bootswatch.css" rel="stylesheet">
-        <link href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/start/jquery-ui.css" rel="stylesheet" type="text/css"/>
+        <link href="css/jquery-ui.css" rel="stylesheet" type="text/css"/>
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
           <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -80,8 +80,8 @@ if (array_key_exists($_SESSION["logged"],$USERS)) {
    </div>
   </div>
   
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <script src="/js/jquery-2.1.4.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
   <!-- create an md5sum version of the password before sending it -->
   <script src="/js/md5-min.js"></script>
 
