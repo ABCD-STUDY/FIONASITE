@@ -328,6 +328,7 @@ loading configuration file...
 	</div>
 	<div class="row">
       <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="study-info-dialog-sendall">Send All Series</button>
         <button type="button" class="mdl-button" id="study-info-dialog-cancel">Cancel</button>
       </div>
     </div>
@@ -1010,6 +1011,21 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-study-info');
        dialog.close();     
     });
+    jQuery('#study-info-dialog-sendall').click(function() {
+       // check if we are allowed to send yet
+       if (jQuery('#session-participant').val() == null || jQuery('#session-name').val() == null || jQuery('#session-run').val() == null) {
+   	  alert("Please select a valid (screened) participant before uploading data");
+	  return;
+       }	
+
+       var buttons = jQuery('#detected-scans .send-series-button');
+       for (var i = 0; i < buttons.length; i++) {
+          console.log("Try to press the send button for series " + jQuery(buttons[i]).attr('filename'));
+	  jQuery(buttons[i]).trigger('click');
+       }
+       alert('Send ' + buttons.length + ' series to /data/outbox');
+    });
+
          // onClick
     jQuery('#detected-scans').on('click', '.send-series-button', function() {
          
