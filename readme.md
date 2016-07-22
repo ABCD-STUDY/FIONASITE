@@ -56,6 +56,24 @@ Configuration
 
 /var/www/html/ (git clone https://github.com/ABCD-STUDY/FIONASITE.git)
 
+In order to provide secure access to the web-interface the following permission levels are supported:
+
+#### Permission level "abcd-data-entry"
+
+Default user level that allows for ABCD data uploads.
+
+#### User "admin"
+
+Only the "admin" user is able to create new user accounts on the system and change the system setup.
+
+#### Permission level "see-scanner"
+
+Only user that have the permission "see-scanner" will be able to see the current list of scans available on the scanner (Data View: Scanner).
+
+#### Permission level "developer"
+
+Only user that have the permission level "developer" will be able to create new processing buckets (docker container) using the web-interface.
+
 ### Server components:
 
 See readme in server directory.
@@ -64,7 +82,7 @@ See readme in server directory.
 Debug
 ======
 
-Use a vagrant setup such as https://github.com/ABCD-STUDY/abcd-dev.git for debugging and development.
+Use a vagrant setup such as https://github.com/ABCD-STUDY/abcd-dev.git for debugging and development (requires developer permissions).
 
 Processing containers inside FIONA use the DAIC Invention system which is docker based and provides a web interface that allows users to define a docker container, change its content and specify for which events the container will be started. The list of events currently supported is:
 

@@ -9,7 +9,7 @@
 
 log=/var/www/html/server/logs/updateInstall.log
 
-todo_old=(
+todo=(
     'existsDirectory' '/data' ''
     'existsDirectory' '/data/DAIC' ''
     'existsDirectory' '/data/active-scans' ''
@@ -33,6 +33,8 @@ todo_old=(
     'permission' '/var/www/html/server' '755'
     'permission' '/var/www/html/server/.pids' '777'
     'permission' '/var/www/html/server/logs' '777'
+    'owner' '/data/quarantine' 'processing:processing'
+    'permission' '/data/quarantine' '777'
 
     'owner' '/data' 'processing:processing'
     'owner' '/data/DAIC' 'processing:processing'
@@ -47,27 +49,18 @@ todo_old=(
     'owner' '/var/www/html/server/logs' 'processing:processing'
 
     'existsFile' '/data/enabled' '111'
-    'existsFile' '/data/config/config.json' '{ "DICOMIP": "137.110.181.168", "DICOMPORT": "4006", "DICOMAETITLE": "UCSDFIONA", "SCANNERIP": "172.20.141.70", "SCANNERPORT": "4006", "SCANNERAETITLE": "CTIPMUCSD1", "MPPSPORT": "4007", "SERVERUSER": "daic", "DAICSERVER": "137.110.181.166", "PFILEDIR": "/data/DAIC" }'
+    'existsFile' '/data/config/config.json' '{ "DICOMIP": "137.110.181.168", "DICOMPORT": "4006", "DICOMAETITLE": "UCSDFIONA", "SCANNERIP": "172.20.141.70", "SCANNERPORT": "4006", "SCANNERAETITLE": "CTIPMUCSD1", "SCANNERTYPE": "SIEMENS", "MPPSPORT": "4007", "SERVERUSER": "daic", "DAICSERVER": "137.110.181.166", "PFILEDIR": "/data/DAIC", "CONNECTION": "" }'
 
     'permission' '/data/enabled' '666'
     'permission' '/data/config/config.json' '644'
 
-    'owner' '/data/enabled' 'processing:processing'
+    'owner' '/data/enabled' 'apache:apache'
     'owner' '/data/config/config.json' 'apache:apache'
-)
-
-todo=(
-    'existsDirectory' '/var/www/html/server/bin/alextest/testdir' ''
-    'existsFile' '/var/www/html/server/bin/alextest/testfile' 'hello'
-    'permission' '/var/www/html/server/bin/alextest/testdir' '777'
-    'permission' '/var/www/html/server/bin/alextest/testfile' '666'
-    'owner' '/var/www/html/server/bin/alextest/testdir' 'processing:processing'
-    'owner' '/var/www/html/server/bin/alextest/testfile' 'processing:processing'
 )
 
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "NAME:"
-    echo " updateInstall - check the directories, files, permissions, owners and cronjobs"
+    echo " updateInstall - check the directories, files, permissions, and owners"
     echo ""
     echo " This program is part of the FIONA computer and checks the system health."
     echo ""
@@ -112,8 +105,12 @@ checkTools() {
         echo "Error: only Linux is currently supported (found $operatingSystem instead). Giving up..." 1>&2
         exit 1;
     fi
+    if [ ! -f "$log" ]; then
+        touch "$log"
+    fi
+
     # check for logfile location
-    if [[ ! -w $log ]]; then
+    if [[ ! -w "$log" ]]; then
         echo "Error: cannot write messages to logfile $log" 1>&2
         if [[ "$force" == "1" ]]; then
              log=/tmp/updateInstall.log
@@ -287,7 +284,7 @@ checkOwners() {
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
-             printf "\nERROR: owner for \"$path\" is wrong. Expected to be \"$expected\"\n"
+             printf "\nERROR: owner for \"$path\" is wrong. Expected to be \"$expected\" but found $(stat -c %U:%G $path)\n"
              if [[ "$force" == "1" ]]; then
                 fixOwner "$path" "$expected"
                 if [[ $(checkOwner "$path" "$expected") == "0" ]]; then
@@ -341,7 +338,7 @@ checkPermissions() {
           path=${todo[(($i+1))]}
           expected=${todo[(($i+2))]}
           if [[ $(checkPermission "$path" "$expected") == "0" ]]; then
-             printf "\nError: permission wrong for $path. Expected to be: $expected\n"
+             printf "\nError: permission wrong for $path. Expected to be: $expected but found $(stat -c %a $path)\n"
              if [[ "$force" == "1" ]]; then
                 fixPermission "$path" "$expected"
                 if [[ $(checkPermission "$path" "$expected") == "0" ]]; then

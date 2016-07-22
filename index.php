@@ -26,6 +26,32 @@
     <link rel="canonical" href="http://www.example.com/">
     -->
 
+<?php
+   session_start();
+
+   include("php/AC.php");
+   $user_name = check_logged();
+  echo('<script type="text/javascript"> user_name = "'.$user_name.'"; </script>'."\n");
+  // print out all the permissions
+  $permissions = list_permissions_for_user($user_name);
+  $p = '<script type="text/javascript"> permissions = [';
+  foreach($permissions as $perm) {
+    $p = $p."\"".$perm."\",";
+  }
+  echo ($p."]; </script>\n");
+
+  $admin = false;
+  if (check_role( "admin" )) {
+     $admin = true;
+  }
+  if (check_role( "developer" )) {
+     $developer = true;
+  }
+  if (check_role( "see-scanner" )) {
+     $seescanner = true;
+  }
+?>
+
     <style>
 @font-face {
   font-family: 'Roboto';
@@ -174,6 +200,10 @@
       <header class="demo-header mdl-layout__header mdl-color--white mdl-color--grey-100 mdl-color-text--grey-600">
         <div class="mdl-layout__header-row">
           <span class="mdl-layout-title hostname" title="Flash I/O Network Appliance">&nbsp;&nbsp;ABCD's FIONA</span>
+	  <nav class="mdl-navigation mdl-menu--top-right">
+	    <a class="mdl-navigation__link" style="color: gray;">User: <?php echo($user_name); ?></a>
+	  </nav>
+          <div class="mdl-layout-spacer"></div>
           <div class="mdl-layout-spacer"></div>
           <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon" id="hdrbtn">
             <i class="material-icons">more_vert</i>
@@ -181,8 +211,15 @@
           <ul class="mdl-menu mdl-js-menu mdl-js-ripple-effect mdl-menu--bottom-right" for="hdrbtn">
             <li class="mdl-menu__item" id="dialog-about-button">About</li>
             <li class="mdl-menu__item"><a href="applications/viewer/" title="Image viewer for FIONA DICOM images">Image Viewer</a></li>
+<?php if ($developer) : ?>
             <li class="mdl-menu__item"><a href="invention.html">Development</a></li>
+<?php endif; ?>
+<?php if ($admin) : ?>
+            <li class="mdl-menu__item" onclick="document.location.href = '/applications/User/admin.php';">Admin Interface</li>
             <li class="mdl-menu__item" id="dialog-setup-button">Setup</li>
+<?php endif; ?>
+            <li class="mdl-menu__item" id="dialog-change-password-button">Change Password</li>
+            <li class="mdl-menu__item" onclick="logout();">Logout</li>
           </ul>
         </div>
       </header>
@@ -199,7 +236,9 @@
             <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
               <li class="mdl-menu__item" id="load-subjects">Patients</li>
               <li class="mdl-menu__item" id="load-studies">Studies</li>
+<?php if ($seescanner) : ?>
               <li class="mdl-menu__item" id="load-scanner">Scanner</li>
+<?php endif; ?>
             </ul>
           </div>
         </header>
@@ -257,6 +296,24 @@
         </div>
       </main>
     </div>
+
+<dialog class="mdl-dialog" id="modal-change-password">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 25px;">
+            Change Password
+        </div>
+	<form>
+          <input class="mdl-textfield__input" type="password" id="password-field1" placeholder="*******" autofocus><br/>
+          <input class="mdl-textfield__input" type="password" id="password-field2" placeholder="type again">
+	</form>
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="change-password-cancel">Cancel</button>
+        <button type="button" class="mdl-button" id="change-password-save" onclick="changePassword();">Save</button>
+    </div>
+</dialog>
+
+
 
 <dialog class="mdl-dialog" id="modal-setup">
     <div class="mdl-dialog__content">
@@ -393,7 +450,40 @@ loading information...
     <script src="js/fullcalendar.min.js"></script>
     <script src="js/ace-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/jquery.bonsai.js" type="text/javascript"></script>
+    <script src="js/md5-min.js" type="text/javascript"></script>
     <script>
+
+      // logout the current user
+      function logout() {
+        jQuery.get('/php/logout.php', function(data) {
+          if (data == "success") {
+            // user is logged out, reload this page
+            location.reload();
+          } else {
+            alert('something went terribly wrong during logout: ' + data);
+          }
+        });
+      }
+
+      // change the current user's password
+      function changePassword() {
+        var password = jQuery('#password-field1').val();
+        var password2 = jQuery('#password-field2').val();
+        if (password == "") {
+          alert("Error: Password cannot be empty.");
+          return; // no empty passwords
+        }
+        hash = hex_md5(password);
+        hash2 = hex_md5(password2);
+        if (hash !== hash2) {
+          alert("Error: The two passwords are not the same, please type again.");
+          return; // do nothing
+        }
+        jQuery.getJSON('/php/getUser.php?action=changePassword&value=' + user_name + '&value2=' + hash, function(data) {
+
+        });
+      }
+
 
 var subjectData = [];
 function loadSubjects() {
@@ -788,7 +878,7 @@ function createUUID() {
     return uuid;
 }
 
-function displayAdditionalScans(data) {
+function displayAdditionalScans(data, StudyInstanceUID) {
 
          var str = "";
          str = str.concat("<li>");
@@ -798,22 +888,18 @@ function displayAdditionalScans(data) {
 
          var item;
          if (typeof data["AdditionalSeries"] == 'undefined') {
-	    return;
+	         return;
          }
          var array = data["AdditionalSeries"];
          for (var i = 0; i < array.length; i++) {
              var item = array[i];
              console.log("item[ClassifyType]: " + JSON.stringify(item["ClassifyType"]));
-             str = str.concat("<li>");
              var classifyType = item["ClassifyType"];
-             str = str.concat("<div class='ClassifyType'>ClassifyType: " + JSON.stringify(classifyType) + "</div>");
-             str = str.concat("<div class='SeriesInstanceUID'>SeriesInstanceUID: " + item["SeriesInstanceUID"] + "</div>");
-             str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + item["SeriesNumber"] + "</div>");
-             str = str.concat("</li>");
-             str = str.concat("");
+             var seriesName = "ClassifyType: " + JSON.stringify(classifyType)
+             str = str.concat(displaySeries(item, seriesName, StudyInstanceUID));
          }
          jQuery('#detected-scans').append(str);
-}
+     }
 
 // get valid session names                                                                                                                                                                  
 function getSessionNamesFromREDCap() {
@@ -955,17 +1041,38 @@ jQuery(document).ready(function() {
             }
             console.log(dataSec1);
             displayHeaderSection(dataSec1);
-            displayDetectedScans(dataSec2, 111);
-            displayAdditionalScans(dataSec3);
+            displayDetectedScans(dataSec2, studyinstanceuid);
+            displayAdditionalScans(dataSec3, studyinstanceuid);
 
         });
 
     });
 
+    var dialogCP = document.querySelector('#modal-change-password');
+    if (!dialogCP.showModal) {
+       dialogPolyfill.registerDialog(dialogCP);
+    }
+    var closeButton = dialogCP.querySelector('#change-password-cancel');
+    var closeClickHandler = function (event) {
+       dialogCP.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+
+    var closeButton = dialogCP.querySelector('#change-password-save');
+    var closeClickHandler = function (event) {
+       dialogCP.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+
     var dialog = document.querySelector('#modal-setup');
     if (!dialog.showModal) {
        dialogPolyfill.registerDialog(dialog);
     }
+    jQuery('#dialog-change-password-button').click(function() {
+      var dialog = document.querySelector('#modal-change-password');
+      dialog.showModal();
+    });
+
     jQuery('#dialog-setup-button').click(function() {
       var dialog = document.querySelector('#modal-setup');
       dialog.showModal();

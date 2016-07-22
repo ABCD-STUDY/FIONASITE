@@ -20,6 +20,7 @@ if (isset($_GET['study'])) {
 if ( $action == "getStudy" ) {
 
     // run compliance check here
+    //echo ("study: ".$study);
     file_put_contents('/tmp/'.$study, "study: ".$study." please run compliance check now");
     chmod ('/tmp/'.$study, 0777);
     $cpath = 'request_compliance_check';
