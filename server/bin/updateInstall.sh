@@ -21,6 +21,7 @@ todo=(
     'existsDirectory' '/var/www/html/server' ''
     'existsDirectory' '/var/www/html/server/.pids' ''
     'existsDirectory' '/var/www/html/server/logs' ''
+    'existsLink' '/var/www/html/php/output' '/data/site/output'
 
     'permission' '/data' '777'
     'permission' '/data/DAIC' '755'
@@ -125,6 +126,65 @@ checkTools() {
        echo "Error: This script should be run as root" 1>&2
        exit 1
     fi
+    printf "\n"
+}
+
+
+#######################################
+#
+#  check if link exists
+#
+#######################################
+
+# check if a single directory exists
+checkLinkExist() {
+    path=$1
+    target=$2
+    if [[ -L "$path" ]]; then
+       # we should check if the target is correct as well
+       if [[ $(realpath "$path") != "$target" ]]; then
+	   echo "0"
+       else
+           echo "1"
+       fi
+    else
+       echo "0"
+    fi
+}
+
+# fix a single directory
+fixLinkExist() {
+    path=$1
+    target=$2
+    ln -s "$target" "$path"
+}
+
+# check if the directories exist
+checkLinksExist() {
+    force=$1
+    echo -n "`date`: check links..."
+    
+    l=${#todo[@]}
+    count=0
+    for (( i=0; i<${l}+1; i=$i+3 ));
+    do
+      if [[ "${todo[$i]}" == "existsLink" ]]; then
+        count=$((count+1))
+        printf "\e[0K\r`date`: check link... [$count]"
+        dir=${todo[(($i+1))]}
+        target=${todo[(($i+2))]}
+        
+        if [[ $(checkLinkExist "$dir" "$target") == "0" ]]; then
+           printf "\nError: Link \"$dir\" does not exist\n"
+           if [[ "$force" == "1" ]]; then
+              fixLinkExist "$dir" "$target"
+              if [[ $(checkLinkExist "$dir" "$target") == "0" ]]; then
+                 echo "Error: could not create symbolic link \"$dir\" to target \"$target\""
+              fi
+           fi
+        fi
+      fi
+    done
     printf "\n"
 }
 
@@ -353,6 +413,7 @@ checkPermissions() {
 
 checkTools $force
 checkDirectoriesExist $force
+checkLinksExist $force
 checkFilesExist $force
 checkOwners $force
 checkPermissions $force
