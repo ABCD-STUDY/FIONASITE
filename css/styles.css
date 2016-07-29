@@ -383,7 +383,9 @@ _:-ms-input-placeholder, :root .demo-graph {
 #study-list-bonsai li {
    padding-left: 30px;
 }
-
+#study-info-text {
+   padding: 3px;
+}
 #circles, text {
   font-size: 11px;
   pointer-events: none;

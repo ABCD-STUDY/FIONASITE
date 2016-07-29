@@ -338,55 +338,50 @@ loading configuration file...
     <div class="row">
       <div class="mdl-cell mdl-cell--12-col"  id="study-info-text"></div>
     </div>
-	<div class="row">
-      <div class="mdl-dialog__actions">
-        <!-- <button type="button" class="mdl-button" id="study-info-dialog-send">Send</button> -->
-      </div>
-    </div>
-	<div class="row">
+    <div class="row">
       <div class="mdl-cell mdl-cell--12-col">
         <div id="header-section"></div>
       </div>
-	</div>
-	<div class="row">
-           <div class="mdl-cell mdl-cell--12-col"  id="identify-section">
-	          <h4>Identify your imaging session</h4>
-                  <div class="form-group">
-                    <label for="session-participant" class="control-label">Participant (pGUID in REDCap)</label><br/>
-                    <select class="form-control" id="session-participant"></select>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="session-name" class="control-label">Session name</label><br/>
-                    <select class="form-control" id="session-name"></select>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="session-run" class="control-label">Imaging Session Type</label><br/>
-                    <select class="form-control" id="session-run">
-                      <option value="SessionA1" title="T1, rsFMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs)">A1</option>
-                      <option value="SessionA2" title="3 fMRI tasks">A2</option>
-                      <option value="SessionB1" title="T1, 3 fMRI tasks">B1</option>
-                      <option value="SessionB2" title="rsfMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs)">B2</option>
-                      <option value="SessionC" title="Combined scan">C</option>
-                    </select>
-                  </div>
-	       </div>
     </div>
-	<div class="row">
-      <div class="mdl-cell mdl-cell--12-col">
-          <div id="detected-scans-summary"></div>
-          <ul id="detected-scans">
-          </ul>
+    <div class="row">
+      <div class="mdl-cell mdl-cell--12-col"  id="identify-section">
+	<h4>Identify your imaging session</h4>
+        <div class="form-group">
+          <label for="session-participant" class="control-label">Participant (pGUID in REDCap)</label><br/>
+          <select class="form-control" id="session-participant"></select>
+        </div>
+	
+        <div class="form-group">
+          <label for="session-name" class="control-label">Session name</label><br/>
+          <select class="form-control" id="session-name"></select>
+        </div>
+	
+        <div class="form-group">
+          <label for="session-run" class="control-label">Imaging Session Type</label><br/>
+          <select class="form-control" id="session-run">
+            <option value="SessionA1" title="T1, rsFMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs)">A1</option>
+            <option value="SessionA2" title="3 fMRI tasks">A2</option>
+            <option value="SessionB1" title="T1, 3 fMRI tasks">B1</option>
+            <option value="SessionB2" title="rsfMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs)">B2</option>
+            <option value="SessionC" title="Combined scan">C</option>
+          </select>
+        </div>
       </div>
-	</div>
-	<div class="row">
+    </div>
+    <div class="row">
+      <div class="mdl-cell mdl-cell--12-col">
+        <div id="detected-scans-summary"></div>
+        <ul id="detected-scans">
+        </ul>
+      </div>
+    </div>
+    <div class="row">
       <div class="mdl-cell mdl-cell--12-col"  id="additional-scans"></div>
-	</div>
-	<div class="row">
+    </div>
+    <div class="row">
       <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
-        <button type="button" class="mdl-button" id="study-info-dialog-sendall">Send All Series</button>
         <button type="button" class="mdl-button" id="study-info-dialog-cancel">Cancel</button>
+        <button type="button" class="mdl-button" id="study-info-dialog-sendall">Send All Series</button>
       </div>
     </div>
   </div>
@@ -732,13 +727,13 @@ function displayHeaderSection(data) {
          if (data["status"] == 1) {
              jQuery('#study-info-text').css({'background-color':'lightgreen'});
          } else {
-             jQuery('#study-info-text').css({'background-color':'red'});
+             jQuery('#study-info-text').css({'background-color':'PaleVioletRed'});
          }
 
          jQuery('#header-section').children().remove();
          var str = "";
          str = str.concat("<li class=\"status"+data["status"]+"\">");
-         str = str.concat("<div class='SeriesName'>Header Information</div>");
+         str = str.concat("<div class='SeriesName' title='Study information entered at the scanner.'>Study Information</div>");
          str = str.concat("<div class='shortmessage'>Short Message: " + data["shortmessage"] + "</div>");
          str = str.concat("<div class='PatientID'>Patient ID: " + data["PatientID"] + "</div>");
          str = str.concat("<div class='PatientName'>Patient Name: " + data["PatientName"] + "</div>");
