@@ -215,9 +215,14 @@ detect () {
         echo "`date`: write tar file /data/quarantine/${SDIR}_${SSERIESDIR}.tgz, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
         out=/data/quarantine/${SDIR}_${SSERIESDIR}.tgz
         cd /data/site/raw
-        tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json"
+        tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json"
         md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
         cp "${SDIR}/${SSERIESDIR}.json" /data/quarantine/${SDIR}_${SSERIESDIR}.json
+        echo "`date`:    test for series compliance file /data/site/output/${SDIR}/series_compliance/compliance_output.json" >> $log
+        if [[ -f "/data/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ]]; then
+  	  cp "/data/site/output/scp_${SDIR}/series_compliance/compliance_output.json" /data/quarantine/${SDIR}.json
+          echo "`date`:    copy compliance_output.json to /data/quarantine/scp_${SDIR}.json" >> $log
+        fi
         echo "`date`: done with creating tar file and md5sum" >> $log
         # now the user interface needs to display this as new data
 
