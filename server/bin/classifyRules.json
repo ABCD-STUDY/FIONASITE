@@ -92,7 +92,7 @@
     ]
   },
   { 
-    "type" : "ABCD-T1",
+    "type" : "ABCD-T1-NORM",
     "description" : "A T1 weighted image from Siemens with ABCD resolution",
     "rules" : [
       {
@@ -109,7 +109,37 @@
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "tfl3d1_16ns"
+      },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+             "value": "NORM"
+          }
+    ]
+  },{ 
+    "type" : "ABCD-T1",
+    "description" : "A T1 weighted image from Siemens with ABCD resolution",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{ 
+        "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "320"
       }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "299"
+      },{ 
+        "tag": [ "0x18", "0x24" ],
+        "value": "tfl3d1_16ns"}
+        ,{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "NORM"
+          }       
+      
     ]
   },
   { 
@@ -223,47 +253,21 @@
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "936"
+        "value": "720"
       }
       ,{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
-        "value": "91" 
+        "value": "90" 
       },{ 
         "tag": [ "SequenceName" ],
-        "value": "epfSM2d1_104"
+        "value": "epfSM2d1_90"
       },{ 
         "tag": [ "AcquisitionLength" ],
-        "value": "TA 05:30"
+        "value": "TA 05:11"
       }
     ]
-  }, 
-  { 
-    "type" : "ABCD-fMRI-NBACK",
-    "description" : "ABCD Nback fMRI scan",
-    "rules" : [
-      {
-	"rule" : "SIEMENSBYMANUFACTURER"
-      },{
-	"rule" : "ORIGINAL"
-      },{ 
-       "tag": [ "0x28", "0x10" ],
-        "operator": "==",
-        "value": "936"
-      }
-      ,{ 
-        "tag": [ "0x18", "0x89" ],
-        "operator": "==",
-        "value": "91" 
-      },{ 
-        "tag": [ "SequenceName" ],
-        "value": "epfSM2d1_104"
-      },{ 
-        "tag": [ "AcquisitionLength" ],
-        "value": "TA 05:19"
-      }
-    ]
-  }, 
+  },  
   { 
     "type" : "ABCD-MID-fMRI",
     "description" : "ABCD MID fMRI scan",
@@ -275,18 +279,18 @@
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "936"
+        "value": "720"
       }
       ,{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
-        "value": "91" 
+        "value": "90" 
       },{ 
         "tag": [ "SequenceName" ],
-        "value": "epfSM2d1_104"
+        "value": "epfSM2d1_90"
       },{ 
         "tag": [ "AcquisitionLength" ],
-        "value": "TA 06:17"
+        "value": "TA 05:33"
       }
     ]
   }, 
@@ -301,18 +305,18 @@
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "936"
+        "value": "720"
       }
       ,{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
-        "value": "91" 
+        "value": "90" 
       },{ 
         "tag": [ "SequenceName" ],
-        "value": "epfSM2d1_104"
+        "value": "epfSM2d1_90"
       },{ 
         "tag": [ "AcquisitionLength" ],
-        "value": "TA 06:34"
+        "value": "TA 06:00"
       }
     ]
   }, 
@@ -327,18 +331,18 @@
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "936"
+        "value": "720"
       }
       ,{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
-        "value": "91" 
+        "value": "90" 
       },{ 
         "tag": [ "SequenceName" ],
-        "value": "epfSM2d1_104"
+        "value": "epfSM2d1_90"
       },{ 
         "tag": [ "AcquisitionLength" ],
-        "value": "TA 05:53"
+        "value": "TA 04:51"
       }
     ]
   },   
@@ -353,15 +357,15 @@
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "104"
+        "value": "90"
       }
       ,{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
-        "value": "91" 
+        "value": "90" 
       },{ 
         "tag": [ "0x18", "0x24" ],
-        "value": "epse2d1_104"
+        "value": "epse2d1_90"
       },{ 
         "tag": [ "PhaseEncodingDirectionPositive" ],
         "operator": "==",
@@ -380,15 +384,15 @@
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
-        "value": "104"
+        "value": "90"
       }
       ,{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
-        "value": "91" 
+        "value": "90" 
       },{ 
         "tag": [ "0x18", "0x24" ],
-        "value": "epse2d1_104"
+        "value": "epse2d1_90"
       },{ 
         "tag": [ "PhaseEncodingDirectionPositive" ],
         "operator": "==",
@@ -444,7 +448,7 @@
              "value": "^research/ABCD/epi_pepolar"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
-        "value": "96, 0, 0, 96"
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "0x19", "0x10b3" ],
         "value": "2.000000"
@@ -523,10 +527,10 @@
              "value": "^research/ABCD/muxepi$"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
-        "value": "96, 0, 0, 96"
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "0x19", "0x105a" ],
-        "value": "312000416.0"
+        "value": "309600384.0"
       }
       ]
   },
@@ -594,7 +598,7 @@
              "value": "^research/ABCD/muxepi$"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
-        "value": "104, 0, 0, 104"
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "0x20", "0x1002" ],
         "value": "3528"
