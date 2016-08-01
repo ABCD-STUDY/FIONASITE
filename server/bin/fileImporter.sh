@@ -9,7 +9,7 @@
 # We assume that inotifywait is installed (yum install inotify-tools).
 # This script will keep running and should be run by user processing.
 #
-# */1 * * * * /data/code/bin/fileImporter.sh >> /var/www/html/server/log/fileImporter.log 2>&1
+# */1 * * * * /var/www/html/server/bin/fileImporter.sh >> /var/www/html/server/logs/fileImporter.log 2>&1
 #
 
 #
@@ -22,7 +22,7 @@ fi
 
 # make sure this script runs only once
 thisscript=`basename "$0"`
-for pid in $(pidof -x "$thisscript"); do
+for pid in $(/usr/sbin/pidof -x "$thisscript"); do
     if [ $pid != $$ ]; then
         echo "[$(date)] : ${thisscript} : Process is already running with PID $pid"
         exit 1
