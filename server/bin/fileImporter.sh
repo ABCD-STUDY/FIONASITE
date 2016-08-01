@@ -32,7 +32,7 @@ done
 # create the import directory
 dirloc=/data/inbox
 if [[ ! -d "$dirlock" ]]; then
-   mkdir -p -m 0666 "$dirloc"
+   mkdir -p -m 0777 "$dirloc"
 fi
 
 # now loop through the directory and process each file (copy to archive and parse)
