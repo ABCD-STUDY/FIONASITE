@@ -50,6 +50,8 @@ todo=(
     'owner' '/var/www/html/server/logs' 'processing:processing'
 
     'existsFile' '/data/enabled' '111'
+    'existsFile' '/var/www/html/server/logs/audit.log' ''
+    'owner' '/var/www/html/server/logs/audit.log' 'apache:apache'
     'existsFile' '/data/config/config.json' '{ "DICOMIP": "137.110.181.168", "DICOMPORT": "4006", "DICOMAETITLE": "UCSDFIONA", "SCANNERIP": "172.20.141.70", "SCANNERPORT": "4006", "SCANNERAETITLE": "CTIPMUCSD1", "SCANNERTYPE": "SIEMENS", "MPPSPORT": "4007", "SERVERUSER": "daic", "DAICSERVER": "137.110.181.166", "PFILEDIR": "/data/DAIC", "CONNECTION": "" }'
 
     'permission' '/data/enabled' '666'
