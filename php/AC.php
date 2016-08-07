@@ -18,6 +18,7 @@
        return;
 
     if (!is_writable( $audit_file )) {
+       syslog(LOG_EMERG, 'ERROR: could not write audit log file in '.$audit_file);
        return;
     }
     $e = new Exception;
