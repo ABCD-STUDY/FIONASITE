@@ -468,6 +468,33 @@ loading information...
           alert("Error: Password cannot be empty.");
           return; // no empty passwords
         }
+        // minimum password length
+        if (password.length < 8) {
+          alert("Error: Password has to be at least 8 characters in length.");
+          return;
+        }
+        // user name should not be part of password
+	if (password.toLowerCase().indexOf(user_name.toLowerCase()) != -1) {
+          alert("Error: username should not be part of the password.");
+          return;
+        }
+        if (! /[a-z]+/.test(password) ) {
+          alert("Error: password should contain lower-case characters a-z");
+          return;
+        }
+        if (! /[A-Z]+/.test(password) ) {
+          alert("Error: password should contain upper case characters A-Z");
+          return;
+        }
+        if (! /[0-9]+/.test(password) ) {
+          alert("Error: password should contain number 0-9");
+          return;
+        }
+        if (! /[\! @#*+-:.,\?\^_\/\\\s]+/.test(password) ) {
+          alert("Error: password should contain punctuation or non-alphanumeric character");
+          return;
+        }
+
         hash = hex_md5(password);
         hash2 = hex_md5(password2);
         if (hash !== hash2) {
@@ -475,7 +502,9 @@ loading information...
           return; // do nothing
         }
         jQuery.getJSON('/php/getUser.php?action=changePassword&value=' + user_name + '&value2=' + hash, function(data) {
-
+	    alert("Success: you have changed the password for user " + user_name);
+        }).fail(function() {
+	    alert("Error: an error was returned trying to set your new password (" + user_name + ")");
         });
       }
 
