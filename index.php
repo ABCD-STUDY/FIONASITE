@@ -44,10 +44,10 @@
   if (check_role( "admin" )) {
      $admin = true;
   }
-  if (check_role( "developer" )) {
+  if (check_permission( "developer" )) {
      $developer = true;
   }
-  if (check_role( "see-scanner" )) {
+  if (check_permission( "see-scanner" )) {
      $seescanner = true;
   }
 ?>
