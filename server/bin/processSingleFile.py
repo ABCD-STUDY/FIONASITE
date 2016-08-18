@@ -809,6 +809,14 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['SequenceVariant'] = str(dataset[0x018,0x021].value)
+                                except:
+                                        pass
+                                try:
+                                        data['SequenceType'] = str(dataset[0x2001,0x1020].value)
+                                except:
+                                        pass
+                                try:
                                         data['PulseSequenceName'] = str(dataset[0x19,0x109c].value)
                                 except:
                                         pass
@@ -826,6 +834,10 @@ class ProcessSingleFile(Daemon):
                                         pass
                                 try:
                                         data['AccessionNumber'] = str(dataset[0x08,0x50].value)
+                                except:
+                                        pass
+                                try:
+                                        data['NumberOfTemporalPositions'] = str(dataset[0x20,0x105].value)
                                 except:
                                         pass
                                 try:
