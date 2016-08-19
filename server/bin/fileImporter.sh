@@ -35,6 +35,9 @@ if [[ ! -d "$dirlock" ]]; then
    mkdir -p -m 0777 "$dirloc"
 fi
 
+# make sure we can read all DICOM tags
+export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
+
 # now loop through the directory and process each file (copy to archive and parse)
 inotifywait -m -r -e create,moved_to --format '%w%f' "${dirloc}" | while read NEWFILE
 do
