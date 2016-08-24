@@ -91,6 +91,28 @@
       }
     ]
   },
+  { "type" : "ABCD-T1",
+    "description" : "A T1 weighted image from Philips with ABCD resolution",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 256, 256, 0"
+      },{ 
+        "tag": [ "0x18","0x20"],
+        "value": "GR"
+      },{ 
+        "tag": [ "0x18","0x21"],
+        "value": "MP"
+      },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "PROJECTION IMAGE"
+          }
+    ]
+  },
   { 
     "type" : "ABCD-T1-NORM",
     "description" : "A T1 weighted image from Siemens with ABCD resolution",
@@ -372,7 +394,207 @@
         "value": "0" 
       }
     ]
-  },   
+  }, 
+  { 
+    "type" : "ABCD-fMRI-FM-PA",
+    "description" : "Field Maps for ABCD fMRI scans",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "92, 0, 0, 89"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "SEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "P$" 
+      }
+    ]
+  }, 
+  { 
+    "type" : "ABCD-rsfMRI",
+    "description" : "Field Maps for ABCD fMRI scans",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "92, 0, 0, 89"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "FEEPI"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "375" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-DTI",
+    "description" : "ABCD DTI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 141"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "DwiSE"
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-Diffusion-FM-PA",
+    "description" : "PA Field Map for ABCD DTI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 141"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "SEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "P$" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-Diffusion-FM-AP",
+    "description" : "AP Field Map for ABCD DTI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 141"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "SEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "A$" 
+      }
+    ]
+  }, 
+  { 
+    "type" : "ABCD-SST-fMRI",
+    "description" : "ABCD SST fMRI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "92, 0, 0, 89"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "FEEPI"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "437" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-nBack-fMRI",
+    "description" : "ABCD nBack fMRI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "92, 0, 0, 89"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "FEEPI"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "350" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-MID-fMRI",
+    "description" : "ABCD MID fMRI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "92, 0, 0, 89"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "FEEPI"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "403" 
+      }
+    ]
+  },
+  { "type" : "ABCD-T2",
+    "description" : "A T2 weighted image from Philips with ABCD resolution",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 256, 256, 0"
+      },{ 
+        "tag": [ "0x18","0x20"],
+        "value": "SE"
+      },{ 
+        "tag": [ "0x18","0x21"],
+        "value": "SK"
+      },
+      {
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "PROJECTION IMAGE"
+          }
+    ]
+  },
+  { 
+    "type" : "ABCD-fMRI-FM-AP",
+    "description" : "Field Maps for ABCD fMRI scans",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "92, 0, 0, 89"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "SEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "A$" 
+      }
+    ]
+  },
   { 
     "type" : "ABCD-fMRI-FM-AP",
     "description" : "Field Maps for ABCD fMRI scans",
@@ -545,7 +767,7 @@
              "value": "^research/ABCD/muxepi$"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
-        "value": "96, 0, 0, 96"
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "0x19", "0x105a" ],
         "value": "342400416.0"
@@ -563,7 +785,7 @@
              "value": "^research/ABCD/muxepi$"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
-        "value": "96, 0, 0, 96"
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "0x19", "0x105a" ],
         "value": "357600448.0"
@@ -580,7 +802,7 @@
              "value": "^research/ABCD/muxepi$"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
-        "value": "96, 0, 0, 96"
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "0x19", "0x105a" ],
         "value": "318400384.0"
