@@ -693,6 +693,9 @@ class ProcessSingleFile(Daemon):
                                         if not os.path.exists(fn):
                                                 print "Error: creating path ", fn, " did not work"
                                                 logging.error('Error: creating path %s did not work' % fn)
+                                        # for some reason os.makedirs does not create the path with the correct permissions (umask problem?)
+                                        # set the permissions here to make sure we can later write into these directories
+                                        os.chmod(fn,0777)
                                 fn2 = os.path.join(fn, dataset.SOPInstanceUID)
                                 if not os.path.isfile(fn2):
                                   os.symlink(response, fn2)
