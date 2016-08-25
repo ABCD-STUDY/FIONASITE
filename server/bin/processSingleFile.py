@@ -935,9 +935,10 @@ class ProcessSingleFile(Daemon):
 # the second is the named pipe in /tmp/.processSingleFile
 #  Hauke,    July 2015               
 if __name__ == "__main__":
-        pidfilename = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '/../.pids/processSingleFile.pid' ])
-        p = os.path.abspath(pidfilename)
+        pidfilename = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '../.pids/processSingleFile.pid' ])
+        p = os.path.dirname(os.path.abspath(pidfilename))
         if not os.path.exists(p):
+                print "The path to the pids does not exist (%s), use alternative location for pid file" % p
                 pidfilename = tempfile.gettempdir() + '/processSingleFile.pid'
         lfn = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '/../logs/processSingleFile.log' ])  
         #log = logging.handlers.RotatingFileHandler(lfn, 'a', 10*1024*1024, backupCount=5)
