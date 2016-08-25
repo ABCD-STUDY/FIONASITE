@@ -7,7 +7,7 @@ The parser for the Siemens CSA header have been adapted from
    https://scion.duhs.duke.edu/svn/vespa/tags/0_1_0/libduke_mr/util_dicom_siemens.py
 """
 
-import sys, os, time, atexit, stat, tempfile, copy
+import sys, os, time, atexit, stat, tempfile, copy, traceback
 import dicom, json, re, logging, logging.handlers, threading
 import struct
 from signal import SIGTERM
@@ -113,6 +113,7 @@ class Daemon:
                     self.daemonize()
                     print ' done'
                     self.run()
+
 
         def send(self,arg):
                     """
@@ -500,13 +501,20 @@ class ProcessSingleFile(Daemon):
                                 elif  op == "regexp":
                                         pattern = re.compile(v2)
 					vstring = v
-					if isinstance(v, (int, float)):
-						#print "v is : ", v, " and v2 is: ", v2
-						vstring = str(v)
-                                        if isnegate(not pattern.search(vstring)):
-                                           # this pattern failed, fail the whole type and continue with the next
-                                           ok = False
-                                           break
+                                        if not isinstance(v, str):
+                                                vstring = str(v)
+					#if isinstance(v, (int, float)):
+					#	#print "v is : ", v, " and v2 is: ", v2
+					#	vstring = str(v)
+                                        try:
+                                                if isnegate(not pattern.search(vstring)):
+                                                        # this pattern failed, fail the whole type and continue with the next
+                                                        ok = False
+                                                        break
+                                        except TypeError:
+                                                print ("pattern: %s, vstring: %s (of type: %s)" % (v2, vstring, type(str(vstring)).__name__))
+                                                print ("%s" % pattern.search(vstring))
+                                                
                                 elif op == "==":
 					try:
                                           if isnegate(not float(v2) == float(v)):
@@ -951,8 +959,12 @@ if __name__ == "__main__":
                         try:
                                 daemon.start()
                         except:
+                                exc_type, exc_obj, exc_tb = sys.exc_info()
+                                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                                print(exc_type, fname, exc_tb.tb_lineno)
+                                print(traceback.format_exc())
                                 print "Error: could not create processing daemon: %s %s %s" % (sys.exc_info()[0] ,sys.exc_info()[1], sys.exc_info()[2])
-                                logging.error("Error: could not create processing daemon: %s" % sys.exc_info()[0])
+                                logging.error("Error: could not create processing daemon: %s %s %s" % (sys.exc_info()[0],sys.exc_info()[1], sys.exc_info()[2]))
                                 sys.exit(-1)
                 elif 'stop' == sys.argv[1]:
                         daemon.stop()
