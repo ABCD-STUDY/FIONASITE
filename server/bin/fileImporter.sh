@@ -48,10 +48,9 @@ export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 
 echo "[$(date)] : start watching $dirloc"
 
-# now loop through the directory and process each file (copy to archive and parse)
-inotifywait -m -r -e create,moved_to --format '%w%f' "${dirloc}" | while read NEWFILE
-do
-  # work on ${NEWFILE}
+work() {
+  NEWFILE="$1"
+
   # check if this is a directory (don't do anything for directories)
   if [[ -d "${NEWFILE}" ]]; then
       continue
@@ -74,11 +73,19 @@ do
   Modality=`/usr/bin/dcmdump +P Modality "${NEWFILE}"| cut -d'[' -f2 | cut -d']' -f1`
   SOPInstanceUID=`/usr/bin/dcmdump +P SOPInstanceUID "${NEWFILE}"| cut -d'[' -f2 | cut -d']' -f1`
 
-  echo "[$(date)] : DICOM file move to /data/site/archive/scp_${StudyInstanceUID}/${Modality}.${SOPInstanceUID}"
   # we need to copy this file to
   dest="/data/site/archive/scp_${StudyInstanceUID}/${Modality}.${SOPInstanceUID}"
+  echo "[$(date)] : DICOM file move to ${dest}"
   mv "${NEWFILE}" "${dest}"
 
   # now tell our processSingleFile system service about the new file (we expect raw files to be created now)
-  echo "local,local,local,/data/site/archive/scp_${StudyInstanceUID}/,${Modality}.${SOPInstanceUID}" >> /tmp/.processSingleFilePipe
+  echo "local,local,local,${dest}" >> /tmp/.processSingleFilePipe
+}
+
+
+# now loop through the directory and process each file (copy to archive and parse)
+inotifywait -m -r -e create,moved_to --format '%w%f' "${dirloc}" | while read NEWFILE
+do
+  # work on ${NEWFILE}
+  work ${NEWFILE}
 done
