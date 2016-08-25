@@ -46,8 +46,6 @@ fi
 # make sure we can read all DICOM tags
 export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 
-echo "[$(date)] : start watching $dirloc"
-
 work() {
   NEWFILE="$1"
 
@@ -82,6 +80,14 @@ work() {
   echo "local,local,local,${dest}" >> /tmp/.processSingleFilePipe
 }
 
+# If we are started and there is data in the directory already,
+# lets try to process those first before establishing a watch.
+echo "[$(date)] : initial processing of data in $dirloc"
+find "${dirloc}" -depth -type f -exec work {} \;
+echo "[$(date)] : initial processing of data in $dirloc done"
+
+
+echo "[$(date)] : start watching $dirloc"
 
 # now loop through the directory and process each file (copy to archive and parse)
 inotifywait -m -r -e create,moved_to --format '%w%f' "${dirloc}" | while read NEWFILE
