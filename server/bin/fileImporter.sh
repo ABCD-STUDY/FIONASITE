@@ -77,13 +77,16 @@ work() {
   mv "${NEWFILE}" "${dest}"
 
   # now tell our processSingleFile system service about the new file (we expect raw files to be created now)
-  echo "local,local,local,${dest}" >> /tmp/.processSingleFilePipe
+  echo "${dest}" >> /tmp/.processSingleFilePipe
 }
 
 # If we are started and there is data in the directory already,
 # lets try to process those first before establishing a watch.
 echo "[$(date)] : initial processing of data in $dirloc"
-find "${dirloc}" -depth -type f -exec work {} \;
+find "${dirloc}" -depth -type f -print0 | while read -d $'\0' file
+do
+  work "$file"
+done
 echo "[$(date)] : initial processing of data in $dirloc done"
 
 
