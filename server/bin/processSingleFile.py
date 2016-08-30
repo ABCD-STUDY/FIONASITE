@@ -699,6 +699,7 @@ class ProcessSingleFile(Daemon):
                                 outdir = '/data/site/raw'
                                 if not os.path.exists(outdir):
                                         os.makedirs(outdir)
+                                        os.chmod(outdir, 0777)
                                 infile = os.path.basename(response)
                                 fn = os.path.join(outdir, dataset.StudyInstanceUID, dataset.SeriesInstanceUID)
                                 if not os.path.exists(fn):
