@@ -771,6 +771,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['SeriesTime'] = dataset.SeriesTime
+                                except:
+                                        pass
+                                try:
                                         data['PatientID'] = dataset.PatientID
                                 except:
                                         pass
