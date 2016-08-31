@@ -143,9 +143,9 @@ do
 
       # setting the compression level to -1 should speed up the packaging
       if hash pigz 2>/dev/null; then
-          tar cf - "${json%.*}/${dicom}" "$file" | pigz --fast -p 6 > "${fn1}"
+          tar cf - "${json%.*}/${dicom}" "$file" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat" | pigz --fast -p 6 > "${fn1}"
       else
-	  GZIP=-1 tar cvzf "${fn1}" "${json%.*}/${dicom}" "$file"
+	  GZIP=-1 tar cvzf "${fn1}" "${json%.*}/${dicom}" "$file"  "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat"
       fi
 
       # create a json that goes together with it
