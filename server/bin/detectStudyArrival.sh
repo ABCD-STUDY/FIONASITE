@@ -217,7 +217,7 @@ detect () {
         cd /data/site/raw
         # speed up compression if we have pigz installed on this machine
 	if hash pigz 2>/dev/null; then
-	    tar --dereference cf - "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json" | pigz --fast -p 6 > "$out"
+	    tar --dereference -cf - "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json" | pigz --fast -p 6 > "$out"
         else
             GZIP=-1 tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json"
 	fi
