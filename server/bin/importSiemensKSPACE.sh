@@ -152,7 +152,7 @@ do
       echo "{ \"PatientName\": \"$PatientName\", \"SeriesInstanceUID\": \"${SeriesInstanceUID}\", \"StudyInstanceUID\": \"${StudyInstanceUID}\", \"dat\": \"$file\" }" > "${js1}"
 
       # and an md5sum file
-      /usr/bin/md5sum "${fn1}" > "${md1}"
+      /usr/bin/md5sum -b "${fn1}" > "${md1}"
       echo "`date`: packaging done"
   done
 
