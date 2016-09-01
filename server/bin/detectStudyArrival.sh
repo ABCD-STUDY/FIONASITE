@@ -215,8 +215,13 @@ detect () {
         echo "`date`: write tar file /data/quarantine/${SDIR}_${SSERIESDIR}.tgz, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
         out=/data/quarantine/${SDIR}_${SSERIESDIR}.tgz
         cd /data/site/raw
-        tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json"
-        md5sum "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
+        # speed up compression if we have pigz installed on this machine
+	if hash pigz 2>/dev/null; then
+	    tar --dereference cf - "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json" | pigz --fast -p 6 > "$out"
+        else
+            GZIP=-1 tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json"
+	fi
+        md5sum -b "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
         cp "${SDIR}/${SSERIESDIR}.json" /data/quarantine/${SDIR}_${SSERIESDIR}.json
         echo "`date`:    test for series compliance file /data/site/output/${SDIR}/series_compliance/compliance_output.json" >> $log
         if [[ -f "/data/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ]]; then
