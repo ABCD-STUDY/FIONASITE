@@ -713,7 +713,11 @@ class ProcessSingleFile(Daemon):
                                         os.chmod(fn,01777)
                                 fn2 = os.path.join(fn, dataset.SOPInstanceUID)
                                 if not os.path.isfile(fn2):
-                                  os.symlink(response, fn2)
+                                        try:
+                                                os.symlink(response, fn2)
+                                        except OSError:
+                                                # the file could exist already? Something must be wrong with this link
+                                                pass
                                 if dataset.PatientID:
                                         patdir = os.path.join(patientdir, dataset.PatientID)
                                         if not os.path.exists(patdir):
