@@ -69,10 +69,18 @@ work() {
   # get study and series instance UIDs from the file
   StudyInstanceUID=`/usr/bin/dcmdump +P StudyInstanceUID "${NEWFILE}"| cut -d'[' -f2 | cut -d']' -f1`
   Modality=`/usr/bin/dcmdump +P Modality "${NEWFILE}"| cut -d'[' -f2 | cut -d']' -f1`
-  SOPInstanceUID=`/usr/bin/dcmdump +P SOPInstanceUID "${NEWFILE}"| cut -d'[' -f2 | cut -d']' -f1`
+  # SOPInstanceUID can appear more than once, in that case use only the very first as filename
+  SOPInstanceUID=`/usr/bin/dcmdump +P SOPInstanceUID "${NEWFILE}"| cut -d'[' -f2 | cut -d']' -f1 | awk 'NR==1{print $1}'`
 
   # we need to copy this file to
   dest="/data/site/archive/scp_${StudyInstanceUID}/${Modality}.${SOPInstanceUID}"
+
+  # test if destination directory exists already
+  if [[ ! -d "/data/site/archive/scp_${StudyInstanceUID}" ]]; then
+      # umask for processing user should be ok
+      mkdir -p "/data/site/archive/scp_${StudyInstanceUID}"
+  fi
+
   echo "[$(date)] : DICOM file move to ${dest}"
   mv "${NEWFILE}" "${dest}"
 
