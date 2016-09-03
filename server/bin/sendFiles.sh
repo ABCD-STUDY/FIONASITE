@@ -34,22 +34,22 @@ sendAllFiles () {
   # find out what exists already on the server
   find "$pfiles" -type f -name "*.md5sum" -print0 | while read -d $'\0' file
   do
-    filename=${file##*/}
-    localFileName=${filename%.*}
+    filename="${file##*/}"
+    localFileName="${filename%.*}"
     localFileMD5=`cat "$file" | cut -d' ' -f 1`
     echo "  find md5sum and m5sum_server for $localFileMD5" >> $log
     find "$d" -type f -name "*.md5sum_server" -print0 | while read -d $'\0' file2
     do
-      filename=${file2##*/}
-      serverFileName=${filename%.*}
+      filename="${file2##*/}"
+      serverFileName="${filename%.*}"
       # if we have the same files MD5
       # echo "compare $localFileName and $serverFileName" >> $log
       if [[ "$localFileName" == "$serverFileName" ]]; then
         serverFileMD5=`cat "$file2" | cut -d' ' -f 1`
         #echo "compare MD5s $serverFileMD5 and $localFileMD5" >> $log
-	    if [[ "$serverFileMD5" == "$localFileMD5" ]]; then
-	        # we don't have to transfer this file, move it to local permanent storage
-	        mv ${file%.*}* /data/DAIC/
+	if [[ "$serverFileMD5" == "$localFileMD5" ]]; then
+	    # we don't have to transfer this file, move it to local permanent storage
+	    mv "${file%.*}"* /data/DAIC/
             echo "`date`: we are done with ${file}, move to /data/DAIC now for posterity" >> $log
         fi
       fi
@@ -62,7 +62,7 @@ sendAllFiles () {
   sftp -p -b ${commandScript} ${user}@abcd-workspace.ucsd.edu
 
   # delete the folder with the md5sums again
-  rm -Rf -- "$d"
+  #rm -Rf -- "$d"
 }
 
 # The following section takes care of not starting this script more than once 
