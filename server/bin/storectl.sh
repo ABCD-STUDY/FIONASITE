@@ -48,9 +48,10 @@ case $1 in
         RETVAL=$?
         [ $RETVAL = 0 ] && exit || echo "storescpd process not running, start now.."
         echo "Starting storescp daemon..."
-        echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescp --fork --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
+        echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescp --fork --promiscuous --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
 
         /usr/bin/nohup /usr/bin/storescp --fork \
+	    --promiscuous \
             --write-xfer-little \
             --exec-on-reception "$scriptfile '#a' '#c' '#r' '#p' '#f' &" \
             --sort-on-study-uid scp \
