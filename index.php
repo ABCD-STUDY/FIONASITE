@@ -521,7 +521,7 @@ function loadSubjects() {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	    shortname = shortenName( shortname );
 
-	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate + '/' + data[i].StudyTime.split('.')[0] + '</div><div class="mono" style="position: absolute; bottom: 13px;">'+shortname+'</div></a></div>');
+	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 15px;">'+shortname+'</div></a></div>');
 	}
     });
 }
@@ -763,7 +763,8 @@ function displayHeaderSection(data) {
          var str = "";
          str = str.concat("<li class=\"status"+data["status"]+"\">");
          str = str.concat("<div class='SeriesName' title='Study information entered at the scanner.'>Study Information</div>");
-         str = str.concat("<div class='shortmessage'>Short Message: " + data["shortmessage"] + "</div>");
+         if (data["shortmessage"] != "")
+            str = str.concat("<div class='shortmessage'>Short Message: " + data["shortmessage"] + "</div>");
          str = str.concat("<div class='PatientID'>Patient ID: " + data["PatientID"] + "</div>");
          str = str.concat("<div class='PatientName'>Patient Name: " + data["PatientName"] + "</div>");
          str = str.concat("<div class='StudyDate'>Study Date: " + data["StudyDate"] + "</div>");
