@@ -260,8 +260,8 @@
 	    </div>
             <div id="system-space" class="mdl-cell mdl-cell--2-col"></div>
             <div id="system-memory" class="mdl-cell mdl-cell--2-col"></div>
-            <div class="mdl-cell mdl-cell--2-col"></div>
-            <div class="mdl-cell mdl-cell--2-col">
+            <!-- <div class="mdl-cell mdl-cell--2-col"></div> --><div class="mdl-layout-spacer"></div>
+            <div class="mdl-cell mdl-cell--2-col minw">
 <label for="receive-dicom" id="receive-dicom-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
   <input type="checkbox" id="receive-dicom" class="mdl-checkbox__input" checked />
   <span class="mdl-checkbox__label">receive DICOM</span>
@@ -521,15 +521,15 @@ function loadSubjects() {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	    shortname = shortenName( shortname );
 
-	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 55px; bottom: -2px;">' + data[i].StudyDate + '/' + data[i].StudyTime.split('.')[0] + '</div>'+shortname+'</a></div>');
+	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate + '/' + data[i].StudyTime.split('.')[0] + '</div><div class="mono" style="position: absolute; bottom: 13px;">'+shortname+'</div></a></div>');
 	}
     });
 }
 function shortenName( name ) {
-   var l = 20;
+   var l = 21;
    if (name !== null && name.length > l) {
        // take the first part
-       return name.substring(0,14) + "..." + name.substring(name.length -5, name.length);
+       return name.substring(0,16) + "..." + name.substring(name.length -5, name.length);
    }
    return name;
 }
