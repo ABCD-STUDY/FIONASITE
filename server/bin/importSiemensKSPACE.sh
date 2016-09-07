@@ -115,12 +115,13 @@ do
       PatientName=($(/usr/bin/jq '.PatientName' $json | tr -d '"'))
       StudyInstanceUID=($(/usr/bin/jq '.StudyInstanceUID' $json | tr -d '"'))
       SeriesInstanceUID=($(/usr/bin/jq '.SeriesInstanceUID' $json | tr -d '"'))
+      SeriesNumber=($(/usr/bin/jq '.SeriesNumber' $json | tr -d '"'))
 
-      fn1="/data/quarantine/SUID_${StudyInstanceUID}_${SeriesInstanceUID}_${me}.tgz"
-      js1="/data/quarantine/SUID_${StudyInstanceUID}_${SeriesInstanceUID}_${me}.json"
-      md1="/data/quarantine/SUID_${StudyInstanceUID}_${SeriesInstanceUID}_${me}.md5sum"
-      fn2=$(ls "/data/outbox/*SUID_${StudyInstanceUID}_${SeriesInstanceUID}_${me}.tgz")
-      fn3=$(ls "/data/DAIC/*SUID_${StudyInstanceUID}_${SeriesInstanceUID}_${me}.tgz")
+      fn1="/data/quarantine/SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz"
+      js1="/data/quarantine/SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.json"
+      md1="/data/quarantine/SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.md5sum"
+      fn2=$(ls "/data/outbox/*SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz")
+      fn3=$(ls "/data/DAIC/*SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz")
 
       # does this file exists already, don't do anything
       if [ -e "$fn1" ] || [ ! -z "$fn2" ] || [ ! -z "$fn3" ]; then
