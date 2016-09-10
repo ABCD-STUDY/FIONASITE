@@ -34,6 +34,7 @@ todo=(
     'permission' '/var/www/html/server' '755'
     'permission' '/var/www/html/server/.pids' '777'
     'permission' '/var/www/html/server/logs' '777'
+    'permission' '/var/www/html/php/request_compliance_check' '777'
     'owner' '/data/quarantine' 'processing:processing'
     'permission' '/data/quarantine' '777'
 
