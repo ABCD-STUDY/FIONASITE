@@ -75,7 +75,7 @@ if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
     echo "USAGE:"
     echo ""
     echo " > sudo $0          # print out errors found with this installation"
-    echo " > sudo $0 -force   # fix errors found with this installation"
+    echo " > sudo $0 -f       # fix errors found with this installation"
     echo ""
     exit 1
 fi
