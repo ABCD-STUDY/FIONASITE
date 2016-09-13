@@ -70,6 +70,25 @@ else
 fi
 
 #
+# create the shares on FIONA (if they don't exist yet)
+#
+a=/data/site/scanner-share/ABCDstream/dicom_stream
+b=/data/site/scanner-share/ABCDstream/kspace_stream
+c=/data/site/scanner-share/ABCDstream/yarra_export
+if [ ! -d "$a" ]; then
+   mkdir -p "$a"
+   chmod 777 "$a"
+fi
+if [ ! -d "$b" ]; then
+   mkdir -p "$b"
+   chmod 777 "$b"
+fi
+if [ ! -d "$c" ]; then
+   mkdir -p "$c"
+   chmod 777 "$c"
+fi
+
+#
 # now go through all the files on the external drive
 #
 find /mnt/host_usb3/ -type f -name *.dat -print0 | while read -d $'\0' file
