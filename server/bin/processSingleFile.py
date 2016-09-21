@@ -783,6 +783,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['SOPClassUID'] = str(dataset[0x08, 0x16].value)
+                                except:
+                                        pass
+                                try:
                                         data['PatientName'] = dataset.PatientName
                                 except:
                                         pass
