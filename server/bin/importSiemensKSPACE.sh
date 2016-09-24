@@ -144,6 +144,7 @@ do
 
       # does this file exists already, don't do anything
       if [ -e "$fn1" ] || [ ! -z "$fn2" ] || [ ! -z "$fn3" ]; then
+	  echo "Info: this file ($fn1|$fn2|$fn3) already exists, skip"
 	  continue; 
       fi
 
@@ -151,21 +152,29 @@ do
 
       # now package the dat file with a single DICOM as a k-space package
       dicom=$(ls "${json%.*}" | head -1)
+      # resolve the symbolic link from raw into the real filename in archive
+      dicom=$(readlink -f "$dicom")
       if [ "$dicom" == "" ]; then
 	  echo "Error: no DICOM file found for this series"
       fi
-      echo "`date`: create now ${fn1},${js1} with ${json%.*}/$dicom"
+      echo "`date`: create now ${fn1},${js1} with $dicom"
       
       #
       # If there are other files that need to be added they should
       # be appended to the end of the next line.
       #
 
+      # we need to make sure again that all files are present - we don't want to create a tgz with missing files
+      if [ ! -e "$file" ] || [ ! -e "${dicom}" ]; then
+	  echo "`date`: Error tried to package together $file and $dicom, but of of them could not be found, we will not create ${fn1}"
+	  continue;
+      fi
+
       # setting the compression level to -1 should speed up the packaging
       if hash pigz 2>/dev/null; then
-          tar cf - "${json%.*}/${dicom}" "$file" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat" | pigz --fast -p 6 > "${fn1}"
+          tar cf - "${dicom}" "$file" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat" | pigz --fast -p 6 > "${fn1}"
       else
-	  GZIP=-1 tar cvzf "${fn1}" "${json%.*}/${dicom}" "$file"  "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat"
+	  GZIP=-1 tar cvzf "${fn1}" "${dicom}" "$file"  "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat"
       fi
 
       # create a json that goes together with it
@@ -173,6 +182,10 @@ do
 
       # and an md5sum file
       /usr/bin/md5sum -b "${fn1}" > "${md1}"
+      
+      # set permissions for processing user
+      chown processing:processing "${fn1}" "${js1}" "${md1}"
+
       echo "`date`: packaging done"
   done
 
