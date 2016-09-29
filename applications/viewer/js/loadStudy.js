@@ -60,6 +60,7 @@ function loadStudy(studyViewer, viewportModel, studyInstanceUID) {
                 stackId: series.seriesNumber,
                 imageIds: [],
                 seriesIndex: seriesIndex,
+		seriesNumber: series.seriesNumber,
                 currentImageIdIndex: 0,
                 frameRate: series.frameRate
             };
@@ -131,7 +132,7 @@ function loadStudy(studyViewer, viewportModel, studyInstanceUID) {
                 'unselectable="on"' +
                 'onselectstart="return false;"' +
                 'onmousedown="return false;"></div>' +
-                "<div class='text-center small'>" + stack.seriesDescription + '</div></a>';
+                "<div class='text-center small' title='"+ stack.seriesDescription + "\nSeries #" + stack.seriesNumber + "'>" + stack.seriesDescription + '</div></a>';
 
             // Add to series list
             var seriesElement = $(seriesEntry).appendTo(seriesList);
