@@ -851,6 +851,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['ActiveCoils'] = str(dataset[0x51,0x100f].value)
+                                except:
+                                        pass
+                                try:
                                         data['Private0019_105a'] = str(dataset[0x19,0x105a].value)
                                 except:
                                         pass
