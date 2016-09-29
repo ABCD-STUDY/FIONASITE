@@ -21,6 +21,9 @@ todo=(
     'existsDirectory' '/var/www/html/server' ''
     'existsDirectory' '/var/www/html/server/.pids' ''
     'existsDirectory' '/var/www/html/server/logs' ''
+    'existsDirectory' '/data/site/scanner-share/ABCDstream/dicom_stream' ''
+    'existsDirectory' '/data/site/scanner-share/ABCDstream/kspace_stream' ''
+    'existsDirectory' '/data/site/scanner-share/ABCDstream/yarra_export' ''
     'existsLink' '/var/www/html/php/output' '/data/site/output'
 
     'permission' '/data' '777'
