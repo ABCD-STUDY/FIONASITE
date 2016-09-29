@@ -17,7 +17,8 @@
      $d = NULL;
      $d = json_decode(file_get_contents($pw_file), true);
      if ($d == NULL) {
-        echo('error: could not parse the machines file. Got: '.$d);
+        echo('error: could not parse the machines file. Got: '.json_encode($d). "\n");
+	return;
      }
      return $d;
   }
