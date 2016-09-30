@@ -11,6 +11,9 @@
 # */1 * * * * /var/www/html/server/bin/importSiemensKSPACE.sh >> /var/www/html/server/logs/importSiemensKSPACE.log 2>&1
 #
 
+# A .dat file needs to be at least that many seconds old (modification time) before it will be copied
+oldtime=15
+
 #
 # check the user account, this script should run as root
 #
@@ -93,6 +96,12 @@ fi
 #
 find /mnt/host_usb3/ -type f -name *.dat -print0 | while read -d $'\0' file
 do
+  # only look at files that are at least oldtime seconds old
+  if [ "$(( $(date +"%s") - $(stat -c "%Y" "$file") ))" -lt "$oldtime" ]; then
+        echo "`date`: too young $file"
+        continue
+  fi
+
   # pattern is : ABCD_kspace_MID00185_20160830_015337.dat
   bn=`basename "$file"`
   ty=`echo $bn | rev | cut -d'_' -f4- | rev`

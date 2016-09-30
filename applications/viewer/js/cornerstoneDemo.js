@@ -10,6 +10,10 @@ loadTemplate("templates/studyViewer.html", function(element) {
     studyViewerTemplate = element;
 });
 
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
 // Get study list from JSON manifest
 //$.getJSON('studyList.json', function(data) {
 $.getJSON('getStudyList.php', function(data) {
@@ -18,11 +22,13 @@ $.getJSON('getStudyList.php', function(data) {
     // Create one table row for each study in the manifest
     var studyRow = '<tr><td>' +
     study.patientName + '</td><td>' +
-    study.patientId + '</td><td>' +
-    study.studyDate + '</td><td>' +
+    study.patientId + '</td><td align="right">' +
+    study.studyDate.replace(/.*(\d{4})(\d{2})(\d{2}).*/, "$2/$3/$1") + '</td><td align="right">' +
+    study.studyTime.replace(/.*(\d{2})(\d{2})(\d{2}).*/, "$1:$2:$3") + '</td><td align="right">' +
+    study.numSeries + '</td><td align="center">' +
     study.modality + '</td><td>' +
-    (study.studyDescription?study.studyDescription:"") + '</td><td>' +
-    study.numImages + '</td><td>' +
+    (study.studyDescription?study.studyDescription:"") + '</td><td align="right">' +
+    numberWithCommas(study.numImages) + '</td><td>' +
     '</tr>';
 
     // Append the row to the study list

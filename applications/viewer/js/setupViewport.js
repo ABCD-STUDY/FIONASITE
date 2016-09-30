@@ -11,6 +11,7 @@ function setupViewport(element, stack, image) {
     cornerstoneTools.mouseInput.enable(element);
     cornerstoneTools.mouseWheelInput.enable(element);
     cornerstoneTools.touchInput.enable(element);
+    cornerstoneTools.keyboardInput.enable(element);
 
     // Enable all tools we want to use with this element
     cornerstoneTools.wwwc.activate(element, 1); // ww/wc is the default tool for left mouse button

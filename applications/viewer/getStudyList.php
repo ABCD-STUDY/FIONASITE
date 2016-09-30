@@ -16,10 +16,12 @@
       $j = glob($f. DIRECTORY_SEPARATOR . "/*.json");
       if (count($j) > 0) {
         $numImages = 0;
+	$numSeries = 0;
         foreach($j as $jf) {
           $data = json_decode(file_get_contents($jf), True);
           if (isset($data['NumFiles'])) {
 	     $numImages = $numImages + $data['NumFiles'];
+	     $numSeries = $numSeries + 1;
           }
         }
         $data = json_decode(file_get_contents($j[0]), True);
@@ -27,10 +29,12 @@
         $studyList['studyList'][] = array( "patientName" => $data['PatientName'], 
 				    	   "patientId" => $data['PatientID'], 
 					   "studyDate" => $data['StudyDate'], 
+					   "studyTime" => $data['StudyTime'], 
 					   "modality" => $data['Modality'], 
 					   "studyDescription" => $data['StudyDescription'], 
 					   'numImages' => $numImages, 
-					   'studyId' => $data['StudyInstanceUID']);
+					   'studyId' => $data['StudyInstanceUID'],
+					   'numSeries' => $numSeries);
       }
    }
    // todo: sort by StudyDate and StudyTime

@@ -21,6 +21,12 @@ todo=(
     'existsDirectory' '/var/www/html/server' ''
     'existsDirectory' '/var/www/html/server/.pids' ''
     'existsDirectory' '/var/www/html/server/logs' ''
+    'existsDirectory' '/data/site/scanner-share/ABCDstream/dicom_stream' ''
+    'permission' '/data/site/scanner-share/ABCDstream/dicom_stream' '777'
+    'existsDirectory' '/data/site/scanner-share/ABCDstream/kspace_stream' ''
+    'permission' '/data/site/scanner-share/ABCDstream/kspace_stream' '777'
+    'existsDirectory' '/data/site/scanner-share/ABCDstream/yarra_export' ''
+    'permission' '/data/site/scanner-share/ABCDstream/yarra_export' '777'
     'existsLink' '/var/www/html/php/output' '/data/site/output'
 
     'permission' '/data' '777'
@@ -54,6 +60,9 @@ todo=(
     'existsFile' '/var/www/html/server/logs/audit.log' ''
     'owner' '/var/www/html/server/logs/audit.log' 'apache:apache'
     'existsFile' '/data/config/config.json' '{ "DICOMIP": "137.110.181.168", "DICOMPORT": "4006", "DICOMAETITLE": "UCSDFIONA", "SCANNERIP": "172.20.141.70", "SCANNERPORT": "4006", "SCANNERAETITLE": "CTIPMUCSD1", "SCANNERTYPE": "SIEMENS", "MPPSPORT": "4007", "SERVERUSER": "daic", "DAICSERVER": "137.110.181.166", "PFILEDIR": "/data/DAIC", "CONNECTION": "" }'
+    'existsFile' '/data/config/machines.json' '[]'
+    'owner' '/data/config/machines.json' 'processing:processing'
+    'permission' '/data/config/machines.json' '644'
 
     'permission' '/data/enabled' '666'
     'permission' '/data/config/config.json' '644'
@@ -213,7 +222,7 @@ fixDirectoryExist() {
     path=$1
     expected=$2
     if [[ "$expected" == "" ]]; then
-       touch $path
+       mkdir -p $path
     else
        echo "$expected" > $file
     fi

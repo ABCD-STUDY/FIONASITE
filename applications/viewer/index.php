@@ -80,6 +80,8 @@
                   <th>Patient Name</th>
                   <th>Patient ID</th>
                   <th>Study Date</th>
+		  <th>Study Time</th>
+		  <th># Series</th>
                   <th>Modality</th>
                   <th>Study Description</th>
                   <th># Images</th>
