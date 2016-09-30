@@ -22,8 +22,11 @@ todo=(
     'existsDirectory' '/var/www/html/server/.pids' ''
     'existsDirectory' '/var/www/html/server/logs' ''
     'existsDirectory' '/data/site/scanner-share/ABCDstream/dicom_stream' ''
+    'permission' '/data/site/scanner-share/ABCDstream/dicom_stream' '777'
     'existsDirectory' '/data/site/scanner-share/ABCDstream/kspace_stream' ''
+    'permission' '/data/site/scanner-share/ABCDstream/kspace_stream' '777'
     'existsDirectory' '/data/site/scanner-share/ABCDstream/yarra_export' ''
+    'permission' '/data/site/scanner-share/ABCDstream/yarra_export' '777'
     'existsLink' '/var/www/html/php/output' '/data/site/output'
 
     'permission' '/data' '777'
