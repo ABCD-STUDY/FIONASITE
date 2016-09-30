@@ -182,6 +182,58 @@
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "spc_200ns"
+      },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "NORM"
+          }
+    ]
+  },
+  { 
+    "type" : "ABCD-T2-NORM",
+    "description" : "A T2 weighted image from Siemens with ABCD resolution",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{ 
+       "tag": [ "0x28", "0x10" ],
+        "operator": "==",
+        "value": "256"
+      }
+      ,{ 
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "227" 
+      },{ 
+        "tag": [ "0x18", "0x24" ],
+        "value": "spc_200ns"
+      },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "value": "NORM"
+          }
+    ]
+  },
+  { 
+    "type" : "Coil Error",
+    "description" : "Required Coil Elements Inactive",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+       "tag": [ "0x51", "0x100f" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "BC"
+      }
+      ,{ 
+       "tag": [ "0x51", "0x100f" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "HEA;HEP"
       }
     ]
   },
@@ -261,6 +313,11 @@
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "ep_b"
+      },{ 
+       "tag": [ "SeriesDescription" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "ABCD_QA_dMRI"
       }
     ]
   },
@@ -366,8 +423,7 @@
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "720"
-      }
-      ,{ 
+      },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
@@ -392,8 +448,7 @@
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "90"
-      }
-      ,{ 
+      },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
@@ -406,7 +461,69 @@
         "value": "0" 
       }
     ]
+  },   
+  { 
+    "type" : "ABCD-MB-fMRI-QA",
+    "description" : "Multiband ABCD Phantom QA",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
+      },{ 
+        "tag": [ "0x18", "0x24" ],
+        "value": "epfSM2d1_90"
+      },{ 
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 06:44"
+      }
+    ]
+  },   
+  { 
+    "type" : "ABCD-fBIRN-QA",
+    "description" : "Non-multiband ABCD Phantom QA",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "64, 0, 0, 64"
+      },{ 
+        "tag": [ "0x18", "0x24" ],
+        "value": "epfid2d1_64"
+      },{ 
+        "tag": [ "AcquisitionLength" ],
+        "value": "TA 06:44"
+      }
+    ]
   }, 
+  { 
+    "type" : "ABCD-Diffusion-QA",
+    "description" : "ABCD Diffusion Phantom QA",
+    "rules" : [
+      {
+	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{
+	"rule" : "MOSAIC"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "0x18", "0x24" ],
+        "value": "ep_b"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "ABCD_QA_dMRI" 
+      }
+    ]
+  },
   { 
     "type" : "ABCD-fMRI-FM-PA",
     "description" : "Field Maps for ABCD fMRI scans",
@@ -461,6 +578,10 @@
       },{ 
         "tag": [ "SequenceType" ],
         "value": "DwiSE"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "operator": "!=",
+        "value": "1" 
       }
     ]
   },
@@ -631,6 +752,86 @@
         "tag": [ "PhaseEncodingDirectionPositive" ],
         "operator": "==",
         "value": "1" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-fBIRN-QA",
+    "description" : "ABCD Philips fBIRN QA (non-Multiband)",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "64, 0, 0, 63"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "FEEPI"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "200" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-MB-fMRI-QA",
+    "description" : "ABCD Philips fBIRN QA (Multiband)",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "92, 0, 0, 89"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "FEEPI"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "395" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-Diffusion-QA",
+    "description" : "ABCD Philips fBIRN QA (non-Multiband)",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 141"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "DwiSE"
+      },{ 
+        "tag": [ "NumberOfTemporalPositions" ],
+        "value": "1" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-Coil-QA",
+    "description" : "ABCD Philips Coil QA",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "128, 0, 0, 128"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "T1FFE"
+      },{ 
+        "tag": [ "SliceThickness" ],
+        "value": "2" 
       }
     ]
   },

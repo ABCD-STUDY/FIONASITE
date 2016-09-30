@@ -131,7 +131,7 @@ runAtInterval () {
 detect () {
   # we can have jobs that we need to run at regular intervals - like study compliance
   # first get a list of the current studies
-  echo "read $DIR for new files" >> $log
+  echo "`date`: read $DIR for new files" >> $log
   find "$DIR" -print0 | while read -d $'\0' file
   do
     if [ "$file" == "$DIR" ]; then

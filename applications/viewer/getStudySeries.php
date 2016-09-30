@@ -60,9 +60,10 @@
         if ($path_info['filename'] == "." || $path_info['filename'] == "..") {
            continue;
         }
-        if (count($instanceList) > 200) {
+	// getting all images could take ages
+        /*if (count($instanceList) > 200) {
             break;
-        }
+        }*/
         $instanceList[] = array( "imageId" => $url . $d );
      }
      $seriesList['seriesList'][] = array( "seriesDescription" => $data['SeriesDescription'], "seriesNumber" => $data["SeriesNumber"], "instanceList" => $instanceList );
