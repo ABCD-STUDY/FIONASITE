@@ -234,7 +234,7 @@
               <span class="visuallyhidden">Accounts</span>
             </button>
             <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="accbtn">
-              <li class="mdl-menu__item" id="load-subjects">Patients</li>
+              <li class="mdl-menu__item" id="load-subjects">Subjects</li>
               <li class="mdl-menu__item" id="load-studies">Studies</li>
 <?php if ($seescanner) : ?>
               <li class="mdl-menu__item" id="load-scanner">Scanner</li>
@@ -548,7 +548,7 @@ function loadStudies() {
         for (var i = 0; i < studies.length; i++) {
 	   str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientName'] + "-" + data[studies[i]][0]['PatientID'] + "<ul>";
            for (var j = 0; j < data[studies[i]].length; j++) {
-	       str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\">" + shortenName(data[studies[i]][j]['SeriesDescription']) + "</li>";
+	       str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\" title=\""+ data[studies[i]][j]['SeriesDescription'] + "\">" + data[studies[i]][j]['SeriesNumber'] + " " + shortenName(data[studies[i]][j]['SeriesDescription']) + "</li>";
            }
            str = str + "</ul></li>";
         }
