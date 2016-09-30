@@ -546,11 +546,21 @@ function loadStudies() {
 	str = "<ul id=\"study-list-bonsai\" class=\"data\">";
         var studies = Object.keys(data);
         for (var i = 0; i < studies.length; i++) {
-	   str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientName'] + "-" + data[studies[i]][0]['PatientID'] + "<ul>";
-           for (var j = 0; j < data[studies[i]].length; j++) {
-	       str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\" title=\""+ data[studies[i]][j]['SeriesDescription'] + "\">" + data[studies[i]][j]['SeriesNumber'] + " " + shortenName(data[studies[i]][j]['SeriesDescription']) + "</li>";
-           }
-           str = str + "</ul></li>";
+	    str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientName'] + "-" + data[studies[i]][0]['PatientID'] + "<ul>";
+            var seriesList = data[studies[i]];
+	    seriesList.sort(function(a,b) { 
+		if ( parseInt(a['SeriesNumber']) == parseInt(b['SeriesNumber'])) {
+		    return 0;
+		}
+		if ( parseInt(a['SeriesNumber']) < parseInt(b['SeriesNumber'])) {
+		    return -1;
+		}
+		return 1;
+	    });
+            for (var j = 0; j < seriesList.length; j++) {
+		str = str + "<li class=\"open-series-info\" key=\"" + studies[i] + "\" entry=\""+ j +"\" title=\""+ seriesList[j]['SeriesDescription'] + "\">" + seriesList[j]['SeriesNumber'] + " " + shortenName(seriesList[j]['SeriesDescription']) + "</li>";
+            }
+            str = str + "</ul></li>";
         }
         str = str + "</ul>";
         jQuery('#list-of-subjects').prepend(str);
