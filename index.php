@@ -176,6 +176,7 @@
      }
      .select2-container {
         margin-bottom: 10px;
+        margin-top: 5px;
      }
      #select2-session-participant-results li {
          border-bottom: 0px;
