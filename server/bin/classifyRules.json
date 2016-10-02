@@ -234,6 +234,11 @@
         "operator": "contains",
         "negate": "yes", 
         "value": "HEA;HEP"
+      },{ 
+       "tag": [ "0x51", "0x100f" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "HC1-7"
       }
     ]
   },
