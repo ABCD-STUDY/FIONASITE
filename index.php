@@ -129,6 +129,7 @@
     <link rel="stylesheet" href="css/fullcalendar.min.css">
     <link rel="stylesheet" media="print" href="css/fullcalendar.print.css">
     <link rel="stylesheet" href="css/jquery.bonsai.css">
+    <link rel="stylesheet" href="css/select2.min.css">
    
     <style>
      #view-source {
@@ -173,6 +174,15 @@
 	 line-height: 1;
 	 letter-spacing: .02em;
      }
+     .select2-container {
+        margin-bottom: 10px;
+     }
+     #select2-session-participant-results li {
+         border-bottom: 0px;
+         margin-bottom: 0px;
+         padding: 0px;
+     }
+
      li {
 	 border-bottom: 1px solid gray;
 	 margin-bottom: 10px;
@@ -348,7 +358,7 @@ loading configuration file...
 	<h4>Identify your imaging session</h4>
         <div class="form-group">
           <label for="session-participant" class="control-label">Participant (pGUID in REDCap)</label><br/>
-          <select class="form-control" id="session-participant"></select>
+          <select class="form-control select2-list" id="session-participant"></select>
         </div>
 	
         <div class="form-group">
@@ -440,6 +450,7 @@ loading information...
     <script src="js/bars.js"></script>
 
     <script src="js/jquery-2.1.4.min.js"></script>
+    <script src="js/select2.min.js"></script>
     <script src="js/radialProgress.js"></script>
     <script src="js/moment-with-locales.min.js"></script>
     <script src="js/fullcalendar.min.js"></script>
@@ -920,7 +931,7 @@ function displayAdditionalScans(data, StudyInstanceUID) {
              var item = array[i];
              console.log("item[ClassifyType]: " + JSON.stringify(item["ClassifyType"]));
              var classifyType = item["ClassifyType"];
-             var seriesName = "ClassifyType: " + JSON.stringify(classifyType)
+             var seriesName = "ClassifyType: " + JSON.stringify(classifyType);
              str = str.concat(displaySeries(item, seriesName, StudyInstanceUID));
          }
          jQuery('#detected-scans').append(str);
@@ -943,11 +954,17 @@ function getSessionNamesFromREDCap() {
 
 function getParticipantNamesFromREDCap() {
     jQuery.getJSON('/php/getParticipantNamesFromREDCap.php', function(data) {
-        jQuery('#session-participant').children().remove();
-        for (var i = 0; i < data.length; i++) {
-            jQuery('#session-participant').append("<option class=\"drop-down-item\" value=\"" + data[i] + "\">" + data[i] + "</option>");
-        }
+        //jQuery('#session-participant').children().remove();
+        //for (var i = 0; i < data.length; i++) {
+        //    jQuery('#session-participant').append("<option class=\"drop-down-item\" value=\"" + data[i] + "\">" + data[i] + "</option>");
+        //}
+	jQuery('#session-participant').select2({
+	    dropdownParent: jQuery('#modal-study-info'),
+	    placeholder: 'Select a REDCap participant',
+	    data: data.map(function(v,i) { return { id:v, text:v }; })
+	});
 	jQuery('#session-participant').val(null);
+	//jQuery('#session-participant').css('z-index', '100003');
     });
 }
 
