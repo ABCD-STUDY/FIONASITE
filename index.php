@@ -810,7 +810,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
              var value = data[keys[i]];
              
              // check if this is a series or a block of series
-             if (value["file"] == null) {
+             if (typeof value !== 'undefined' && value["file"] == null) {
 
                  // this JSON object does not contain the "file" field, so it must be a block
                  // iterate through the JSON objects contained within this block.
