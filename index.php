@@ -375,6 +375,7 @@ loading configuration file...
             <option value="SessionB1" title="T1, 3 fMRI tasks">B1 (T1, 3 fMRI tasks)</option>
             <option value="SessionB2" title="rsfMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs)">B2 (rsfMRI (2 runs), DTI, T2, rsfMRI (up to 2 runs))</option>
             <option value="SessionC" title="Combined scan">C (Combined scan)</option>
+            <option value="SessionPHANTOM" title="Phantom scan">P (Phantom scan)</option>
           </select>
         </div>
       </div>
@@ -810,7 +811,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
              var value = data[keys[i]];
              
              // check if this is a series or a block of series
-             if (value["file"] == null) {
+             if (typeof value !== 'undefined' && value["file"] == null) {
 
                  // this JSON object does not contain the "file" field, so it must be a block
                  // iterate through the JSON objects contained within this block.

@@ -52,7 +52,9 @@ sendAllFiles () {
 	    mv "${file%.*}"* /data/DAIC/
             echo "`date`: we are done with ${file}, move to /data/DAIC now for posterity" >> $log
 	else
-            echo "`date`: MD5SUM for ${file} does not match with server, send this file again" >> $log	    
+            echo "`date`: MD5SUM for ${file} does not match with server, send this file again" >> $log
+	    # one reason of a mis-match is that the local md5sum file is wrong
+	    echo " calculate md5sum ${file} > ${localFileName}.md5sum" >> $log
         fi
       fi
     done
@@ -61,7 +63,11 @@ sendAllFiles () {
   # preserve times (-p)
   # add limit here to prevent too much traffic on the ABCD transfer
   echo "`date`: now copy everything else to the DAIC" >> $log  
+  START=$(date +%s.%N)
   sftp -p -b ${commandScript} ${user}@abcd-workspace.ucsd.edu
+  END=$(date +%s.%N)
+  dur=$(echo "$END - $START" | bc)
+  echo "`date`: copy done (${dur}sec)" >> $log  
 
   # delete the folder with the md5sums again
   #rm -Rf -- "$d"
