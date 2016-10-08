@@ -52,7 +52,9 @@ sendAllFiles () {
 	    mv "${file%.*}"* /data/DAIC/
             echo "`date`: we are done with ${file}, move to /data/DAIC now for posterity" >> $log
 	else
-            echo "`date`: MD5SUM for ${file} does not match with server, send this file again" >> $log	    
+            echo "`date`: MD5SUM for ${file} does not match with server, send this file again" >> $log
+	    # one reason of a mis-match is that the local md5sum file is wrong
+	    echo " calculate md5sum ${file} > ${localFileName}.md5sum" >> $log
         fi
       fi
     done
