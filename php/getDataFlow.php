@@ -1,6 +1,10 @@
 <?php
 
-  // get an array that lists all the data flow variables for the current system
+  // 
+  // The flow if data throught the FIONA system can be observed by following directory structures for each study and series on the system.
+  // This script will capture the current state of the system and produce a hierarchical structure of study/series/state that
+  // can be used to visualize the state of the system.
+  //
   $data = array();
 
   // get all studies from /data/site/archive
@@ -63,7 +67,6 @@
 	if (!isset($data[$s]->series[$ss])) {
   	   $data[$s]->series[$ss] = (object)array( "quarantine" => 1);
         } else {
-	   // $data[$s]->series[$ss]->quarantine = 1;
            $data[$s]->series[$ss] = (object)array_merge( (array)$data[$s]->series[$ss], array('quarantine' => 1));
         }
      } else {
@@ -102,7 +105,6 @@
 	}
 
 	if ($s != "") {
-  	   //$data[$studyInstanceUID]->series[$s]->quarantine = 1;	   
            $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('quarantine' => 1));
         }
      }
@@ -178,7 +180,6 @@
 	}
 
 	if ($s != "") {
-  	   // $data[$studyInstanceUID]->series[$s]->outbox = 1;
 	   $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('outbox' => 1));
 	}
      }
@@ -253,15 +254,11 @@
 	}
 
 	if ($s != "") {
-  	   // $data[$studyInstanceUID]->series[$s]->outbox = 1;
 	   $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('DAIC' => 1));
 	}
      }
   }
 
-
-
-
-  echo (json_encode($data, JSON_PRETTY_PRINT));
+  echo (json_encode($data));
 
 ?>
