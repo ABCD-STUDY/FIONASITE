@@ -6,6 +6,7 @@
   // can be used to visualize the state of the system.
   //
   $data = array();
+  chdir('/var/www/html/php');
 
   // get all studies from /data/site/archive
   $studies = glob('data/site/archive/scp_*', GLOB_ONLYDIR);
@@ -73,12 +74,15 @@
         // kspace series
 	$endstudy = strpos($sname, "_subjid");
 	$s = substr($sname, 5, $endstudy-5);
+	if (empty($s) || $s == "" || $s === null)
+           continue;
+
 	// found a series instance uid, what is the study for this?
         $studyInstanceUID = "";
 	foreach($data as $key => $value) {
 	   if (isset($value->series)) {
-	      foreach($value->series as $k => $s) {
-	          if ($k == $s) { // found the series instance uid and the study instance uid
+	      foreach($value->series as $k => $se) {
+	          if ($k == $se) { // found the series instance uid and the study instance uid
 		     $studyInstanceUID = $key;
 		     break;
 		  }		   
@@ -103,10 +107,22 @@
 	   // this series study is not in raw, it could still be in archive, but its expensive to look there...
 	   $studyInstanceUID = uniqid();
 	}
-
-	if ($s != "") {
-           $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('quarantine' => 1));
+	if (!isset($data[$studyInstanceUID])) {
+	   $data[$studyInstanceUID] = (object)array( "quarantine" => 1 );
         }
+
+        if (!isset($data[$studyInstanceUID]->series)) {
+	   $data[$studyInstanceUID]->series = array();
+        }
+	if (!array_key_exists($s, $data[$studyInstanceUID]->series)) {
+  	   $data[$studyInstanceUID]->series[$s] = (object)array( "quarantine" => 1);
+        } else {
+	   $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('quarantine' => 1));
+        }
+
+	//if ($s != "") {
+        //   $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('quarantine' => 1));
+        //}
      }
   }
 

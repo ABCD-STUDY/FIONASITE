@@ -431,7 +431,7 @@ loading configuration file...
             Data Flow
         </div>
 	<div>
-	  <p style="line-height: 1.2em;">Experimental visualization of the data flow for each study. Studies are represented by rectangular regions, where each study region is filled with smaller squares that represent image series. The color of each image series square indicates its state in the system. States are ordered according to the data flow in columns of archive (red), raw (yellow), quarantine (green), outbox (blue), and DAIC (violet).</p>
+	  <p style="line-height: 1.2em;">Experimental visualization of the data flow for each study. Studies are represented by rectangular regions, where each study region is filled with rows of smaller squares that represent image series. The color of each individual image series square indicates its current state. States are ordered according to the data flow in columns of archive (red), raw (yellow), quarantine (green), outbox (blue), and DAIC (violet).</p>
         </div>
 	<div id="data-flow-container" style="position: relative;"></div>
     </div>
