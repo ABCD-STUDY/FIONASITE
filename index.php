@@ -53,6 +53,70 @@
 ?>
 
     <style>
+.study {
+   width: 80px;
+   height: auto;
+   border: 2px solid gray;
+   border-radius: 3px;
+   color: blue;
+   display: inline-flex;
+   margin: 2px;
+}
+.item {
+   width: 10px;
+   height: 10px;
+   border: 2px solid gray;
+   border-radius: 3px;
+   background-color: white;
+   margin: 2px;
+}
+.group-archive .item {
+   background-color: rgba(226,87,30,.5);
+}
+.group-archive .item-heigh {
+   background-color: rgba(226,87,30,.5);
+}
+.group-raw .item {
+   background-color: rgba(255,255,0,.5);
+}
+.group-quarantine .item {
+   background-color: rgba(150,191,51,.5);
+}
+.group-outbox .item {
+   background-color: rgba(0,0,255,.5);
+}
+.group-DAIC .item {
+   background-color: rgba(139,0,255,.5);
+}
+#modal-data-flow {
+   width: 90%;
+}
+.item-heigh {
+   width: 10px;
+   height: 50%;
+   min-height: 10px;
+   border: 2px solid gray;
+   border-radius: 3px;
+   color: white;
+   margin: 2px;
+}
+.group-archive {
+   width: 16px;
+   height: auto;
+}
+.group-raw {
+   width: 16px;
+   height: auto;
+}
+.group-quarantine {
+   width: 16px;
+   height: auto;
+}
+.group-outbox {
+   width: 16px;
+   height: auto;
+}
+
 @font-face {
   font-family: 'Roboto';
   font-style: normal;
@@ -224,6 +288,7 @@
             <li class="mdl-menu__item"><a href="applications/viewer/" title="Image viewer for FIONA DICOM images">Image Viewer</a></li>
 <?php if ($developer) : ?>
             <li class="mdl-menu__item"><a href="invention.html">Development</a></li>
+            <li class="mdl-menu__item" id="dialog-data-flow-button">Data Flow</li>
 <?php endif; ?>
 <?php if ($admin) : ?>
             <li class="mdl-menu__item" onclick="document.location.href = '/applications/User/admin.php';">Admin Interface</li>
@@ -341,6 +406,21 @@ loading configuration file...
     </div>
 </dialog>
 
+<dialog class="mdl-dialog" id="modal-data-flow">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 25px;">
+            Data Flow
+        </div>
+	<div>
+	  <p>Experimental visualization of the data flow for each study. Studies are represented by rectangular regions, where each study region is filled with smaller squares that represent image series. The color of each image series square indicates its state in the system. States are ordered according to the data flow in columns of archive, raw, quarantine, outbox, and DAIC.</p>
+        </div>
+	<div id="data-flow-container" style="position: relative;"></div>
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="data-flow-dialog-cancel">ok</button>
+    </div>
+</dialog>
+
 <dialog class="mdl-dialog" id="modal-study-info">
   <div class="mdl-dialog__content">
     <div style="font-size: 32pt; margin-bottom: 20px;">
@@ -453,6 +533,7 @@ loading information...
 
     <script src="js/jquery-2.1.4.min.js"></script>
     <script src="js/select2.min.js"></script>
+    <script src="js/wookmark.min.js"></script>
     <script src="js/radialProgress.js"></script>
     <script src="js/moment-with-locales.min.js"></script>
     <script src="js/fullcalendar.min.js"></script>
@@ -1050,6 +1131,10 @@ jQuery(document).ready(function() {
 
     });
 
+    var dialog = document.querySelector('#modal-data-flow');
+        if (!dialog.showModal) {
+        dialogPolyfill.registerDialog(dialog);
+    }
     var dialog = document.querySelector('#modal-study-info');
         if (!dialog.showModal) {
         dialogPolyfill.registerDialog(dialog);
@@ -1102,6 +1187,14 @@ jQuery(document).ready(function() {
 
     });
 
+    var dialogDF = document.querySelector('#modal-data-flow');
+    var closeButton = dialogDF.querySelector('#data-flow-dialog-cancel');
+    var closeClickHandler = function (event) {
+       dialogDF.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+
+
     var dialogCP = document.querySelector('#modal-change-password');
     if (!dialogCP.showModal) {
        dialogPolyfill.registerDialog(dialogCP);
@@ -1125,6 +1218,78 @@ jQuery(document).ready(function() {
     jQuery('#dialog-change-password-button').click(function() {
       var dialog = document.querySelector('#modal-change-password');
       dialog.showModal();
+    });
+
+    jQuery('#dialog-data-flow-button').click(function() {
+      var dialog = document.querySelector('#modal-data-flow');
+      dialog.showModal();
+
+      // we need to collect data about which files are in which directories on the system
+      jQuery.getJSON('php/getDataFlow.php', function(data) {
+	  studies = Object.keys(data);
+	
+	  for (var i = 0; i < studies.length; i++) {
+            var series = data[studies[i]];
+	    var str = "<div class=\"study\" title=\""+studies[i]+"\">";
+    	    str = str + "<div class=\"group-archive\">";
+            if (typeof series['archive'] != 'undefined' && series['archive'] == 1)
+		str = str + "<div class=\"item-heigh\" title=\"archive "+studies[i]+"\"></div>";
+            str = str + "</div>";
+
+            str = str + "<div class=\"group-raw\">";
+            if (typeof series['series'] != 'undefined') {
+              var seriesnames = Object.keys(series['series']);
+              for (var j = 0; j < seriesnames.length; j++) {
+ 	          if (typeof series['series'][seriesnames[j]]['raw'] != 'undefined' && series['series'][seriesnames[j]]['raw'] == 1) {
+ 		     str = str + "<div class=\"item\" title=\"raw "+ seriesnames[j] +"\"></div>";
+                  }
+              }
+	    }
+            str = str + "</div>";
+
+
+            str = str + "<div class=\"group-quarantine\">";
+            if (typeof series['series'] != 'undefined') {
+              var seriesnames = Object.keys(series['series']);
+              for (var j = 0; j < seriesnames.length; j++) {
+ 	          if (typeof series['series'][seriesnames[j]]['quarantine'] != 'undefined' && series['series'][seriesnames[j]]['quarantine'] == 1) {
+ 		     str = str + "<div class=\"item\" title=\"quarantine "+seriesnames[j]+"\"></div>";
+                  }
+              }
+	    }
+            str = str + "</div>";
+
+
+            str = str + "<div class=\"group-outbox\">";
+            if (typeof series['series'] != 'undefined') {
+              var seriesnames = Object.keys(series['series']);
+              for (var j = 0; j < seriesnames.length; j++) {
+ 	          if (typeof series['series'][seriesnames[j]]['outbox'] != 'undefined' && series['series'][seriesnames[j]]['outbox'] == 1) {
+ 		     str = str + "<div class=\"item\" title=\"outbox "+seriesnames[j]+"\"></div>";
+                  }
+              }
+	    }
+            str = str + "</div>";
+
+
+            str = str + "<div class=\"group-DAIC\">";
+            if (typeof series['series'] != 'undefined') {
+              var seriesnames = Object.keys(series['series']);
+              for (var j = 0; j < seriesnames.length; j++) {
+ 	          if (typeof series['series'][seriesnames[j]]['DAIC'] != 'undefined' && series['series'][seriesnames[j]]['DAIC'] == 1) {
+ 		     str = str + "<div class=\"item\" title=\"DAIC "+seriesnames[j]+"\"></div>";
+                  }
+              }
+	    }
+            str = str + "</div>";
+
+
+	    str = str + "</div>";
+	    jQuery('#data-flow-container').append(str);
+          }
+          //jQuery('#data-flow-container').woodmark();
+          var wookmark = new Wookmark('#data-flow-container');
+      });
     });
 
     jQuery('#dialog-setup-button').click(function() {
