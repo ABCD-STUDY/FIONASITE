@@ -28,6 +28,7 @@ todo=(
     'existsDirectory' '/data/site/scanner-share/ABCDstream/yarra_export' ''
     'permission' '/data/site/scanner-share/ABCDstream/yarra_export' '777'
     'existsLink' '/var/www/html/php/output' '/data/site/output'
+    'existsLink' '/var/www/html/php/data' '/data'
 
     'permission' '/data' '777'
     'permission' '/data/DAIC' '755'
