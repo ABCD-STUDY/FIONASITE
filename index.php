@@ -1253,6 +1253,8 @@ jQuery(document).ready(function() {
     	    str = str + "<div class=\"group-archive\">";
             if (typeof series['archive'] != 'undefined' && series['archive'] == 1)
 		str = str + "<div class=\"item-heigh\" title=\"archive "+studies[i]+"\"></div>";
+            else
+		str = str + "<div class=\"no-item\" title=\"archive\"></div>";
             str = str + "</div>";
 
 	    str = str + "<div class=\"series-group\">";
@@ -1269,12 +1271,12 @@ jQuery(document).ready(function() {
  	          if (typeof series['series'][seriesnames[j]]['quarantine'] != 'undefined' && series['series'][seriesnames[j]]['quarantine'] == 1) {
  		     str = str + "</div><div class=\"item quarantine\" title=\"quarantine "+ seriesnames[j] +"\">";
                   } else {
- 		     str = str + "</div><div class=\"no-item\" title=\"raw "+ seriesnames[j] +"\">";
+ 		     str = str + "</div><div class=\"no-item\" title=\"quarantine "+ seriesnames[j] +"\">";
                   }
  	          if (typeof series['series'][seriesnames[j]]['outbox'] != 'undefined' && series['series'][seriesnames[j]]['outbox'] == 1) {
  		     str = str + "</div><div class=\"item outbox\" title=\"outbox "+ seriesnames[j] +"\">";
                   } else {
- 		     str = str + "</div><div class=\"no-item\" title=\"raw "+ seriesnames[j] +"\">";
+ 		     str = str + "</div><div class=\"no-item\" title=\"outbox "+ seriesnames[j] +"\">";
                   }
  	          if (typeof series['series'][seriesnames[j]]['DAIC'] != 'undefined' && series['series'][seriesnames[j]]['DAIC'] == 1) {
  		     str = str + "</div><div class=\"item DAIC\" title=\"DAIC "+ seriesnames[j] +"\"></div>";
