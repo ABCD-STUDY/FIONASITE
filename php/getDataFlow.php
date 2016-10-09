@@ -43,7 +43,7 @@
   foreach( $series as $serie) {
      $sname = basename($serie);
 
-     // what is the study and series instance uids?
+     // what are the study and series instance uids?
      // check if we have k-space data
      if (strpos($sname, "SUID_") === FALSE) {
         // DICOM series
@@ -63,7 +63,8 @@
 	if (!isset($data[$s]->series[$ss])) {
   	   $data[$s]->series[$ss] = (object)array( "quarantine" => 1);
         } else {
-	   $data[$s]->series[$ss]->quarantine = 1;
+	   // $data[$s]->series[$ss]->quarantine = 1;
+           $data[$s]->series[$ss] = (object)array_merge( (array)$data[$s]->series[$ss], array('quarantine' => 1));
         }
      } else {
         // kspace series
@@ -80,7 +81,7 @@
 		  }		   
               }
 	   }
-	   if ($studyInstanceUID == "")
+	   if ($studyInstanceUID != "")
 	      break;
 	}
 	if ($studyInstanceUID == "") {

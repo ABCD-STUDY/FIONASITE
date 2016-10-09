@@ -54,9 +54,9 @@
 
     <style>
 .study {
-   width: 80px;
+   width: 72px;
    height: auto;
-   border: 2px solid gray;
+   border: 1px solid gray;
    border-radius: 3px;
    color: blue;
    display: inline-flex;
@@ -65,10 +65,21 @@
 .item {
    width: 10px;
    height: 10px;
-   border: 2px solid gray;
+   border: 1px solid gray;
    border-radius: 3px;
    background-color: white;
-   margin: 2px;
+   margin: 0px;
+   margin-top: 2px;
+   margin-left: 2px;
+}
+.no-item {
+   width: 10px;
+   height: 10px;
+   border: 1px solid white;
+   background-color: white;
+   margin: 0px;
+   margin-top: 2px;
+   margin-left: 2px;
 }
 .group-archive .item {
    background-color: rgba(226,87,30,.5);
@@ -76,17 +87,25 @@
 .group-archive .item-heigh {
    background-color: rgba(226,87,30,.5);
 }
-.group-raw .item {
+.raw.item {
    background-color: rgba(255,255,0,.5);
 }
-.group-quarantine .item {
+.quarantine.item {
    background-color: rgba(150,191,51,.5);
 }
-.group-outbox .item {
+.outbox.item {
    background-color: rgba(0,0,255,.5);
 }
-.group-DAIC .item {
+.DAIC.item {
    background-color: rgba(139,0,255,.5);
+}
+.series-group {
+   font-size: 18px;
+   line-height: 12px;
+   margin-bottom: 2px;
+}
+.serie {
+   display: inline-flex;
 }
 #modal-data-flow {
    width: 90%;
@@ -95,13 +114,13 @@
    width: 10px;
    height: 50%;
    min-height: 10px;
-   border: 2px solid gray;
+   border: 1px solid gray;
    border-radius: 3px;
    color: white;
    margin: 2px;
 }
 .group-archive {
-   width: 16px;
+   width: 14px;
    height: auto;
 }
 .group-raw {
@@ -412,7 +431,7 @@ loading configuration file...
             Data Flow
         </div>
 	<div>
-	  <p>Experimental visualization of the data flow for each study. Studies are represented by rectangular regions, where each study region is filled with smaller squares that represent image series. The color of each image series square indicates its state in the system. States are ordered according to the data flow in columns of archive, raw, quarantine, outbox, and DAIC.</p>
+	  <p>Experimental visualization of the data flow for each study. Studies are represented by rectangular regions, where each study region is filled with smaller squares that represent image series. The color of each image series square indicates its state in the system. States are ordered according to the data flow in columns of archive (red), raw (yellow), quarantine (green), outbox (blue), and DAIC (violet).</p>
         </div>
 	<div id="data-flow-container" style="position: relative;"></div>
     </div>
@@ -1236,6 +1255,39 @@ jQuery(document).ready(function() {
 		str = str + "<div class=\"item-heigh\" title=\"archive "+studies[i]+"\"></div>";
             str = str + "</div>";
 
+	    str = str + "<div class=\"series-group\">";
+
+            if (typeof series['series'] != 'undefined') {
+              var seriesnames = Object.keys(series['series']);
+              for (var j = 0; j < seriesnames.length; j++) {
+	          str = str + "<div class=\"serie\">";
+ 	          if (typeof series['series'][seriesnames[j]]['raw'] != 'undefined' && series['series'][seriesnames[j]]['raw'] == 1) {
+ 		     str = str + "<div class=\"item raw\" title=\"raw "+ seriesnames[j] +"\">";
+                  } else {
+ 		     str = str + "<div class=\"no-item\" title=\"raw "+ seriesnames[j] +"\">";
+		  }
+ 	          if (typeof series['series'][seriesnames[j]]['quarantine'] != 'undefined' && series['series'][seriesnames[j]]['quarantine'] == 1) {
+ 		     str = str + "</div><div class=\"item quarantine\" title=\"quarantine "+ seriesnames[j] +"\">";
+                  } else {
+ 		     str = str + "</div><div class=\"no-item\" title=\"raw "+ seriesnames[j] +"\">";
+                  }
+ 	          if (typeof series['series'][seriesnames[j]]['outbox'] != 'undefined' && series['series'][seriesnames[j]]['outbox'] == 1) {
+ 		     str = str + "</div><div class=\"item outbox\" title=\"outbox "+ seriesnames[j] +"\">";
+                  } else {
+ 		     str = str + "</div><div class=\"no-item\" title=\"raw "+ seriesnames[j] +"\">";
+                  }
+ 	          if (typeof series['series'][seriesnames[j]]['DAIC'] != 'undefined' && series['series'][seriesnames[j]]['DAIC'] == 1) {
+ 		     str = str + "</div><div class=\"item DAIC\" title=\"DAIC "+ seriesnames[j] +"\"></div>";
+                  } else {
+ 		     str = str + "</div><div class=\"no-item\" title=\"DAIC "+ seriesnames[j] +"\"></div>";
+                  }
+	          str = str + "</div>";
+              }
+	    }
+
+
+/*
+
             str = str + "<div class=\"group-raw\">";
             if (typeof series['series'] != 'undefined') {
               var seriesnames = Object.keys(series['series']);
@@ -1281,7 +1333,8 @@ jQuery(document).ready(function() {
                   }
               }
 	    }
-            str = str + "</div>";
+            str = str + "</div>"; */
+	    str = str + "</div>";
 
 
 	    str = str + "</div>";
