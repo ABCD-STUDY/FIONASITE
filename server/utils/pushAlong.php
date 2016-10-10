@@ -65,6 +65,15 @@
 	 if (!$inDAIC)
             continue;
 
+	 // if we have an entry in DAIC for this study, we should try to get the correct header
+	 $daics = glob('data/DAIC/*'.$studyInstanceUID.'*');
+	 $header = "";
+	 if ( count($daics) > 0 ) {
+	    $path = pathinfo($daics[0]);
+	    // get the header for the first file
+	    $header = explode($studyInstanceUID, $path['filename'])[0];
+         }
+
          $quarantineButNotOutboxOrDAIC = array();
       	 foreach($study['series'] as $seriesInstanceUID => $v) {
 	    if (array_key_exists('quarantine',$v) && $v['quarantine'] == 1) {
@@ -93,7 +102,7 @@
 		  }
 
 		  if (!$force) {
-		     echo("  copy to outbox:\n    ".json_encode($tgz)."\n    ".json_encode($md5sum)."\n    ".json_encode($json)."\n");
+		     echo("  copy to outbox (header: ".$header."):\n    ".json_encode($tgz)."\n    ".json_encode($md5sum)."\n    ".json_encode($json)."\n");
 		     continue;
 		  }
 
@@ -101,7 +110,7 @@
 	          $ok = true;
 		  foreach($tgz as $t) {
 		      $path = pathinfo($t);
-		      $destination = "data/outbox/".$path['filename'].".".$path['extension'];
+		      $destination = "data/outbox/".$header.$path['filename'].".".$path['extension'];
  		      if ($ok) {
 		         $ok = copy($t, $destination);
 		         if ($ok) { 
@@ -116,7 +125,7 @@
 		  }
 		  foreach($md5sum as $t) {
 		      $path = pathinfo($t);
-		      $destination = "data/outbox/".$path['filename'].".".$path['extension'];
+		      $destination = "data/outbox/".$header.$path['filename'].".".$path['extension'];
  		      if ($ok) {
 		         $ok = copy($t, $destination);
 		         if ($ok) { 
@@ -131,7 +140,7 @@
 		  }
 		  foreach($json as $t) {
 		      $path = pathinfo($t);
-		      $destination = "data/outbox/".$path['filename'].".".$path['extension'];
+		      $destination = "data/outbox/".$header.$path['filename'].".".$path['extension'];
  		      if ($ok) {
 		         $ok = copy($t, $destination);
 		         if ($ok) { 
