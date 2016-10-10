@@ -1246,7 +1246,8 @@ jQuery(document).ready(function() {
       // we need to collect data about which files are in which directories on the system
       jQuery.getJSON('php/getDataFlow.php', function(data) {
 	  studies = Object.keys(data);
-	
+          jQuery('#data-flow-container').children().remove();
+
 	  for (var i = 0; i < studies.length; i++) {
             var series = data[studies[i]];
 	    var str = "<div class=\"study\" title=\""+studies[i]+"\">";
@@ -1287,55 +1288,6 @@ jQuery(document).ready(function() {
               }
 	    }
 
-
-/*
-
-            str = str + "<div class=\"group-raw\">";
-            if (typeof series['series'] != 'undefined') {
-              var seriesnames = Object.keys(series['series']);
-              for (var j = 0; j < seriesnames.length; j++) {
- 	          if (typeof series['series'][seriesnames[j]]['raw'] != 'undefined' && series['series'][seriesnames[j]]['raw'] == 1) {
- 		     str = str + "<div class=\"item\" title=\"raw "+ seriesnames[j] +"\"></div>";
-                  }
-              }
-	    }
-            str = str + "</div>";
-
-
-            str = str + "<div class=\"group-quarantine\">";
-            if (typeof series['series'] != 'undefined') {
-              var seriesnames = Object.keys(series['series']);
-              for (var j = 0; j < seriesnames.length; j++) {
- 	          if (typeof series['series'][seriesnames[j]]['quarantine'] != 'undefined' && series['series'][seriesnames[j]]['quarantine'] == 1) {
- 		     str = str + "<div class=\"item\" title=\"quarantine "+seriesnames[j]+"\"></div>";
-                  }
-              }
-	    }
-            str = str + "</div>";
-
-
-            str = str + "<div class=\"group-outbox\">";
-            if (typeof series['series'] != 'undefined') {
-              var seriesnames = Object.keys(series['series']);
-              for (var j = 0; j < seriesnames.length; j++) {
- 	          if (typeof series['series'][seriesnames[j]]['outbox'] != 'undefined' && series['series'][seriesnames[j]]['outbox'] == 1) {
- 		     str = str + "<div class=\"item\" title=\"outbox "+seriesnames[j]+"\"></div>";
-                  }
-              }
-	    }
-            str = str + "</div>";
-
-
-            str = str + "<div class=\"group-DAIC\">";
-            if (typeof series['series'] != 'undefined') {
-              var seriesnames = Object.keys(series['series']);
-              for (var j = 0; j < seriesnames.length; j++) {
- 	          if (typeof series['series'][seriesnames[j]]['DAIC'] != 'undefined' && series['series'][seriesnames[j]]['DAIC'] == 1) {
- 		     str = str + "<div class=\"item\" title=\"DAIC "+seriesnames[j]+"\"></div>";
-                  }
-              }
-	    }
-            str = str + "</div>"; */
 	    str = str + "</div>";
 
 
