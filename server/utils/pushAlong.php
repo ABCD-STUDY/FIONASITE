@@ -1,5 +1,9 @@
 <?php
 
+   //
+   // call with -f if you want this to actually do something
+   //
+
    $shortopts = "f";
    $options = getopt($shortopts);
    $force = false;
@@ -9,6 +13,9 @@
       $force = false;
    } 
 
+   //
+   // get the data we need
+   //
    chdir('/var/www/html/php');
    $fname = '/var/www/html/php/getDataFlow.php';
    $data = null;
@@ -23,14 +30,29 @@
       exit(1);
    }
 
+   //
    // lets start by identifying studies that do not have data in raw
+   //
    foreach($data as $key => $study) {
       if (array_key_exists('archive', $study) && $study['archive'] == 1 && !array_key_exists('raw',$study)) {
          echo ("found study in archive that is not in raw ".$key."\n");
+         $path = 'data/site/archive/scp_'.$key;
+         if (is_dir($path)) {
+  	    if ($force) {
+  	       // send these images using s2m.sh
+	       exec('/var/www/html/server/utils/s2m.sh '.$path);
+            } else {
+	       echo (" run: /var/www/html/server/utils/s2m.sh ".$path."\n");
+	    }
+         } else {
+	    echo (" Error: did not find one archive that fits ".$path."\n");
+         }
       }       
    }
 
+   //
    // find studies that have series in DAIC but also some series in quarantine that are not in outbox or DAIC
+   //
    foreach($data as $studyInstanceUID => $study) {
       if (isset($study['series'])) {
          $inDAIC = false;
