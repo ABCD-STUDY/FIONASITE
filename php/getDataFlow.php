@@ -168,8 +168,8 @@
         $studyInstanceUID = "";
 	foreach($data as $key => $value) {
 	   if (isset($value->series)) {
-	      foreach($value->series as $k => $s) {
-	          if ($k == $s) { // found the series instance uid and the study instance uid
+	      foreach($value->series as $k => $se) {
+	          if ($k == $se) { // found the series instance uid and the study instance uid
 		     $studyInstanceUID = $key;
 		     break;
 		  }		   
@@ -194,9 +194,19 @@
 	   // this series study is not in raw, it could still be in archive, but its expensive to look there...
 	   $studyInstanceUID = uniqid();
 	}
+	if (!array_key_exists($studyInstanceUID,$data)) {
+	  $data[$studyInstanceUID] = (object)array('outbox' => 1);
+	}
+	if (!array_key_exists('series', $data[$studyInstanceUID])) {
+	   $data[$studyInstanceUID]->series = array();
+        }
 
 	if ($s != "") {
-	   $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('outbox' => 1));
+	   if (!array_key_exists($s, $data[$studyInstanceUID]->series)) {
+	      $data[$studyInstanceUID]->series[$s] = array('outbox' => 1);
+	   } else {
+ 	      $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('outbox' => 1));	      
+	   }
 	}
      }
   }
@@ -268,10 +278,24 @@
 	   // this series study is not in raw, it could still be in archive, but its expensive to look there...
 	   $studyInstanceUID = uniqid();
 	}
+	if (!array_key_exists($studyInstanceUID,$data)) {
+	  $data[$studyInstanceUID] = (object)array('outbox' => 1);
+	}
+	if (!array_key_exists('series', $data[$studyInstanceUID])) {
+	   $data[$studyInstanceUID]->series = array();
+        }
 
 	if ($s != "") {
-	   $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('DAIC' => 1));
+	   if (!array_key_exists($s, $data[$studyInstanceUID]->series)) {
+	      $data[$studyInstanceUID]->series[$s] = array('DAIC' => 1);
+	   } else {
+ 	      $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('DAIC' => 1));	      
+	   }
 	}
+
+	//if ($s != "") {
+	//   $data[$studyInstanceUID]->series[$s] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$s], array('DAIC' => 1));
+	//}
      }
   }
 
