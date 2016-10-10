@@ -62,10 +62,10 @@
         } else {
 	   $data[$s]->quarantine = 1;
         }
-        if (!isset($data[$s]->series)) {
+        if (!array_key_exists('series',$data[$s])) {
 	   $data[$s]->series = array();
         }
-	if (!isset($data[$s]->series[$ss])) {
+	if (!array_key_exists($ss,$data[$s]->series)) {
   	   $data[$s]->series[$ss] = (object)array( "quarantine" => 1);
         } else {
            $data[$s]->series[$ss] = (object)array_merge( (array)$data[$s]->series[$ss], array('quarantine' => 1));
