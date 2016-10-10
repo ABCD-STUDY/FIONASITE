@@ -242,8 +242,8 @@
         $studyInstanceUID = "";
 	foreach($data as $key => $value) {
 	   if (isset($value->series)) {
-	      foreach($value->series as $k => $s) {
-	          if ($k == $s) { // found the series instance uid and the study instance uid
+	      foreach($value->series as $k => $se) {
+	          if ($k == $se) { // found the series instance uid and the study instance uid
 		     $studyInstanceUID = $key;
 		     break;
 		  }		   
