@@ -225,6 +225,8 @@
 	
 	// We need the last entry
 	$ar = explode("_", $sname);
+        if (count($ar) < 2)
+	   continue;
 	$s  = $ar[count($ar)-2];	
 	$ss = $ar[count($ar)-1];
 	if (!isset($data[$s])) {
