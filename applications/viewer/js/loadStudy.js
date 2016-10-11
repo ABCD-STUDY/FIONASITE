@@ -58,6 +58,7 @@ function loadStudy(studyViewer, viewportModel, studyInstanceUID) {
             var stack = {
                 seriesDescription: series.seriesDescription,
                 stackId: series.seriesNumber,
+		seriesInstanceUID: series.seriesInstanceUID,
                 imageIds: [],
                 seriesIndex: seriesIndex,
 		seriesNumber: series.seriesNumber,

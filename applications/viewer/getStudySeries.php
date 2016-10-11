@@ -35,9 +35,10 @@
 	$seriesList['studyDate'] = "";
 	$seriesList['numImages'] = "";
 	$seriesList['studyId']   = "";
+	$seriesList['studyInstanceUID'] = "";
 	$seriesList['studyDescription']   = "";
-	if (isset($data['PatientId'])) {
-	   $seriesList['patientId'] = $data['PatientId'];
+	if (isset($data['PatientID'])) {
+	   $seriesList['patientId'] = $data['PatientID'];
         }
 	if (isset($data['StudyDate'])) {
   	   $seriesList['studyDate'] = $data['StudyDate'];
@@ -50,6 +51,9 @@
         }
 	if (isset($data['StudyDescription'])) {
 	   $seriesList['studyId']   = $data['StudyDescription'];
+        }
+	if (isset($data['StudyInstanceUID'])) {
+	   $seriesList['studyInstanceUID']   = $data['StudyInstanceUID'];
         }
      }
      $instanceList = array();
@@ -66,7 +70,7 @@
         }*/
         $instanceList[] = array( "imageId" => $url . $d );
      }
-     $seriesList['seriesList'][] = array( "seriesDescription" => $data['SeriesDescription'], "seriesNumber" => $data["SeriesNumber"], "instanceList" => $instanceList );
+     $seriesList['seriesList'][] = array( "seriesDescription" => $data['SeriesDescription'], "seriesNumber" => $data["SeriesNumber"], "instanceList" => $instanceList, "seriesInstanceUID" => $data['SeriesInstanceUID'] );
    }
 
    echo (json_encode($seriesList, JSON_PRETTY_PRINT));
