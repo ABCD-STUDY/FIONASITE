@@ -911,7 +911,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
              var value = data[keys[i]];
              
              // check if this is a series or a block of series
-             if (typeof value !== 'undefined' && value["file"] == null) {
+             if (typeof value !== 'undefined' && value !== null && value["file"] == null) {
 
                  // this JSON object does not contain the "file" field, so it must be a block
                  // iterate through the JSON objects contained within this block.
@@ -927,7 +927,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
                  str = str.concat("<ul>");
                  for (var j = 0; j < keys2.length; j++) {
                      var value2 = value[keys2[j]];
-                     if (value2["file"] != null) {
+                     if (value2 !== null && value2["file"] !== null) {
                          // found a series inside a block
                          str = str.concat(displaySeries(value2, keys2[j], StudyInstanceUID));
                      }
@@ -945,8 +945,9 @@ function displayDetectedScans(data, StudyInstanceUID) {
 
 function displaySeries(series, seriesName, StudyInstanceUID) {
          
-         if (series["status"] == null) {
+         if (series === null || series["status"] === null) {
              console.log("ERROR: displaySeries: status not found");
+	     return;
          }
 
          if (series["SeriesNumber"] == null) {
