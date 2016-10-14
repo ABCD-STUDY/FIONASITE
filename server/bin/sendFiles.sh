@@ -60,6 +60,8 @@ sendAllFiles () {
     done
   done
 
+
+
   # preserve times (-p)
   # add limit here to prevent too much traffic on the ABCD transfer
   echo "`date`: now copy everything else to the DAIC" >> $log  
