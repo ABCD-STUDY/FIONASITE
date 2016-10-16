@@ -13,6 +13,8 @@ function setupViewportOverlays(element, data) {
     $(topLeft[0]).attr('title', 'PatientName');
     $(topLeft[1]).text(data.patientId);
     $(topLeft[1]).attr('title', 'PatientID');
+    //$(topLeft[2]).text(data.seriesDescription);
+    $(topLeft[2]).attr('title', 'SeriesDescription');
     $(topRight[0]).text(data.studyDescription);
     $(topRight[1]).text(data.studyDate);
     $(bottomLeft[3]).attr('title', 'Series Instance UID');
@@ -46,6 +48,7 @@ function setupViewportOverlays(element, data) {
         // Update Image number overlay
         $(bottomLeft[2]).text("Image # " + (stack.currentImageIdIndex + 1) + "/" + stack.imageIds.length);
 	$(bottomLeft[3]).text("SIUID: " + stack.seriesInstanceUID);
+        $(topLeft[2]).text(stack.seriesDescription);
 	$(bottomLeft[0]).text("SeriesNumber: " + stack.stackId);
     }
     // Add a CornerstoneNewImage event listener on the 'element' (viewer) (?)
