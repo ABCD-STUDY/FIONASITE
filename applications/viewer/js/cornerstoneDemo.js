@@ -23,8 +23,8 @@ $.getJSON('getStudyList.php', function(data) {
     var studyRow = '<tr><td>' +
     study.patientName + '</td><td>' +
     study.patientId + '</td><td align="right">' +
-    study.studyDate.replace(/.*(\d{4})(\d{2})(\d{2}).*/, "$2/$3/$1") + '</td><td align="right">' +
-    study.studyTime.replace(/.*(\d{2})(\d{2})(\d{2}).*/, "$1:$2:$3") + '</td><td align="right">' +
+    study.studyDate.split(".")[0].replace(/.*(\d{4})(\d{2})(\d{2}).*/, "$2/$3/$1") + '</td><td align="right">' +
+    study.studyTime.split(".")[0].replace(/.*(\d{2})(\d{2})(\d{2}).*/, "$1:$2:$3") + '</td><td align="right">' +
     study.numSeries + '</td><td align="center">' +
     study.modality + '</td><td>' +
     (study.studyDescription?study.studyDescription:"") + '</td><td align="right">' +
