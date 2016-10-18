@@ -613,6 +613,8 @@ class ProcessSingleFile(Daemon):
                                 aetitlecaller = responses[0][1:-1]
                                 aetitlecalled = responses[1][1:-1]
                                 callerip      = responses[2]
+                                if callerip == '':
+                                        callerip = "0.0.0.0"
                                 dicomdir      = responses[3]
                                 dicomfile     = responses[4]
                                 response      = ''.join([dicomdir, os.path.sep, dicomfile])
