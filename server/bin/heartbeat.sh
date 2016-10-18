@@ -75,12 +75,12 @@ fi
 #
 ids=`pgrep -f detectStudyArrival`
 while read -r line; do
-    tr=`ps -p "$line" -o etimes=`
+    tr=`ps -p "$line" -o etimes= | tr -d ' '`
     if [ "$tr" -eq "0" ] || [ "$tr" = "" ]; then
 	:
     elif [ "$tr" -gt "3600" ]; then
         echo "`date`: Error, detectStudyArrival is running for more than 1 hour, stop it now and have it restart" >> $log
 	/usr/bin/kill $line && /bin/bin/rm -f /var/www/html/server/.pids/detectStudyArrival.lock
 	# the cron job will restart this service again
-    fi 
+    fi
 done <<< "$ids"
