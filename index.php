@@ -204,6 +204,9 @@
   word-wrap: normal;
   direction: ltr;
 }
+.mark {
+  background-color: DarkSlateGray;
+}
 </style>
     <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet"> -->
     <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
@@ -1162,6 +1165,7 @@ jQuery(document).ready(function() {
     var studyinstanceuid;
     jQuery('#list-of-subjects').on('click', '.open-study-info', function() {
         console.log("clicked on study: ");
+	// we should highlight the current row in this case until the next hover event		     
         var dialog = document.querySelector('#modal-study-info');
         dialog.showModal();
         jQuery('#session-participant').val(null);
@@ -1174,6 +1178,9 @@ jQuery(document).ready(function() {
         seriesinstanceuid = jQuery(this).attr('seriesinstanceuid');
         console.log("studyinstanceuid: " + studyinstanceuid);
         console.log("seriesinstanceuid: " + seriesinstanceuid);
+	jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
+        jQuery(this).addClass('mark');
+
 
         var options = {
             "action": "getStudy",
@@ -1343,9 +1350,11 @@ jQuery(document).ready(function() {
     });
     jQuery('#study-info-dialog-cancel').click(function() {
        var dialog = document.querySelector('#modal-study-info');
+       jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        dialog.close();     
     });
     jQuery('#study-info-dialog-sendall').click(function() {
+       jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        // check if we are allowed to send yet
        if (jQuery('#session-participant').val() == null || jQuery('#session-name').val() == null || jQuery('#session-run').val() == null) {
    	  alert("Please select a valid (screened) participant before uploading data");
