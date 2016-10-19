@@ -705,7 +705,10 @@ class ProcessSingleFile(Daemon):
                                 infile = os.path.basename(response)
                                 fn = os.path.join(outdir, dataset.StudyInstanceUID, dataset.SeriesInstanceUID)
                                 if not os.path.exists(fn):
-                                        os.makedirs(fn)
+                                        try:
+                                                os.makedirs(fn)
+                                        except OSError:
+                                                print "Error: no permissions to create this path ", fn
                                         if not os.path.exists(fn):
                                                 print "Error: creating path ", fn, " did not work"
                                                 logging.error('Error: creating path %s did not work' % fn)
