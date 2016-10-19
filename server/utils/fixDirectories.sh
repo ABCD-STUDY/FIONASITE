@@ -7,7 +7,7 @@
 # there.
 #
 # Run as root user cron job
-#       */10 * * * * /var/www/html/server/utilts/fixDirectories.sh
+#       */10 * * * * /var/www/html/server/utils/fixDirectories.sh
 #
 
 dirloc=/data/site/raw/
