@@ -14,6 +14,12 @@ function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+// Some patientID's might contain '^' characters from spaces (DICOM), those are not good 
+// id's. We should sanitize them before we use them.
+function sanitizePI( patientID ) {
+   return patientID.replace(/\^|\./g,"_");
+}
+
 // Get study list from JSON manifest
 //$.getJSON('studyList.json', function(data) {
 $.getJSON('getStudyList.php', function(data) {
@@ -38,7 +44,7 @@ $.getJSON('getStudyList.php', function(data) {
     $(studyRowElement).click(function() {
 
       // Add new tab for this study and switch to it
-      var studyTab = '<li><a href="#x' + study.patientId + '" data-toggle="tab">' + study.patientName + '&nbsp;<button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-top: -3px; margin-left: 5px;"><span aria-hidden="true" style="color: white;">&times;</span></button></a></li>';
+      var studyTab = '<li><a href="#x' + sanitizePI(study.patientId) + '" data-toggle="tab">' + study.patientName + '&nbsp;<button type="button" class="close" data-dismiss="alert" aria-label="Close" style="margin-top: -3px; margin-left: 5px;"><span aria-hidden="true" style="color: white;">&times;</span></button></a></li>';
       $('#tabs').append(studyTab);
 
       // Add tab content by making a copy of the studyViewerTemplate element
@@ -48,7 +54,7 @@ $.getJSON('getStudyList.php', function(data) {
       studyViewerCopy.find('.imageViewer').append(viewportCopy);*/
 
 
-      studyViewerCopy.attr("id", 'x' + study.patientId);
+      studyViewerCopy.attr("id", 'x' + sanitizePI(study.patientId));
       // Make the viewer visible
       studyViewerCopy.removeClass('hidden');
       // Add section to the tab content
