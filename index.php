@@ -461,7 +461,9 @@ loading configuration file...
 	<h4>Identify your imaging session</h4>
         <div class="form-group">
           <label for="session-participant" class="control-label">Participant (pGUID in REDCap)</label><br/>
-          <select class="form-control select2-list" id="session-participant"></select>
+          <select class="form-control select2-list" id="session-participant">
+	    <option></option>
+	  </select>
         </div>
 	
         <div class="form-group">
@@ -1070,17 +1072,11 @@ function getSessionNamesFromREDCap() {
 
 function getParticipantNamesFromREDCap() {
     jQuery.getJSON('/php/getParticipantNamesFromREDCap.php', function(data) {
-        //jQuery('#session-participant').children().remove();
-        //for (var i = 0; i < data.length; i++) {
-        //    jQuery('#session-participant').append("<option class=\"drop-down-item\" value=\"" + data[i] + "\">" + data[i] + "</option>");
-        //}
 	jQuery('#session-participant').select2({
 	    dropdownParent: jQuery('#modal-study-info'),
 	    placeholder: 'Select a REDCap participant',
 	    data: data.map(function(v,i) { return { id:v, text:v }; })
 	});
-	jQuery('#session-participant').val(null);
-	//jQuery('#session-participant').css('z-index', '100003');
     });
 }
 
