@@ -893,6 +893,15 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 
+                                # Collect the UUID from the ptag_ser structure
+                                if ptag_ser:
+                                        try:
+                                                tmp = ptag_ser['MrPhoenixProtocol']
+                                                searchThis = re.compile(r'sWipMemBlock.tFree\t\s*=\s*\t\"\"(?P<UUID>[^\"]+)')
+                                                data['siemensUUID'] = searchThis.search(tmp).group('UUID')
+                                        except:
+                                                pass
+
                                 # lets add up all the diffusion information we find for Siemens
                                 siemensDiffusionInformation = None
                                 if ptag_img:
