@@ -107,9 +107,9 @@ do
   ty=`echo $bn | rev | cut -d'_' -f4- | rev`
   me=`echo $bn | rev | cut -d'_' -f3 | rev`
   da=`echo $bn | rev | cut -d'_' -f2 | rev`
-  ti=`echo $bn | rev | cut -d'_' -f1 | rev | cut -d'.' -f1`
+  ti=`echo $bn | rev | cut -d'_' -f1 | rev | cut -d'.' -f1 | sed 's/^[0]*//'`
 
-  echo "found $file of type $ty with meas $me done on day $da time $ti"
+  echo "Found: $file of type $ty with meas $me done on day $da time $ti"
 
   # try to find an image series that was done at the same day/time
   # jq "[.StudyDate,.StudyTime,.SeriesInstanceUID,input_filename]" /data/site/raw/*/*.json
@@ -128,15 +128,45 @@ do
 	  continue;
       fi
       # same day item found
+
+      # we can check now for the MID number
+      meNum=$(echo "$me" | sed -e 's/^MID[0]*//')
       
-      st=($(/usr/bin/jq '.SeriesTime' $json | cut -d'.' -f1 | tr -d '"'))
+      # the meNum is shared between the .dat and the hdr files (if they come from the same day)
+      
+      st=($(/usr/bin/jq '.SeriesTime' $json | cut -d'.' -f1 | tr -d '"' | sed -e 's/^[0]*//'))
       if [ $st -le $ti ]; then
 	  continue;
       fi
       # after time item found
-      
-      if [ $(( $st - $ti )) -gt 200 ]; then
-	  continue;
+
+
+      # this meNum is part of the yarra_export filename, collect the hdr files for this entry
+      # but we get too many entries here, need to filter by date at least
+      # we will get copies of the hdr files from ABCDfMRIadj and ABCDfMRIhdr, copy both right now to make this work
+      # ls -lahrt /data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCD*/*\#M${meNum}\#*.hdr
+      hdrs=$(find /data/site/scanner-share/ABCDstream/yarra_export/measfiles/ -name "*\#M${meNum}\#*.hdr" -printf '%TY%Tm%Td "%p"\n' | grep "$da" | head -1 | cut -d' ' -f2- | sed 's/^"\(.*\)"$/\1/')
+      # get the UUID that appears in the DICOM
+      UUID=""
+      if [ ! -z "${hdrs}" ]; then
+         UUID=$(/bin/strings $hdrs | grep sWipMemBlock.tFree | awk '{ print $3; }' | sed 's/^"\(.*\)"$/\1/')
+      fi
+  
+      #echo "header: \"$UUID ${hdrs}\""
+      #
+      # Assumption: some json files will have the same UUID in their jsons.
+      # Those DICOM series and the k-space data belong together. We don't need to check
+      # for the time in these cases.
+      #
+      seriesUUID=($(/usr/bin/jq '.siemensUUID' $json | cut -d'.' -f1 | tr -d '"'))
+
+      if [ ! -z "$UUID" ] && [ ! -z "$seriesUUID" ] && [ "$UUID" == "$seriesUUID" ]; then
+	  # found a json series that belongs to this dat and hdr file combination
+	  echo "FOUND two UUID's that belong together $UUID"
+      else
+	  if [ $(( $st - $ti )) -gt 200 ]; then
+	      continue;
+	  fi
       fi
 
       # get the StudyInstanceUID and the SeriesInstanceUID
@@ -148,12 +178,12 @@ do
       fn1="/data/quarantine/SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz"
       js1="/data/quarantine/SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.json"
       md1="/data/quarantine/SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.md5sum"
-      fn2=$(ls "/data/outbox/*SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz")
-      fn3=$(ls "/data/DAIC/*SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz")
+      fn2=$(ls "/data/outbox/*SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz" 2> /dev/null)
+      fn3=$(ls "/data/DAIC/*SUID_${StudyInstanceUID}_subjid_${PatientName}_${SeriesInstanceUID}_se${SeriesNumber}_${me}.tgz" 2> /dev/null)
 
       # does this file exists already, don't do anything
       if [ -e "$fn1" ] || [ ! -z "$fn2" ] || [ ! -z "$fn3" ]; then
-	  echo "Info: this file ($fn1|$fn2|$fn3) already exists, skip"
+	  echo "  Info: this file (\"$fn1\"|\"$fn2\"|\"$fn3\") already exists, skip"
 	  continue; 
       fi
 
@@ -162,28 +192,36 @@ do
       # now package the dat file with a single DICOM as a k-space package
       dicom=$(ls "${json%.*}" | head -1)
       # resolve the symbolic link from raw into the real filename in archive
-      dicom=$(readlink -f "$dicom")
+      dicom=$(/bin/readlink -f "${json%.*}/$dicom")
       if [ "$dicom" == "" ]; then
 	  echo "Error: no DICOM file found for this series"
       fi
       echo "`date`: create now ${fn1},${js1} with $dicom"
       
-      #
-      # If there are other files that need to be added they should
-      # be appended to the end of the next line.
-      #
-
       # we need to make sure again that all files are present - we don't want to create a tgz with missing files
       if [ ! -e "$file" ] || [ ! -e "${dicom}" ]; then
 	  echo "`date`: Error tried to package together $file and $dicom, but of of them could not be found, we will not create ${fn1}"
 	  continue;
       fi
 
+      echo "Create TGZ now: ${fn1} <- ${dicom} ${file} ${json} ${hdrs}"
+
       # setting the compression level to -1 should speed up the packaging
       if hash pigz 2>/dev/null; then
-          tar cf - "${dicom}" "$file" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat" | pigz --fast -p 6 > "${fn1}"
+          tar cf - "${dicom}" "$file" "$json" ${hdrs} | pigz --fast -p 6 > "${fn1}"
+	  packval=$?
       else
-	  GZIP=-1 tar cvzf "${fn1}" "${dicom}" "$file"  "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDfMRIhdr/*${me}*.hdr" "/data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCDMPR/*${me}*.dat"
+	  GZIP=-1 tar cvzf "${fn1}" "${dicom}" "$file" "$json" ${hdrs}
+	  packval=$?
+      fi
+      if [ $packval -ne 0 ]; then
+	  # something went wrong, remove this output, if it exists
+	  echo "   ERRROR: could not create tar file ${fn1}"
+	  if [ -e "${fn1}" ]; then
+	      /bin/rm -f "${fn1}"
+	  fi
+	  # try again next time
+	  continue
       fi
 
       # create a json that goes together with it
@@ -196,6 +234,11 @@ do
       chown processing:processing "${fn1}" "${js1}" "${md1}"
 
       echo "`date`: packaging done"
+
+      # If we are done with packaging and we have all data in there we should remove the files from the external usb
+      # and from the hdr location, but not the DICOM or the json.
+      echo "  REMOVE:  /bin/rm -f $file ${hdrs}"
+
   done
 
 done
