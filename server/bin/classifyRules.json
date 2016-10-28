@@ -565,7 +565,7 @@
         "value": "FEEPI"
       },{ 
         "tag": [ "NumberOfTemporalPositions" ],
-        "value": "375" 
+        "value": "383" 
       }
     ]
   },
@@ -584,9 +584,8 @@
         "tag": [ "SequenceType" ],
         "value": "DwiSE"
       },{ 
-        "tag": [ "NumberOfTemporalPositions" ],
-        "operator": "!=",
-        "value": "1" 
+        "tag": [ "SeriesDescription" ],
+        "value": "^DTI" 
       }
     ]
   },
@@ -646,7 +645,7 @@
         "value": "FEEPI"
       },{ 
         "tag": [ "NumberOfTemporalPositions" ],
-        "value": "437" 
+        "value": "445" 
       }
     ]
   },
@@ -666,7 +665,7 @@
         "value": "FEEPI"
       },{ 
         "tag": [ "NumberOfTemporalPositions" ],
-        "value": "350" 
+        "value": "370" 
       }
     ]
   },
@@ -686,7 +685,7 @@
         "value": "FEEPI"
       },{ 
         "tag": [ "NumberOfTemporalPositions" ],
-        "value": "403" 
+        "value": "411" 
       }
     ]
   },
@@ -815,8 +814,8 @@
         "tag": [ "SequenceType" ],
         "value": "DwiSE"
       },{ 
-        "tag": [ "NumberOfTemporalPositions" ],
-        "value": "1" 
+        "tag": [ "SeriesDescription" ],
+        "value": "^ABCD" 
       }
     ]
   },
