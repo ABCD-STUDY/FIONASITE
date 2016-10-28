@@ -150,6 +150,9 @@ do
       UUID=""
       if [ ! -z "${hdrs}" ]; then
          UUID=$(/bin/strings $hdrs | grep sWipMemBlock.tFree | awk '{ print $3; }' | sed 's/^"\(.*\)"$/\1/')
+      else
+	  echo "`date`: Error could not find a hdr file for \"$file\", we will not package this dat file."
+	  continue;
       fi
   
       #echo "header: \"$UUID ${hdrs}\""
@@ -196,11 +199,11 @@ do
       if [ "$dicom" == "" ]; then
 	  echo "Error: no DICOM file found for this series"
       fi
-      echo "`date`: create now ${fn1},${js1} with $dicom"
+      echo "`date`: create now ${fn1} and ${js1} with $dicom"
       
       # we need to make sure again that all files are present - we don't want to create a tgz with missing files
-      if [ ! -e "$file" ] || [ ! -e "${dicom}" ]; then
-	  echo "`date`: Error tried to package together $file and $dicom, but of of them could not be found, we will not create ${fn1}"
+      if [ ! -e "$file" ] || [ ! -e "${dicom}" ] || [ ! -e "${hdrs}" ]; then
+	  echo "`date`: Error tried to package together \"$file\", \"$dicom\" and \"$hdrs\" but of of them could not be found, we will not create ${fn1}"
 	  continue;
       fi
 
