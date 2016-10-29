@@ -115,6 +115,10 @@ do
   # jq "[.StudyDate,.StudyTime,.SeriesInstanceUID,input_filename]" /data/site/raw/*/*.json
   # jq '{ "SeriesDescription": .SeriesDescription, "StudyDate": .StudyDate,"StudyTime": .StudyTime,"SeriesTime": .SeriesTime, "SeriesInstanceUID": .SeriesInstanceUID,"filename": input_filename} | select(.StudyDate == "20160825")' /data/site/raw/*/*.json
 
+  # we can check now for the MID number
+  meNum=$(echo "$me" | sed -e 's/^MID[0]*//')
+  hdrs=$(find /data/site/scanner-share/ABCDstream/yarra_export/measfiles/ -name "*\#M${meNum}\#*.hdr" -printf '%TY%Tm%Td "%p"\n' | grep "$da" | head -1 | cut -d' ' -f2- | sed 's/^"\(.*\)"$/\1/')
+
   # search all json files for one that matches this ScanDate
   find /data/site/raw -type f -iname '*.json' -print0 | while read -d $'\0' json
   do
@@ -129,8 +133,6 @@ do
       fi
       # same day item found
 
-      # we can check now for the MID number
-      meNum=$(echo "$me" | sed -e 's/^MID[0]*//')
       
       # the meNum is shared between the .dat and the hdr files (if they come from the same day)
       
@@ -145,7 +147,7 @@ do
       # but we get too many entries here, need to filter by date at least
       # we will get copies of the hdr files from ABCDfMRIadj and ABCDfMRIhdr, copy both right now to make this work
       # ls -lahrt /data/site/scanner-share/ABCDstream/yarra_export/measfiles/ABCD*/*\#M${meNum}\#*.hdr
-      hdrs=$(find /data/site/scanner-share/ABCDstream/yarra_export/measfiles/ -name "*\#M${meNum}\#*.hdr" -printf '%TY%Tm%Td "%p"\n' | grep "$da" | head -1 | cut -d' ' -f2- | sed 's/^"\(.*\)"$/\1/')
+
       # get the UUID that appears in the DICOM
       UUID=""
       if [ ! -z "${hdrs}" ]; then
