@@ -1358,11 +1358,31 @@ jQuery(document).ready(function() {
        }	
 
        var buttons = jQuery('#detected-scans .send-series-button');
-       for (var i = 0; i < buttons.length; i++) {
-          console.log("Try to press the send button for series " + jQuery(buttons[i]).attr('filename'));
-	  jQuery(buttons[i]).trigger('click');
-       }
-       alert('Send ' + buttons.length + ' series to /data/outbox');
+       jQuery.each(buttons, function(index, value) {
+          var StudyInstanceUID = jQuery(value).attr('StudyInstanceUID');
+          var SeriesInstanceUID = jQuery(value).attr('SeriesInstanceUID');
+          var filename = jQuery(value).attr('filename');
+	  if (jQuery('#session-participant').val() == null || jQuery('#session-name').val() == null || jQuery('#session-run').val() == null) {
+		alert("Please select a valid (screened) participant before uploading data");
+		return;
+          }
+				
+          var options = {
+             "filename": filename,
+	     "id_redcap" : jQuery('#session-participant').val(),
+	     "redcap_event_name": jQuery('#session-name').val(),
+             "run": jQuery('#session-run').val()
+          };
+          jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
+              // alert(JSON.stringify(data));
+	      // collect the different messages before sending them
+          });
+       });
+
+       alert('Sending ' + buttons.length + ' series to the DAIC.');
+       var dialog = document.querySelector('#modal-study-info');
+       jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
+       dialog.close();     
     });
 
          // onClick
