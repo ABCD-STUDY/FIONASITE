@@ -8,7 +8,7 @@
 #
 # This script should be run by user root (creates mount point).
 #
-# */1 * * * * /var/www/html/server/bin/importSiemensKSPACE.sh >> /var/www/html/server/logs/importSiemensKSPACE.log 2>&1
+# */30 * * * * /var/www/html/server/bin/importSiemensKSPACE.sh >> /var/www/html/server/logs/importSiemensKSPACE.log 2>&1
 #
 
 # A .dat file needs to be at least that many seconds old (modification time) before it will be copied
