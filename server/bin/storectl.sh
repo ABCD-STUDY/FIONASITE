@@ -50,10 +50,10 @@ case $1 in
         echo "Starting storescp daemon..."
         echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescp --fork --promiscuous --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
 
-        /usr/bin/nohup /usr/bin/storescp --fork \
+        /usr/bin/nohup /var/www/html/server/bin/storescpFIONA --fork \
 	    --promiscuous \
             --write-xfer-little \
-            --exec-on-reception "$scriptfile '#a' '#c' '#r' '#p' '#f' &" \
+            --exec-on-reception "PleaseLookAtThis '#a' '#c' '#r' '#p' '#f'" \
             --sort-on-study-uid scp \
             --output-directory "$od" \
             $port &>${SERVERDIR}/logs/storescpd.log &
