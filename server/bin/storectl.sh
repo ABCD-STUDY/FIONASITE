@@ -44,11 +44,11 @@ case $1 in
             exit -1
         fi
         echo "Check if storescp daemon is running..."
-        /usr/bin/pgrep -f -u processing "storescp "
+        /usr/bin/pgrep -f -u processing "storescpFIONA "
         RETVAL=$?
         [ $RETVAL = 0 ] && exit || echo "storescpd process not running, start now.."
         echo "Starting storescp daemon..."
-        echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescp --fork --promiscuous --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
+        echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescpFIONA --fork --promiscuous --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
 
         /usr/bin/nohup /var/www/html/server/bin/storescpFIONA --fork \
 	    --promiscuous \
@@ -62,7 +62,7 @@ case $1 in
         ;;
     'stop')
         #/usr/bin/pkill -F $pidfile
-        /usr/bin/pkill -u processing storescp
+        /usr/bin/pkill -u processing storescpFIONA
         RETVAL=$?
         # [ $RETVAL -eq 0 ] && rm -f $pidfile
         [ $RETVAL = 0 ] && rm -f ${pidfile}
