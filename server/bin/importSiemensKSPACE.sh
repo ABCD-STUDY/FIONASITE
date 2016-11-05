@@ -241,7 +241,7 @@ do
       # If we are done with packaging and we have all data in there we should remove the files from the external usb
       # and from the hdr location, but not the DICOM or the json.
       echo "  REMOVE:  /bin/rm -f $file ${hdrs}"
-
+      /bin/rm -f ${file} ${hdrs}
   done
 
 done
