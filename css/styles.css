@@ -68,7 +68,7 @@ html, body {
       -ms-flex-pack: end;
           justify-content: flex-end;
   padding: 16px;
-  height: 151px;
+  height: 121px;
 }
 .demo-avatar-dropdown {
   display: -webkit-box;
@@ -470,4 +470,109 @@ nav ul a {
   color: rgba(0,0,0,0.87);
   text-decoration: none;
   font-weight: 400;
+}
+
+
+
+#view-name {
+  font-size: 24px;
+}
+div.message {
+   line-height: 1.2em;
+   margin-top: 5px;
+}
+.message p {
+  margin: 0px;
+}
+#detected-scans > ul > li {
+  margin-bottom: 5px;
+}
+#detected-scans > ul > li > ul > li {
+  margin-bottom: 5px;
+}
+
+
+
+.mdh-expandable-search {
+  margin: 0 50px;
+  align-items: center;
+  justify-content: center;
+  width: 250px;
+  padding: 5px;
+}
+
+.mdh-expandable-search form {
+  max-width: 600px;
+}
+
+.mdh-expandable-search,
+.mdh-expandable-search form,
+.mdh-expandable-search input {
+  /* Cross browser flex-grow */
+  -webkit-box-flex: 1;
+  -webkit-flex-grow: 1;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}
+
+.mdh-expandable-search,
+.mdh-expandable-search form {
+  /* Cross browser inline-flex */
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -moz-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+/* Position search icon */
+.mdh-expandable-search .material-icons {
+  position: relative;
+  right: -40px;
+  margin-left: -24px; /* Remove the blank space left behind by the icon being relatively positioned */
+}
+
+.mdh-expandable-search input {
+  outline: none;
+  border: none;
+  font-size: 16px;
+  color: #FFFFFF;
+  background-color: #78909C;
+  padding: 0px 45px 0px 88px;
+  height: 30px;
+  line-height: 40px; /* TODO: This was recommended for cross browser compatability of input height, check if its actually needed in modern browsers */
+  
+  border-radius: 3px 3px 3px 3px;
+  -moz-border-radius: 3px 3px 3px 3px;
+  -webkit-border-radius: 3px 3px 3px 3px;
+}
+
+.mdh-expandable-search input::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #FFFFFF;
+}
+.mdh-expandable-search input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #FFFFFF;
+   opacity:  1; /* Firefox gives the placeholder a reduced opacity so we have to increase it */
+}
+.mdh-expandable-search input::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #FFFFFF;
+   opacity:  1; /* Firefox gives the placeholder a reduced opacity so we have to increase it */
+}
+.mdh-expandable-search input:-ms-input-placeholder { /* Internet Explorer 10+ */
+   color:    #FFFFFF;
+}
+
+
+/* Bug fix: https://github.com/google/material-design-lite/issues/1078
+ * To much padding on the left of header when the menu button is hidden */
+@media screen and (min-width: 851px) {
+  .mdl-layout__header-row {
+    padding: 0 40px 0 40px;
+  }
+}
+
+/* Bug fix for badges being in the wrong location */
+.mdl-badge[data-badge]:after {
+  right: -7px;
+  top: -8px;
 }

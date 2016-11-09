@@ -272,7 +272,7 @@
 
      li {
 	 border-bottom: 1px solid gray;
-	 margin-bottom: 10px;
+	 margin-bottom: 5px;
 	 list-style-type: none;
 	 margin-left: 0px;
 	 padding: 5px;
@@ -343,6 +343,22 @@
         <nav class="demo-navigation  mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
            <center><span id="view-name"></span></center>
            <div class="mdl-layout-spacer"></div>
+           <div class="" style="color: white; width: 100%;">
+               <div class="mdh-expandable-search mdl-cell--hide-phone">
+                   <i class="material-icons">search</i>
+                   <form action="#">
+                        <input id="search-list" type="text" placeholder="Search" size="1">
+                   </form>
+               </div>
+
+               <!-- Displayed on mobile -->
+               <div class="mdl-layout-spacer mdl-cell--hide-tablet mdl-cell--hide-desktop"></div>
+                 <!-- Search button -->
+                <button class="mdh-toggle-search mdl-button mdl-js-button mdl-button--icon mdl-cell--hide-tablet mdl-cell--hide-desktop">
+                    <i class="material-icons">search</i>
+                </button>
+           </div>
+
         </nav>
         <nav id="list-of-subjects" class="demo-navigation mdl-navigation mdl-color--blue-grey-800">
            <div class="mdl-layout-spacer"></div>
@@ -932,7 +948,7 @@ function displayDetectedScans(data, StudyInstanceUID) {
                  str = str.concat("<ul>");
                  for (var j = 0; j < keys2.length; j++) {
                      var value2 = value[keys2[j]];
-                     if (value2 !== null && value2["file"] !== null) {
+                     if (value2 !== null && typeof value2["file"] !== "undefined") {
                          // found a series inside a block
                          str = str.concat(displaySeries(value2, keys2[j], StudyInstanceUID));
                      }
@@ -992,7 +1008,9 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          str = str.concat("<div class='message'><p>" + series["message"] + "</p></div>");
          var id = "transferStatus"+createUUID();
          str = str.concat("<div id=\""+id+"\" class='TransferStatus'>TransferStatus: " + transferStatus + "</div>");
-         str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + series["SeriesNumber"] + "</div>");
+         if (typeof series["SeriesNumber"] != 'undefined') { 
+           str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + (series["SeriesNumber"]==null?"":series["SeriesNumber"]) + "</div>");
+         }
          if (transferStatus == "/quarantine/") {
              str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          }
@@ -1080,11 +1098,71 @@ function getParticipantNamesFromREDCap() {
     });
 }
 
+function traverse(elem, s) {
+  $(elem).children().each(function(i,e){
+    //console.log($(e).text());
+    s = jQuery(e).text() + traverse($(e), s);
+  });
+  return s;
+}
+
+
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
-    jQuery('#list-of-subjects').on('click', '.pull-study', function() {
+ jQuery('.mdh-toggle-search').click(function() {
+    // No search bar is currently shown
+    if ($(this).find('i').text() == 'search') {
+      $(this).find('i').text('cancel');
+      $(this).removeClass('mdl-cell--hide-tablet mdl-cell--hide-desktop'); // Ensures the close button doesn't disappear if the screen is resized.
+
+      $('.mdl-layout__drawer-button, .mdl-layout-title, .mdl-badge, .mdl-layout-spacer').hide();
+      $('.mdl-layout__header-row').css('padding-left', '16px'); // Remove margin that used to hold the menu button
+      $('.mdh-expandable-search').removeClass('mdl-cell--hide-phone').css('margin', '0 16px 0 0');
+      
+    }
+    // Search bar is currently showing
+    else {
+      $(this).find('i').text('search');
+      $(this).addClass('mdl-cell--hide-tablet mdl-cell--hide-desktop');
+      
+      $('.mdl-layout__drawer-button, .mdl-layout-title, .mdl-badge, .mdl-layout-spacer').show();
+      $('.mdl-layout__header-row').css('padding-left', '');
+      $('.mdh-expandable-search').addClass('mdl-cell--hide-phone').css('margin', '0 50px');
+    }
+    
+  });
+
+  jQuery('#search-list').keyup(function() {
+         //console.log('new search...' + jQuery('#search-list').val());
+         search = jQuery('#search-list').val();
+         if (search.trim() == "") {
+             jQuery('#list-of-subjects div.open-study-info').each(function(i,v) {
+                 jQuery(this).show();
+             });
+         }
+         var re = new RegExp(search,'i');
+         jQuery('#list-of-subjects div.open-study-info').each(function(i,v) {
+             var str = traverse(v);
+             if (re.test(str)) {
+                 jQuery(v).show();
+             } else {
+                 jQuery(v).hide();
+             }
+             //console.log('found strings: ' + str);
+         });
+         jQuery('#list-of-subjects > ul > li').each(function(i,v){
+             var str = jQuery(v).text();  // gets us all the text elements we will need
+             if (re.test(str)) {
+                 jQuery(v).show();
+             } else {
+                 jQuery(v).hide();
+             }
+         });
+   });
+
+   jQuery('#list-of-subjects').on('click', '.pull-study', function() {
        // pull this study over from FIONA
        var study = jQuery(this).attr('study');
        if (study != "") {
