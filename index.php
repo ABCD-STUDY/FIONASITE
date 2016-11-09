@@ -1382,7 +1382,10 @@ jQuery(document).ready(function() {
        alert('Sending ' + buttons.length + ' series to the DAIC.');
        var dialog = document.querySelector('#modal-study-info');
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
-       dialog.close();     
+       dialog.close();
+       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val() }, function(data) {
+	  console.log("tried to announce data, got: " + data);
+       });
     });
 
          // onClick
