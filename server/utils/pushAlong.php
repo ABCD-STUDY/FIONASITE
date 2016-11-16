@@ -186,10 +186,23 @@
 		$tgzQuarantine = glob('data/quarantine/*'.$seriesInstanceUID.'*.tgz');
 		if (count($tgzDAIC) == 1 && count($tgzQuarantine) == 1 &&
 		    filemtime($tgzDAIC[0]) < filemtime($tgzQuarantine[0]) ) {
+		   $fn = basename($tgzDAIC[0],'.tgz');
+		   $ofn = basename($tgzQuarantine[0],'.tgz');
+		   $fs = glob("/".dirname($tgzQuarantine[0])."/".$ofn."*");
 		   if ($force) {
-		      
+		      foreach ($fs as $f) {
+		          $path_parts = pathinfo($f);
+		          $ok = rename($f, "/data/outbox/".$fn.".".$path_parts['extension']);
+			  if (! $ok) {
+			     echo ("Error moving: ".$f. " to /data/outbox/".$fn.".".$path_parts['extension']);
+			  }			  
+	              }		      
 		   } else {
-		      echo (" should copy newer ".$tgzQuarantine[0]." over to outbox/\n");
+		      # create filename for output, should be what we have in DAIC
+		      foreach ($fs as $f) {
+		          $path_parts = pathinfo($f);
+		          echo (" should copy newer ".$f." over to outbox/ as ".$fn.".".$path_parts['extension']."\n");
+	              }				      
 		   }
                 }	       
 	    }
