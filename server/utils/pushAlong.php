@@ -3,6 +3,13 @@
    //
    // call with -f if you want this to actually do something
    //
+   // todo: add check for user processing
+
+   $username = exec('whoami');
+   if ( $username != "processing" ) {
+      echo("Error: run this script as user processing not as ".$username."\n");
+      exit(1);
+   }
 
    $shortopts = "f";
    $options = getopt($shortopts);
@@ -166,5 +173,53 @@
       }
    }
 
+   //
+   // find data in DAIC that has a newer version in quarantine (copy new version to outbox for transfer)
+   //
+   foreach($data as $studyInstanceUID => $study) {
+      if (isset($study['series'])) {
+      	 foreach($study['series'] as $seriesInstanceUID => $v) {
+	    if (array_key_exists('DAIC',$v) && $v['DAIC'] == 1 &&
+	        array_key_exists('quarantine',$v) && $v['quarantine'] == 1) {
+		// check the file times of both tgz files
+		$tgzDAIC = glob('data/DAIC/*'.$seriesInstanceUID.'*.tgz');
+		$tgzQuarantine = glob('data/quarantine/*'.$seriesInstanceUID.'*.tgz');
+		if (count($tgzDAIC) == 1 && count($tgzQuarantine) == 1 &&
+		    filemtime($tgzDAIC[0]) < filemtime($tgzQuarantine[0]) ) {
+		   $fn = basename($tgzDAIC[0],'.tgz');
+		   $ofn = basename($tgzQuarantine[0],'.tgz');
+		   $fs = glob("/".dirname($tgzQuarantine[0])."/".$ofn."*");
+		   if ($force) {
+		      foreach ($fs as $f) {
+		          $path_parts = pathinfo($f);
+		          $ok = rename($f, "/data/outbox/".$fn.".".$path_parts['extension']);
+			  if (! $ok) {
+			     echo ("Error moving: ".$f. " to /data/outbox/".$fn.".".$path_parts['extension']);
+			  }			  
+	              }		      
+		   } else {
+		      # create filename for output, should be what we have in DAIC
+		      foreach ($fs as $f) {
+		          $path_parts = pathinfo($f);
+		          echo (" should copy newer ".$f." over to outbox/ as ".$fn.".".$path_parts['extension']."\n");
+	              }				      
+		   }
+                }	       
+	    }
+	 }
+      }
+   }
+
+   //
+   // find data in DAIC that is also in quarantine (can be deleted)
+   //
+
+   //
+   // find tgz data in quarantine that does not have an md5sum file (create md5sum file)
+   //
+   
+   //
+   // find tgz data in quarantine that has a md5sum file that is older than the tgz (recreate the md5sum file)
+   //
 
 ?>
