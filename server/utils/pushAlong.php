@@ -4,6 +4,9 @@
    // call with -f if you want this to actually do something
    //
    // todo: add check for user processing
+   // Run as user processing: 
+   //      0 */23 * * * /usr/bin/php /var/www/html/server/utils/pushAlong.php -f >> /var/www/html/server/logs/pushAlong.log
+   //    
 
    $username = exec('whoami');
    if ( $username != "processing" ) {
