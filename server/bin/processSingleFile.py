@@ -596,6 +596,8 @@ class ProcessSingleFile(Daemon):
                         logging.error('Error: could not open named pipe for reading commands')
                         sys.exit(1)
                         
+                # remove any zero bytes from the filename
+                _split = re.compile(r'[\0%s]' % re.escape(''.join([os.path.sep, os.path.altsep or ''])))
                 while True:
                         response = rp.readline()[:-1]
                         if not response:
@@ -610,8 +612,14 @@ class ProcessSingleFile(Daemon):
                                                 print 'Error: expected 5 arguments in line from pipe separated by commas'
                                                 logging.error('Error: expected 5 arguments in line from pipe separated by commas but got %s' % response)
                                                 continue
-                                aetitlecaller = responses[0][1:-1]
-                                aetitlecalled = responses[1][1:-1]
+                                aetitlecaller = responses[0]
+                                aetitlecaller = aetitlecaller.replace('"','')
+                                aetitlecaller = aetitlecaller.replace(' ','')
+                                aetitlecaller = aetitlecaller.replace('\\','')
+                                aetitlecalled = responses[1]
+                                aetitlecalled = aetitlecalled.replace('"','')
+                                aetitlecalled = aetitlecalled.replace(' ','')
+                                aetitlecalled = aetitlecalled.replace('\\','')
                                 callerip      = responses[2]
                                 if callerip == '':
                                         callerip = "0.0.0.0"
@@ -688,8 +696,9 @@ class ProcessSingleFile(Daemon):
                                 if not os.path.exists(arriveddir):
                                         os.makedirs(arriveddir)
                                 # write a touch file for each image of a series (to detect series arrival)
+                                # make sure that the touch file name does not contain double quotes or back-slash characters, or null bytes
                                 try:
-                                        arrivedfile = os.path.join(arriveddir, ''.join([ aetitlecaller, " ", aetitlecalled, " ", callerip, " ", dataset.StudyInstanceUID, " ", dataset.SeriesInstanceUID ] ))
+                                        arrivedfile = os.path.join(arriveddir, _split.sub('', ''.join([ aetitlecaller, " ", aetitlecalled, " ", callerip, " ", dataset.StudyInstanceUID, " ", dataset.SeriesInstanceUID ] )))
                                 except AttributeError:
                                         logging.error('Did not find Study or Series instance UID for arrivedfile')
                                         continue
