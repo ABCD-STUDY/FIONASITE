@@ -30,7 +30,7 @@ fi
 
 if [[ $# -eq 2 ]]; then
    if [[ "$1" -eq "last" ]]; then
-       find /data/site/archive -type d -mtime "-$2" -print0 | while read -d $'\0' file
+       find /data/site/archive/ -mindepth 1 -type d -mtime "-$2" -print0 | while read -d $'\0' file
        do
 	   dir=`realpath "$file"`
 	   echo "Send data in \"$dir\" to $myip : $myport"
