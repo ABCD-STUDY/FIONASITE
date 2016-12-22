@@ -586,7 +586,10 @@
       },{ 
         "tag": [ "SeriesDescription" ],
         "value": "^DTI" 
-      }
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "[0-4]$" 
+      }   
     ]
   },
   { 
@@ -623,6 +626,46 @@
       },{ 
         "tag": [ "SequenceType" ],
         "value": "SEEPI"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "A$" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-Diffusion-FM-PA",
+    "description" : "PA Field Map for ABCD DTI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 141"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "DwiSE"
+      },{ 
+        "tag": [ "SeriesDescription" ],
+        "value": "P$" 
+      }
+    ]
+  },
+  { 
+    "type" : "ABCD-Diffusion-FM-AP",
+    "description" : "AP Field Map for ABCD DTI scan",
+    "rules" : [
+      {
+	"rule" : "PHILIPSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 141"
+      },{ 
+        "tag": [ "SequenceType" ],
+        "value": "DwiSE"
       },{ 
         "tag": [ "SeriesDescription" ],
         "value": "A$" 
