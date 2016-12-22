@@ -1430,7 +1430,10 @@ jQuery(document).ready(function() {
     jQuery('#study-info-dialog-sendall').click(function() {
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        // check if we are allowed to send yet
-       if (jQuery('#session-participant').val() == null || jQuery('#session-name').val() == null || jQuery('#session-run').val() == null) {
+       if (jQuery('#session-participant').val() == "" || 
+           jQuery('#session-participant').val() == null || 
+           jQuery('#session-name').val() == null || 
+           jQuery('#session-run').val() == null) {
    	  alert("Please select a valid (screened) participant before uploading data");
 	  return;
        }	
@@ -1440,7 +1443,10 @@ jQuery(document).ready(function() {
           var StudyInstanceUID = jQuery(value).attr('StudyInstanceUID');
           var SeriesInstanceUID = jQuery(value).attr('SeriesInstanceUID');
           var filename = jQuery(value).attr('filename');
-	  if (jQuery('#session-participant').val() == null || jQuery('#session-name').val() == null || jQuery('#session-run').val() == null) {
+	  if ( jQuery('#session-participant').val() == "" || 
+	       jQuery('#session-participant').val() == null || 
+               jQuery('#session-name').val() == null || 
+               jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant before uploading data");
 		return;
           }
@@ -1474,7 +1480,10 @@ jQuery(document).ready(function() {
          var SeriesInstanceUID = jQuery(this).attr('SeriesInstanceUID');
          var filename = jQuery(this).attr('filename');
          // alert("send-series-button: StudyInstanceUID: " + StudyInstanceUID + " SeriesInstanceUID: " + SeriesInstanceUID);
-	 if (jQuery('#session-participant').val() == null || jQuery('#session-name').val() == null || jQuery('#session-run').val() == null) {
+	 if (jQuery('#session-participant').val() == "" || 
+             jQuery('#session-participant').val() == null || 
+             jQuery('#session-name').val() == null || 
+             jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant before uploading data");
 		return;
          }
