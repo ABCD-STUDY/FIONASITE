@@ -25,16 +25,26 @@ if [[ $# -eq 1 ]]; then
    dir=`realpath "$1"`
    echo "Send data in \"$dir\" to $myip : $myport"
    docker run -it -v ${dir}:/input dcmtk /bin/bash -c "/usr/bin/storescu -v +sd +r -nh $myip $myport /input; exit"
+   if [[ $? -ne "0" ]]; then
+       # sending using docker is fastest, but it can fail due to network issues, lets send straight using storescu in that case
+       echo "sending with docker failed, send using storescu instead"
+       /usr/bin/storescu -v -aet me -aec me +sd +r -nh $myip $myport "${dir}"
+   fi
    exit
 fi
 
 if [[ $# -eq 2 ]]; then
    if [[ "$1" -eq "last" ]]; then
-       find /data/site/archive -type d -mtime "-$2" -print0 | while read -d $'\0' file
+       find /data/site/archive/ -mindepth 1 -type d -mtime "-$2" -print0 | while read -d $'\0' file
        do
 	   dir=`realpath "$file"`
 	   echo "Send data in \"$dir\" to $myip : $myport"
 	   docker run -i -v ${dir}:/input dcmtk /bin/bash -c "/usr/bin/storescu -v +sd +r -nh $myip $myport /input; exit"
+           if [[ $? -ne "0" ]]; then
+	       # sending using docker is fastest, but it can fail due to network issues, lets send straight using storescu in that case
+	       echo "sending with docker failed, send using storescu instead"
+	       /usr/bin/storescu -v -aet me -aec me +sd +r -nh $myip $myport "${dir}"
+	   fi
        done
    else
        echo "Error: we only understand something like: \"./s2m.sh last 7\" to resend the data for the last 7 days"
