@@ -910,6 +910,12 @@ class ProcessSingleFile(Daemon):
                                                 data['siemensUUID'] = searchThis.search(tmp).group('UUID')
                                         except:
                                                 pass
+                                        try:
+                                                tmp = ptag_ser['MrPhoenixProtocol']
+                                                searchThat = re.compile(r'sProtConsistencyInfo.tMeasuredBaselineString\t\s*=\s*\t\"\"N4_(?P<SieOS>[^_"]+)')
+                                                data['OSLevel'] = searchThat.search(tmp).group('SieOS')
+                                        except:
+                                                pass
 
                                 # lets add up all the diffusion information we find for Siemens
                                 siemensDiffusionInformation = None
