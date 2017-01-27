@@ -916,6 +916,12 @@ class ProcessSingleFile(Daemon):
                                                 data['OSLevel'] = searchThat.search(tmp).group('SieOS')
                                         except:
                                                 pass
+                                        try:
+                                                tmp = ptag_ser['MrPhoenixProtocol']
+                                                searchThat = re.compile(r'sGroupArray.asGroup\[0\].nSize\t\s*=\s*\t(?P<NumSlice>[^\ns"]+)')
+                                                data['NumSlices'] = searchThat.search(tmp).group('NumSlice')
+                                        except:
+                                                pass
 
                                 # lets add up all the diffusion information we find for Siemens
                                 siemensDiffusionInformation = None
