@@ -228,8 +228,7 @@
         "operator": "contains",
         "negate": "yes", 
         "value": "BC"
-      }
-      ,{ 
+      },{ 
        "tag": [ "0x51", "0x100f" ],
         "operator": "contains",
         "negate": "yes", 
@@ -254,8 +253,10 @@
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "140"
-      }
-      ,{ 
+      },{ 
+        "tag": [ "NumSlices" ],
+        "value": "81"
+      },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "105" 
@@ -287,6 +288,9 @@
         "operator": "==",
         "value": "105" 
       },{ 
+        "tag": [ "NumSlices" ],
+        "value": "81"
+      },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "ep_b0"
       },{ 
@@ -310,14 +314,16 @@
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "1260"
-      }
-      ,{ 
+      },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "105" 
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "ep_b"
+      },{ 
+        "tag": [ "NumSlices" ],
+        "value": "81"
       },{ 
        "tag": [ "SeriesDescription" ],
         "operator": "contains",
@@ -338,11 +344,13 @@
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "720"
-      }
-      ,{ 
+      },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
+      },{ 
+        "tag": [ "NumSlices" ],
+        "value": "60"
       },{ 
         "tag": [ "SequenceName" ],
         "value": "epf..2d1_90"
@@ -382,6 +390,9 @@
         "operator": "==",
         "value": "90" 
       },{ 
+        "tag": [ "NumSlices" ],
+        "value": "60"
+      },{ 
         "tag": [ "SequenceName" ],
         "value": "epf..2d1_90"
       },{ 
@@ -402,11 +413,13 @@
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "720"
-      }
-      ,{ 
+      },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
+      },{ 
+        "tag": [ "NumSlices" ],
+        "value": "60"
       },{ 
         "tag": [ "SequenceName" ],
         "value": "epf..2d1_90"
@@ -433,6 +446,9 @@
         "operator": "==",
         "value": "90" 
       },{ 
+        "tag": [ "NumSlices" ],
+        "value": "60"
+      },{ 
         "tag": [ "SequenceName" ],
         "value": "epf..2d1_90"
       },{ 
@@ -458,6 +474,9 @@
         "operator": "==",
         "value": "90" 
       },{ 
+        "tag": [ "NumSlices" ],
+        "value": "60"
+      },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "epse2d1_90"
       },{ 
@@ -481,6 +500,9 @@
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "epf..2d1_90"
+      },{ 
+        "tag": [ "NumSlices" ],
+        "value": "60"
       },{ 
         "tag": [ "AcquisitionLength" ],
         "value": "TA 06:44"
@@ -792,6 +814,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
+      },{ 
+        "tag": [ "NumSlices" ],
+        "value": "60"
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "epse2d1_90"
