@@ -74,6 +74,13 @@
         // kspace series
 	$endstudy = strpos($sname, "_subjid");
 	$studyInstanceUID = substr($sname, 5, $endstudy-5);
+	$seriesInstanceUID = "";
+	// assume that both series and study instance uid's are part of the filename. First entry is study-, second series instance uid.
+        preg_match('/.*_([0-9.]*)_.*_([0-9.]*)_.*/', $sname, $matches);
+	if (count($matches) > 2) {
+	   //echo ("we found two matches in SUID field: ".$matches[1]. " and ". $matches[2]);
+	   $seriesInstanceUID = $matches[2];
+	}	
 
 	if ($studyInstanceUID == "") {
 	   // this series study is not in raw, it could still be in archive, but its expensive to look there...
@@ -87,6 +94,14 @@
 
         if (!isset($data[$studyInstanceUID]->series)) {
 	   $data[$studyInstanceUID]->series = array();
+        }
+
+	if ($seriesInstanceUID != "") {
+  	   if (!array_key_exists($seriesInstanceUID,$data[$studyInstanceUID]->series)) {
+  	      $data[$studyInstanceUID]->series[$seriesInstanceUID] = (object)array( "quarantine" => 1);
+           } else {
+              $data[$studyInstanceUID]->series[$seriesInstanceUID] = (object)array_merge( (array)$data[$studyInstanceUID]->series[$seriesInstanceUID], array('quarantine' => 1));
+           }
         }
      }
   }
