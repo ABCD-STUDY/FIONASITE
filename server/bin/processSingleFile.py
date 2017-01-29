@@ -721,6 +721,7 @@ class ProcessSingleFile(Daemon):
                                         if not os.path.exists(fn):
                                                 print "Error: creating path ", fn, " did not work"
                                                 logging.error('Error: creating path %s did not work' % fn)
+                                                continue
                                         # for some reason os.makedirs does not create the path with the correct permissions (umask problem?)
                                         # set the permissions here to make sure we can later write into these directories
                                         os.umask(00000)
@@ -914,6 +915,12 @@ class ProcessSingleFile(Daemon):
                                                 tmp = ptag_ser['MrPhoenixProtocol']
                                                 searchThat = re.compile(r'sProtConsistencyInfo.tMeasuredBaselineString\t\s*=\s*\t\"\"N4_(?P<SieOS>[^_"]+)')
                                                 data['OSLevel'] = searchThat.search(tmp).group('SieOS')
+                                        except:
+                                                pass
+                                        try:
+                                                tmp = ptag_ser['MrPhoenixProtocol']
+                                                searchThat = re.compile(r'sGroupArray.asGroup\[0\].nSize\t\s*=\s*\t(?P<NumSlice>[^\ns"]+)')
+                                                data['NumSlices'] = searchThat.search(tmp).group('NumSlice')
                                         except:
                                                 pass
 
