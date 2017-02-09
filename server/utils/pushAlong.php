@@ -46,7 +46,7 @@
    foreach($data as $key => $study) {
       if (array_key_exists('archive', $study) && $study['archive'] == 1 && !array_key_exists('raw',$study)) {
          echo ("found study in archive that is not in raw ".$key."\n");
-         $path = 'data/site/archive/scp_'.$key;
+         $path = '/data/site/archive/scp_'.$key;
          if (is_dir($path)) {
   	    if ($force) {
   	       // send these images using s2m.sh
