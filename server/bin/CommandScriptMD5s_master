@@ -1,4 +1,6 @@
 cd fiona
 # this has to be done only once
 # mkdir <SITE>
-get outbox/*.md5sum_server
+#get outbox/*.md5sum_server
+get outbox/md5server_cache.tar
+
