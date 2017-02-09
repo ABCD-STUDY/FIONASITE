@@ -29,6 +29,10 @@ sendAllFiles () {
   d=`mktemp -d /tmp/md5sums_server_XXXX`
   cd "$d"
   sftp -p -b ${commandScriptMD5s} ${user}@abcd-workspace.ucsd.edu
+  if [[ -e md5server_cache.tar ]]; then
+     # untar the md5server file into the current directory, and go on
+     tar xf md5server_cache.tar
+  fi
 
   # now we should only upload files that have no, or no correct md5sum calculated on the server
   # find out what exists already on the server
