@@ -125,6 +125,11 @@ do
      echo " matching header file found \"${hdrs}\""
   fi
 
+  if [ -z "${hdrs}" ]; then
+     echo "`date`: Error could not find a hdr file for *\#M${meNum}\#*.hdr, \"$file\", we will not package this dat file."
+     continue;
+  fi
+
   # search all json files for one that matches this ScanDate
   find /data/site/raw -type f -iname '*.json' -print0 | while read -d $'\0' json
   do
