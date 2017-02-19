@@ -118,6 +118,12 @@ do
   # we can check now for the MID number
   meNum=$(echo "$me" | sed -e 's/^MID[0]*//')
   hdrs=$(find /data/site/scanner-share/ABCDstream/yarra_export/measfiles/ -name "*\#M${meNum}\#*.hdr" -printf '%TY%Tm%Td "%p"\n' | grep "$da" | head -1 | cut -d' ' -f2- | sed 's/^"\(.*\)"$/\1/')
+  if [ -z "${hdrs}" ]; then
+     echo " no header file found with M${meNum}"
+     continue
+  else
+     echo " matching header file found \"${hdrs}\""
+  fi
 
   # search all json files for one that matches this ScanDate
   find /data/site/raw -type f -iname '*.json' -print0 | while read -d $'\0' json
@@ -129,10 +135,11 @@ do
       #    has a fabs(SeriesTime - ti) < 2min
       sd=($(/usr/bin/jq '{ "StudyDate": .StudyDate } | select(.StudyDate == "'"${da}"'")' $json))
       if [ -z "$sd" ]; then
+          #echo "Error: not the right StudyDate found in $json"
 	  continue;
       fi
       # same day item found
-
+      echo "Info: same day (${da}) StudyDate found in $json"
       
       # the meNum is shared between the .dat and the hdr files (if they come from the same day)
       
@@ -141,6 +148,7 @@ do
 	  continue;
       fi
       # after time item found
+      echo "Info: SeriesTime (${st}) is after $json"
 
 
       # this meNum is part of the yarra_export filename, collect the hdr files for this entry
@@ -165,13 +173,16 @@ do
       #
       seriesUUID=($(/usr/bin/jq '.siemensUUID' $json | cut -d'.' -f1 | tr -d '"'))
 
-      if [ ! -z "$UUID" ] && [ ! -z "$seriesUUID" ] && [ "$UUID" == "$seriesUUID" ]; then
+      # we can have more than one UUID in the UUID variable returned from the header, search for any match
+      if [ ! -z "$UUID" ] && [ ! -z "$seriesUUID" ] && [ "$seriesUUID" == *"${UUID}"* ]; then
 	  # found a json series that belongs to this dat and hdr file combination
 	  echo "FOUND two UUID's that belong together $UUID"
       else
 	  if [ $(( $st - $ti )) -gt 200 ]; then
+	      echo "INFO: time between $st and $ti not sufficiently close ("$(( $st - $ti ))", <200), cancel"
 	      continue;
 	  fi
+	  echo "Info: time between $st and $ti is sufficiently close together"
       fi
 
       # get the StudyInstanceUID and the SeriesInstanceUID
@@ -205,7 +216,7 @@ do
       
       # we need to make sure again that all files are present - we don't want to create a tgz with missing files
       if [ ! -e "$file" ] || [ ! -e "${dicom}" ] || [ ! -e "${hdrs}" ]; then
-	  echo "`date`: Error tried to package together \"$file\", \"$dicom\" and \"$hdrs\" but of of them could not be found, we will not create ${fn1}"
+	  echo "`date`: Error tried to package together \"$file\", \"$dicom\" and \"$hdrs\" but one of them could not be found, we will not create ${fn1}"
 	  continue;
       fi
 
