@@ -119,6 +119,11 @@ do
   meNum=$(echo "$me" | sed -e 's/^MID[0]*//')
   hdrs=$(find /data/site/scanner-share/ABCDstream/yarra_export/measfiles/ -name "*\#M${meNum}\#*.hdr" -printf '%TY%Tm%Td "%p"\n' | grep "$da" | head -1 | cut -d' ' -f2- | sed 's/^"\(.*\)"$/\1/')
 
+  if [ -z "${hdrs}" ]; then
+     echo "`date`: Error could not find a hdr file for *\#M${meNum}\#*.hdr, \"$file\", we will not package this dat file."
+     continue;
+  fi
+
   # search all json files for one that matches this ScanDate
   find /data/site/raw -type f -iname '*.json' -print0 | while read -d $'\0' json
   do
