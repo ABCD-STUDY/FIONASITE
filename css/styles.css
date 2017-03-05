@@ -576,3 +576,28 @@ div.message {
   right: -7px;
   top: -8px;
 }
+.messagepop {
+  background-color:#FFFFFF;
+  border:1px solid #999999;
+  cursor:default;
+  display:none;
+  margin-top: 5px;
+  position:absolute;
+  text-align:left;
+  width:450px;
+  z-index:50;
+  padding: 5px 5px 5px;
+}
+.messagepop p, .messagepop.div {
+  border-bottom: 1px solid #EFEFEF;
+  margin: 8px 0;
+  padding-bottom: 8px;
+}
+.messagepop .messagepop-title {
+  font-size: 24px;
+  color: gray;
+  margin-bottom: 10px;
+}
+.messagepop .messagepop-content {
+  overflow-x: scroll;
+}

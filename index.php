@@ -519,6 +519,17 @@ loading configuration file...
   </div>
 </dialog>
 
+<div class="messagepop pop">
+   <div class="messagepop-title"></div>
+   <div class="messagepop-content"></div>
+<!--     <form method="post" id="new_message" action="/messages">
+        <p><label for="email">Your email or name</label><input type="text" size="30" name="email" id="email" /></p>
+        <p><label for="body">Message</label><textarea rows="6" name="body" id="body" cols="35"></textarea></p>
+        <p><input type="submit" value="Send Message" name="commit" id="message_submit"/> or <a class="close" href="/">Cancel</a></p>
+    </form> -->
+</div>
+
+
 <dialog class="mdl-dialog" id="modal-series-info">
     <div class="mdl-dialog__content">
         <div style="font-size: 32pt; margin-bottom: 20px;">
@@ -1106,33 +1117,65 @@ function traverse(elem, s) {
   return s;
 }
 
+function deselect(e) {
+  $('.pop').slideFadeToggle(function() {
+    e.removeClass('selected');
+  });    
+}
+jQuery.fn.slideFadeToggle = function(easing, callback) {
+    return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
+};
+
 
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
- jQuery('.mdh-toggle-search').click(function() {
-    // No search bar is currently shown
-    if ($(this).find('i').text() == 'search') {
-      $(this).find('i').text('cancel');
-      $(this).removeClass('mdl-cell--hide-tablet mdl-cell--hide-desktop'); // Ensures the close button doesn't disappear if the screen is resized.
+    jQuery('.pop').on('click', function(e) {
+	deselect(jQuery(this));
+    });
 
-      $('.mdl-layout__drawer-button, .mdl-layout-title, .mdl-badge, .mdl-layout-spacer').hide();
-      $('.mdl-layout__header-row').css('padding-left', '16px'); // Remove margin that used to hold the menu button
-      $('.mdh-expandable-search').removeClass('mdl-cell--hide-phone').css('margin', '0 16px 0 0');
-      
-    }
-    // Search bar is currently showing
-    else {
-      $(this).find('i').text('search');
-      $(this).addClass('mdl-cell--hide-tablet mdl-cell--hide-desktop');
-      
-      $('.mdl-layout__drawer-button, .mdl-layout-title, .mdl-badge, .mdl-layout-spacer').show();
-      $('.mdl-layout__header-row').css('padding-left', '');
-      $('.mdh-expandable-search').addClass('mdl-cell--hide-phone').css('margin', '0 50px');
-    }
+    jQuery('#modal-data-flow').on('click', '.item', function(e) {
+	// create a popover for this item
+	if (jQuery(this).hasClass('selected')) {
+	    deselect(jQuery(this));
+	} else {
+	    jQuery(this).addClass('selected');
+	    jQuery('.pop').slideFadeToggle();
+	    // move the window to the mouse position
+	    jQuery('.pop').css('top', jQuery(this).offset().top + "px");
+	    jQuery('.pop').css('left', jQuery(this).offset().left + 'px');
+	    jQuery('.pop').css('z-index', 100003);
+            // fill in the contents
+	    var title = jQuery(this).attr('title');
+	    jQuery('.pop .messagepop-title').html( title.split(' ')[0] );
+	    jQuery('.pop .messagepop-content').html( 'SeriesInstanceUID:</br>' + title.split(" ")[1] + '</br>StudyInstanceUID:</br>' + jQuery(this).parent().parent().parent().attr('title'));
+	}
+	return false;
+    }); 
     
-  });
+    jQuery('.mdh-toggle-search').click(function() {
+	// No search bar is currently shown
+	if ($(this).find('i').text() == 'search') {
+	    $(this).find('i').text('cancel');
+	    $(this).removeClass('mdl-cell--hide-tablet mdl-cell--hide-desktop'); // Ensures the close button doesn't disappear if the screen is resized.
+	    
+	    $('.mdl-layout__drawer-button, .mdl-layout-title, .mdl-badge, .mdl-layout-spacer').hide();
+	    $('.mdl-layout__header-row').css('padding-left', '16px'); // Remove margin that used to hold the menu button
+	    $('.mdh-expandable-search').removeClass('mdl-cell--hide-phone').css('margin', '0 16px 0 0');
+	    
+	}
+	// Search bar is currently showing
+	else {
+	    $(this).find('i').text('search');
+	    $(this).addClass('mdl-cell--hide-tablet mdl-cell--hide-desktop');
+	    
+	    $('.mdl-layout__drawer-button, .mdl-layout-title, .mdl-badge, .mdl-layout-spacer').show();
+	    $('.mdl-layout__header-row').css('padding-left', '');
+	    $('.mdh-expandable-search').addClass('mdl-cell--hide-phone').css('margin', '0 50px');
+	}
+    
+    });
 
   jQuery('#search-list').keyup(function() {
          //console.log('new search...' + jQuery('#search-list').val());
