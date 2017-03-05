@@ -17,7 +17,7 @@ if (isset($_GET['filename'])) {
     echo ("{ \"ok\": 0, \"message\": \"filename not set\" }");
     return;
 }
-if (isset($_GET['id_redcap'])) {
+if (isset($_GET['id_redcap']) && $_GET['id_redcap'] != "") {
     $id_redcap = $_GET['id_redcap'];
 } else {
     echo ("{ \"ok\": 0, \"message\": \"id_redcap not set\" }");
