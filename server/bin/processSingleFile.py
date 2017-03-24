@@ -923,6 +923,12 @@ class ProcessSingleFile(Daemon):
                                                 data['NumSlices'] = searchThat.search(tmp).group('NumSlice')
                                         except:
                                                 pass
+                                        try:
+                                                tmp = ptag_ser['MrPhoenixProtocol']
+                                                searchThat = re.compile(r'SequenceID\t\s*=\s*\t(?P<MeaID>[^\n"]+)')
+                                                data['MeasID'] = searchThat.search(tmp).group('MeaID')
+                                        except:
+                                                pass
 
                                 # lets add up all the diffusion information we find for Siemens
                                 siemensDiffusionInformation = None
