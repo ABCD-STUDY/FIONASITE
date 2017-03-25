@@ -186,28 +186,56 @@
 	        array_key_exists('quarantine',$v) && $v['quarantine'] == 1) {
 		// check the file times of both tgz files
 		$tgzDAIC = glob('data/DAIC/*'.$seriesInstanceUID.'*.tgz');
-		$tgzQuarantine = glob('data/quarantine/*'.$seriesInstanceUID.'*.tgz');
-		if (count($tgzDAIC) == 1 && count($tgzQuarantine) == 1 &&
-		    filemtime($tgzDAIC[0]) < filemtime($tgzQuarantine[0]) ) {
-		   $fn = basename($tgzDAIC[0],'.tgz');
-		   $ofn = basename($tgzQuarantine[0],'.tgz');
-		   $fs = glob("/".dirname($tgzQuarantine[0])."/".$ofn."*");
-		   if ($force) {
-		      foreach ($fs as $f) {
-		          $path_parts = pathinfo($f);
-		          $ok = rename($f, "/data/outbox/".$fn.".".$path_parts['extension']);
-			  if (! $ok) {
-			     echo ("Error moving: ".$f. " to /data/outbox/".$fn.".".$path_parts['extension']);
-			  }			  
-	              }		      
-		   } else {
-		      # create filename for output, should be what we have in DAIC
-		      foreach ($fs as $f) {
-		          $path_parts = pathinfo($f);
-		          echo (" should copy newer ".$f." over to outbox/ as ".$fn.".".$path_parts['extension']."\n");
-	              }				      
-		   }
-                }	       
+		for ( $i = 0; $i < count($tgzDAIC); $i++) { // we want to find the correct DAIC file (matches with the series we found in quarantine)
+		    $tgzQuarantine = glob('data/quarantine/*'.$seriesInstanceUID.'*.tgz');
+		    for ( $j = 0; $j < count($tgzQuarantine); $j++) {
+		        if ( filemtime($tgzDAIC[$i]) < filemtime($tgzQuarantine[$j]) ) {
+		           $fn = basename($tgzDAIC[$i],'.tgz');
+		           // get the header information from the file at the DAIC
+		           // we can do this by looking at the part of the filename before the Session
+		           $nameparts = explode('Session',$fn);
+		           if (count($nameparts) < 2) {
+		              echo("Cannot get header information from this file in DAIC ".$fn);
+		              continue;
+		           }
+			   $spart = explode('_', $nameparts[1]);
+			   if (count($spart) < 2) {
+		              echo("Cannot get header information from this file in DAIC ".$fn);
+		              continue;			      
+			   }
+			   $header = $nameparts[0] . "Session" . $spart[0]; // created the new prefix for this file
+
+		           $ofn = basename($tgzQuarantine[$j],'.tgz');
+
+			   // our filename we would like to copy to /data/DAIC/ would be (prepend our header):
+			   $newfilename = '/data/DAIC/' . $header . '_' . $ofn . '.tgz';
+			   // is this now a new version of the file in DAIC that we would overwrite?
+			   if ( $newfilename != $tgzDAIC[$i] ) {
+			      // no? ok, don't copy this file over to /data/DAIC, we have the wrong timing information here, try with the next one
+			      //echo ("Warning: did not find the correct file in /data/DAIC, should have been: ".$newfilename. ", but got:".$tgzDAIC[$i]."\n");
+			      continue;
+			   }
+			   echo ("Info: did find the same (older) file in /data/DAIC as ".$newfilename." now copy the newer file over to /data/outbox to replace the older file in /data/DAIC");
+
+		           $fs = glob("/".dirname($tgzQuarantine[$j])."/".$ofn."*");
+		           if ($force) {
+		              foreach ($fs as $f) {
+		                  $path_parts = pathinfo($f);
+		                  $ok = rename($f, "/data/outbox/".$header.'_'.$ofn.".".$path_parts['extension']);
+	  		          if (! $ok) {
+			             echo ("Error moving: ".$f. " to /data/outbox/".$header.'_'.$ofn.".".$path_parts['extension']);
+	 		          }			  
+	                     }		      
+		           } else {
+		              # create filename for output, should be what we have in DAIC
+		              foreach ($fs as $f) {
+		                 $path_parts = pathinfo($f);
+		                 echo (" should copy newer ".$f." over to outbox/ as ".$header.'_'.$ofn.".".$path_parts['extension']."\n");
+	                      }				      
+		           }
+                        }
+                    }
+	        }	       
 	    }
 	 }
       }
