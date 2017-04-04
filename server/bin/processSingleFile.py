@@ -969,6 +969,12 @@ class ProcessSingleFile(Daemon):
                                         currentSliceLocation = data['SliceLocation']
                                 except:
                                         pass
+                                currentMeasID = None
+                                try:
+                                        currentMeasID = data['MeasID']
+                                except:
+                                        pass
+                                # this will overwrite the currently created data again - but only if it exists already (add after this section if you want to update every slice)
                                 if os.path.exists(fn3):
                                         with open(fn3, 'r') as f:
                                                 data = json.load(f)
@@ -977,6 +983,11 @@ class ProcessSingleFile(Daemon):
                                         try:
                                                 if float(data['SliceLocation']) > float(currentSliceLocation):
                                                         data['SliceLocation'] = currentSliceLocation;
+                                        except:
+                                                pass
+                                if currentMeasID != None:
+                                        try:
+                                                data['MeasID'] = currentMeasID
                                         except:
                                                 pass
                                 if siemensDiffusionInformation != None:
