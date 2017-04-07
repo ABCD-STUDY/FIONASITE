@@ -1038,7 +1038,12 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
                  }
 		 for (var i = 0; i < data.length; i++) {
 	           console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
-		   jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >(path)</span>");
+	           var fname = data[i].filename.replace(/^.*[\\\/]/, '').split("_");
+		   if (fname.length > 2)
+                       fname = fname.slice(0,2).join("_");
+		   else
+		       fname = "unknown";
+		   jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path)</span>");
                  }
              };
            })(id)
