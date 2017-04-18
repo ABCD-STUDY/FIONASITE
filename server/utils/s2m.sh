@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# send to me 
+# send to me (s2m)
 # Sends a DICOM directory using the dcmtk docker container from the local 
 # machine to the local DICOM node. This script can be used to re-classify
 # DICOM files (creates /data/site/raw and /data/site/participant information).
@@ -9,6 +9,9 @@
 #
 #    # Send a single directory with DICOM files
 #    s2m.sh <DICOM directory to send>
+#
+#    # Send all studies of a single PatientID
+#    s2m.sh <PatientID>
 #
 #    # send all studies of the last 7 days
 #    s2m.sh last 7
@@ -23,6 +26,23 @@ fi
 
 if [[ $# -eq 1 ]]; then
    dir=`realpath "$1"`
+   if [ ! -d "$dir" ]; then
+       # path does not exist, perhaps we got a subject id - find and select first study with that ID
+       dd=`jq -r "[.PatientID,.StudyInstanceUID] | @csv" /data/site/raw/*/*.json | grep $1 | sort | uniq | head -1 | cut -d',' -f2 | tr -d '"'`
+       for a in $dd; do
+	   # call ourselfs again with the participant id
+	   dir=`realpath "/data/site/archive/scp_$a"`
+	   echo "submit one study $dir.."
+	   "$0" "$dir"
+       done
+       #if [ ! -d "$dir" ]; then
+       #  echo "This directory or patient id could not be found"
+       #	 exit
+       #fi
+   else
+       echo "$dir is a path "
+   fi
+
    echo "Send data in \"$dir\" to $myip : $myport"
    docker run -it -v ${dir}:/input dcmtk /bin/bash -c "/usr/bin/storescu -v +sd +r -nh $myip $myport /input; exit"
    if [[ $? -ne "0" ]]; then
