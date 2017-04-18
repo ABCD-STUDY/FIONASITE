@@ -28,7 +28,7 @@ if [[ $# -eq 1 ]]; then
    dir=`realpath "$1"`
    if [ ! -d "$dir" ]; then
        # path does not exist, perhaps we got a subject id - find and select first study with that ID
-       dd=`jq -r "[.PatientID,.StudyInstanceUID] | @csv" /data/site/raw/*/*.json | grep $1 | sort | uniq | head -1 | cut -d',' -f2 | tr -d '"'`
+       dd=`jq -r "[.PatientID,.PatientName,.StudyInstanceUID] | @csv" /data/site/raw/*/*.json | grep $1 | sort | uniq | cut -d',' -f3 | tr -d '"'`
        for a in $dd; do
 	   # call ourselfs again with the participant id
 	   dir=`realpath "/data/site/archive/scp_$a"`
