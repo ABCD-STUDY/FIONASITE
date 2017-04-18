@@ -39,12 +39,6 @@ if [[ $# -eq 1 ]]; then
 	   /usr/bin/bash -i -c "$0 $dir"
        done
        exit
-       #if [ ! -d "$dir" ]; then
-       #  echo "This directory or patient id could not be found"
-       #	 exit
-       #fi
-   else
-       echo "$dir is a path "
    fi
 
    echo "Send data in \"$dir\" to $myip : $myport"
