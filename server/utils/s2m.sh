@@ -32,9 +32,13 @@ if [[ $# -eq 1 ]]; then
        for a in $dd; do
 	   # call ourselfs again with the participant id
 	   dir=`realpath "/data/site/archive/scp_$a"`
-	   echo "submit one study $dir.."
-	   "$0" "$dir"
+           # run this in an interactive shell
+           echo "#################################"
+           echo "# Run a new sub-send command    #"
+           echo "#################################"
+	   /usr/bin/bash -i -c "$0 $dir"
        done
+       exit
        #if [ ! -d "$dir" ]; then
        #  echo "This directory or patient id could not be found"
        #	 exit
