@@ -1,4 +1,6 @@
 <?php
+
+  date_default_timezone_set('America/Los_Angeles');
 	
   if (isset($_GET["start"]))
     $start = rawurldecode($_GET["start"]);
@@ -19,6 +21,38 @@
   $enddateIn   = DateTime::createFromFormat("Y-m-d", $end);
   $events = [];
 
+  // add the events that exist on this machine
+  $files = glob("/data/site/raw/*/*.json");
+  foreach($files as $key => $value) {
+    if (in_array($value, array(".",".."))) {
+       continue;
+    }
+    $data = json_decode(file_get_contents($value), TRUE);    
+    // date is
+    $D = DateTime::createFromFormat("Ymd His", $data['StudyDate']. " " . $data['StudyTime']);
+    if ($D == null) { // ignore these
+       continue;
+    }
+    $D2 = $D;
+    $D2->add(new DateInterval('PT1H'));
+    if ( $D > $startdateIn && $D < $enddateIn ) {
+       $a = array( 'title' => $data['PatientID'], 'start' => $D->format(DateTime::ATOM), 
+                   'end' => $D2->format(DateTime::ATOM), 'PatientID' => $data['PatientID'], 
+                   'PatientName' => $data['PatientName'], 'StudyInstanceUID' => $data['StudyInstanceUID'] );
+       $found = false;
+       foreach ($events as $ev) {
+          if ($ev['StudyInstanceUID'] == $data['StudyInstanceUID']) {
+            $found = true;
+	    break;
+	  }	    
+       }
+       if (! $found) {
+         $events[] = $a;
+       }
+    }
+  }
+
+/*
   $d = "/data/scanner";
   $dirs = scandir($d);
   foreach($dirs as $key => $value) {
@@ -76,7 +110,7 @@
          }
       }
     }
-  }
+  } */
   echo(json_encode(array_values($events)));
 
 ?>
