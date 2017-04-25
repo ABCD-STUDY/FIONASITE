@@ -28,11 +28,17 @@
        continue;
     }
     $data = json_decode(file_get_contents($value), TRUE);    
-    // date is
-    $D = DateTime::createFromFormat("Ymd His", $data['StudyDate']. " " . $data['StudyTime']);
+
+
+    // time could have fractional seconds, use up to seconds only
+    $tim = explode(".", $data['SeriesTime']);
+
+    // syslog(LOG_EMERG, "BEFORE in loop, get a json for \"" . $data['SeriesTime'] . "\" => \"" . $tim[0] . "\"" );
+    $D = DateTime::createFromFormat("Ymd His", $data['StudyDate']. " " . $tim[0]);
     if ($D == null) { // ignore these
        continue;
     }
+    // syslog(LOG_EMERG, "AFTER in loop, get a json for ".$data['PatientID']." date ".$D->format(DATE_ATOM));
     $D2 = $D;
     $D2->add(new DateInterval('PT1H'));
     if ( $D > $startdateIn && $D < $enddateIn ) {
