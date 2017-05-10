@@ -842,7 +842,7 @@ function createCalendar() {
 	},
         defaultView: 'month', // only month is working here, would be good to switch to agendaDay instead
         timezone: 'America/Los_Angeles',
-	eventSources: [ { url: "php/events.php", color: '#ffdce5', textColor: 'black' } ],
+	eventSources: [ { url: "php/events.php", color: '#dddddd', textColor: 'black' } ],
 	eventResize: function(calEvent, jsEvent, view) {
 	    alert("eventResize: function(calEvent, jsEvent, view)");
             if (!updateEvent(calEvent)) {
@@ -851,6 +851,7 @@ function createCalendar() {
 	},
 	viewRender: function(view) {
 	   try { 
+              console.log("HI");
               //setTimeline(view);
            } catch( err ) {}
         },
