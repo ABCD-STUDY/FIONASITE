@@ -314,6 +314,7 @@
 <?php endif; ?>
 <?php if ($admin) : ?>
             <li class="mdl-menu__item" onclick="document.location.href = '/applications/User/admin.php';">Admin Interface</li>
+            <li class="mdl-menu__item" id="dialog-clean-quarantine-button">Quarantine Data</li>
             <li class="mdl-menu__item" id="dialog-setup-button">Setup</li>
 <?php endif; ?>
             <li class="mdl-menu__item" id="dialog-change-password-button">Change Password</li>
@@ -443,6 +444,26 @@ loading configuration file...
         <button type="button" class="mdl-button" id="setup-dialog-save">Save</button>
     </div>
 </dialog>
+
+<dialog class="mdl-dialog" id="modal-clean-quarantine">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 32pt; margin-bottom: 25px;">
+            Quarantine Data
+        </div>
+	<table class="table table-stripped">
+          <thead>
+   	    <th><td>Name</td></tr>
+          </thead>
+          <tbody id="cleanQuarantine">
+
+          </tbody>
+        </table>
+    </div>
+    <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
+        <button type="button" class="mdl-button" id="clean-quarantine-close">Close</button>
+    </div>
+</dialog>
+
 
 <dialog class="mdl-dialog" id="modal-data-flow">
     <div class="mdl-dialog__content">
@@ -577,9 +598,9 @@ loading information...
     <script src="js/d3.js"></script>
     <script src="js/circles.js"></script>
 
-    <script src="js/sankey.js"></script>
+    <!-- <script src="js/sankey.js"></script>
     <script src="js/d3.chart.min.js"></script>
-    <script src="js/d3.chart.sankey.min.js"></script>   
+    <script src="js/d3.chart.sankey.min.js"></script>    -->
     <script src="js/bars.js"></script>
 
     <script src="js/jquery-2.1.4.min.js"></script>
@@ -591,7 +612,7 @@ loading information...
     <script src="js/ace-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/jquery.bonsai.js" type="text/javascript"></script>
     <script src="js/md5-min.js" type="text/javascript"></script>
-    <script>
+    <script type="text/javascript">
 
       // logout the current user
       function logout() {
@@ -1429,6 +1450,18 @@ jQuery(document).ready(function() {
       });
     });
 
+    jQuery('#dialog-clean-quarantine-button').click(function() {
+      console.log('start dialog');
+      var dialog = document.querySelector('#modal-clean-quarantine');
+      console.log('start dialog');
+      dialog.showModal();
+      jQuery.get('php/quarantineData.php?action=getData', function(data) {
+	  for (var i = 0; i < data.length; i++) {
+             jQuery('#cleanQuarantine').append("<tr><td>" + data[i]['PatientID'] + "</td></tr>");
+          }
+      });
+    });
+
     jQuery('#dialog-setup-button').click(function() {
       var dialog = document.querySelector('#modal-setup');
       dialog.showModal();
@@ -1445,8 +1478,8 @@ jQuery(document).ready(function() {
              editor.setValue(data);
           }
       });
-
     });
+
     jQuery('#setup-dialog-save').click(function() {
 	jQuery.getJSON('php/config.php', { "action": "save", "value": editor.getValue() }, function(data) {
 	    // did saving the data work?
