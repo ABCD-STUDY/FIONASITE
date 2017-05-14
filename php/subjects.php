@@ -1,7 +1,15 @@
 <?php
   // we can only see things that are in our current directory
 
+  $projname = "";
+  if (isset($_GET['project'])) {
+     $projname = $_GET['project'];
+  }
+
   $d = 'raw';
+  if ($projname == "PCGC") {
+      $d = 'rawPCGC';
+  }
   $results = scandir($d);
 
   # get all files first (need to sort by modification time)

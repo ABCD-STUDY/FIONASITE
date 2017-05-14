@@ -40,6 +40,23 @@
   }
   echo ($p."]; </script>\n");
 
+  // PCGC
+  // For each $permissions: "SiteABCD", "SitePCGC"
+  // get the site name: "ABCD", "PCGC"
+  // and create and array of $sites
+  $sites = array();
+  foreach ($permissions as $perm) {
+     $parts = explode("Site", $perm);
+     if (count($parts) > 1) {
+        $sites[] = $parts[1];
+     }
+  }
+  $p = '<script type="text/javascript"> sites = [';
+  foreach($sites as $s) {
+    $p = $p."\"".$s."\",";
+  }
+  echo ($p."]; </script>\n");
+
   $admin = false;
   if (check_role( "admin" )) {
      $admin = true;
@@ -325,6 +342,29 @@
       <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
         <header class="demo-drawer-header">
           <img src="images/user.jpg" class="demo-avatar">
+	  <!-- PCGC -->
+	  <!-- Dropdown selector to pick a project -->
+          <div class="demo-avatar-dropdown" id="project-dropdown-section">
+            <span>Project</span>
+            <div class="mdl-layout-spacer"></div>
+            <button id="projbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+              <i class="material-icons" role="presentation">arrow_drop_down</i>
+              <span class="visuallyhidden">Accounts</span>
+            </button>
+            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="projbtn">
+	      <li> </li><!-- The first menu item is not selectable -->
+	      <?php
+		 // Add a menu item for each project
+		 foreach ($sites as $site) {
+		   echo ("<li class=\"mdl-menu__item clickable-project-name\" id=\"proj".$site."\">".strtoupper($site)."</li>");
+		 }
+	      ?>
+            </ul>
+	    <div>
+	      <!-- Display the project name -->
+	      <center><span id="projname"></span></center>
+	    </div>
+          </div>
           <div class="demo-avatar-dropdown">
             <span>Data Views</span>
             <div class="mdl-layout-spacer"></div>
@@ -614,6 +654,10 @@ loading information...
     <script src="js/md5-min.js" type="text/javascript"></script>
     <script type="text/javascript">
 
+      // PCGC
+      // ABCD is the default project name
+      var projname = "ABCD";
+
       // logout the current user
       function logout() {
         jQuery.get('/php/logout.php', function(data) {
@@ -680,7 +724,8 @@ function loadSubjects() {
     console.log("loadSubjects");
     jQuery('#list-of-subjects').find('.data').remove();
     jQuery('#view-name').text('Subjects');
-    jQuery.getJSON('/php/subjects.php', function(data) {
+    // PCGC
+    jQuery.getJSON('/php/subjects.php', {'project': projname }, function(data) {
         
         subjectData = data; // we can re-use those
 	for (var i = 0; i < data.length; i++) {
@@ -703,7 +748,8 @@ var studyData = [];
 function loadStudies() {
     jQuery('#list-of-subjects').find('.data').remove();
     jQuery('#view-name').text("Studies");
-    jQuery.getJSON('/php/series.php', function(data) {
+    // PCGC
+    jQuery.getJSON('/php/series.php', {'project': projname }, function(data) {
         studyData = data;
 	// sort those by date
 
@@ -738,7 +784,8 @@ function loadStudies() {
 function loadScanner() {
     jQuery('#list-of-subjects').find('.data').remove();
     jQuery('#view-name').text("Scanner");
-    jQuery.getJSON('/php/scanner.php', function(data) {
+    // PCGC
+    jQuery.getJSON('/php/scanner.php', {'project': projname }, function(data) {
 	str = "<ul id=\"scanner-list-bonsai\" class=\"data\">";
 	for (var i = 0; i < data.length; i++) {
 	   var na = data[i].PatientName + "-" + data[i].PatientID;
@@ -872,7 +919,6 @@ function createCalendar() {
 	},
 	viewRender: function(view) {
 	   try { 
-              console.log("HI");
               //setTimeline(view);
            } catch( err ) {}
         },
@@ -1158,6 +1204,14 @@ var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
+    // PCGC
+    if (sites.length < 1) {
+        // hide project-dropdown-section
+        jQuery('#project-dropdown-section').hide();
+    }
+    // Set the project name label
+    jQuery('#projname').text(projname);
+
     jQuery('.pop').on('click', function(e) {
 	deselect(jQuery(this));
     });
@@ -1257,6 +1311,13 @@ jQuery(document).ready(function() {
     //createCircles();
     // disable the bars for now			
     //createBars();
+
+    // PCGC
+    jQuery('.clickable-project-name').click(function() {
+        var value = jQuery(this).text();
+	jQuery('#projname').text(value);
+        projname = value;
+    });
 
     jQuery('#load-subjects').click(function() {
 	loadSubjects();
