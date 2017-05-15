@@ -1,9 +1,11 @@
 <?php
 
-$action = "";
+$action = "getData";
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
-} else {
+} 
+
+if ($action == "") {
     echo ("{ \"ok\": 0, \"message\": \"action not set\" }");
     return;
 }

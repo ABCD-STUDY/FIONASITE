@@ -450,15 +450,23 @@ loading configuration file...
         <div style="font-size: 32pt; margin-bottom: 25px;">
             Quarantine Data
         </div>
-	<table class="table table-stripped">
-          <thead>
-   	    <th><td>Name</td></tr>
-          </thead>
-          <tbody id="cleanQuarantine">
+        <div style="height: 500px; overflow-y: scroll;">
+  	  <table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+            <thead><tr>
+	         <th>#Files</th>
+		 <th>Action</th>
+   	         <th style="mdl-data-table__cell--non-numeric">Name</th>
+		 <th class="mdl-data-table__cell--non-numeric sort" data-sort="StudyDate">StudyDate</th>
+                 <th>Size (MB)</th>
+                 <th>parts pushed to DAIC as</th>
+              </tr>
+            </thead>
+            <tbody id="cleanQuarantine">
 
-          </tbody>
-        </table>
-    </div>
+            </tbody>
+          </table>
+        </div>
+      </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
         <button type="button" class="mdl-button" id="clean-quarantine-close">Close</button>
     </div>
@@ -872,7 +880,6 @@ function createCalendar() {
 	},
 	viewRender: function(view) {
 	   try { 
-              console.log("HI");
               //setTimeline(view);
            } catch( err ) {}
         },
@@ -1153,6 +1160,17 @@ jQuery.fn.slideFadeToggle = function(easing, callback) {
     return this.animate({ opacity: 'toggle', height: 'toggle' }, 'fast', easing, callback);
 };
 
+function getReadableFileSizeString(fileSizeInBytes) {
+    var i = -1;
+    var byteUnits = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+    do {
+        fileSizeInBytes = fileSizeInBytes / 1024;
+        i++;
+    } while (fileSizeInBytes > 1024);
+
+    return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
+};
+
 
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
@@ -1386,6 +1404,17 @@ jQuery(document).ready(function() {
     if (!dialog.showModal) {
        dialogPolyfill.registerDialog(dialog);
     }
+    var dialog = document.querySelector('#modal-clean-quarantine');
+    if (!dialog.showModal) {
+       dialogPolyfill.registerDialog(dialog);
+    }
+    var closeButton = dialog.querySelector('#clean-quarantine-close');
+    var closeClickHandler = function (event) {
+       dialog.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+
+
     jQuery('#dialog-change-password-button').click(function() {
       var dialog = document.querySelector('#modal-change-password');
       dialog.showModal();
@@ -1452,13 +1481,19 @@ jQuery(document).ready(function() {
     });
 
     jQuery('#dialog-clean-quarantine-button').click(function() {
-      console.log('start dialog');
       var dialog = document.querySelector('#modal-clean-quarantine');
-      console.log('start dialog');
       dialog.showModal();
-      jQuery.get('php/quarantineData.php?action=getData', function(data) {
-	  for (var i = 0; i < data.length; i++) {
-             jQuery('#cleanQuarantine').append("<tr><td>" + data[i]['PatientID'] + "</td></tr>");
+      jQuery.getJSON('php/quarantineData.php?action=getData', function(data) {
+	  studies = Object.keys(data);
+	  for (var i = 0; i < studies.length; i++) {
+             jQuery('#cleanQuarantine').append("<tr>" +
+					       "<td title=\""+data[studies[i]]['files'].join(", ")+"\">" + data[studies[i]]['files'].length + "</td>" +
+			                       "<td>" + "<button class=\"btn\">Delete</button>" + "</td>" +
+					       "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientID'] + "</td>" +
+			                       "<td>" + data[studies[i]]['StudyDate'] + "</td>" + 
+					       "<td>" + getReadableFileSizeString(data[studies[i]]['size']) + "</td>" +
+					       "<td>" + data[studies[i]]['header'] + "</td>"
+					       + "</tr>");
           }
       });
     });
