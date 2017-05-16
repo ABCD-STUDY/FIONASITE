@@ -1551,7 +1551,7 @@ jQuery(document).ready(function() {
 	  for (var i = 0; i < studies.length; i++) {
              jQuery('#cleanQuarantine').append("<tr data=\"" + studies[i] + "\">" + // data can be used to lookup in quarantineDataTmp
 					       "<td title=\""+data[studies[i]]['files'].join(", ")+"\">" + data[studies[i]]['files'].length + "</td>" +
-			                       "<td>" /*+ "<button class=\"btn quarantine-delete-these\">Delete</button>"*/ + "<button class=\"btn quarantine-move-these\">Move to DAIC</button>" + "</td>" +
+			                       "<td>" + "<button class=\"btn quarantine-delete-these\">Delete</button>" + "<button class=\"btn quarantine-move-these\">Move to DAIC</button>" + "</td>" +
 					       "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientName'] + "</td>" +
 			                       "<td>" + data[studies[i]]['StudyDate'] + "</td>" + 
 					       "<td>" + getReadableFileSizeString(data[studies[i]]['size']) + "</td>" +
@@ -1590,12 +1590,20 @@ jQuery(document).ready(function() {
 	    console.log("Error: could not find this study in the quarantine data tmp: " + study);
 	    return;
 	}
-	console.log("Delete these datasets: " + json_encode(quarantineDataTmp[study]['files']));
         var files = JSON.stringify(quarantineDataTmp[study]['files']);
 	console.log("Delete these datasets: " + files);
-	jQuery.getJSON('php/quarantineData.php', { "action": "deleteData", "files": files }, function(data) {
-           // request that the files are moved to DAIC with the specified header
-        });
+	var row = jQuery(this).parent().parent();
+	jQuery.ajax({
+		      url: 'php/quarantineData.php?action=deleteData', 
+		      data: { "action": "deleteData", "files": files }, 
+		      dataType: 'json',
+		      type: "POST",
+		      success: function(data) {
+			        // request that the files are moved to DAIC with the specified header
+			        console.log("delete files: " + JSON.stringify(data));
+			        row.hide(); // hide this column
+		      }
+	});
     });
 
     jQuery('#dialog-setup-button').click(function() {

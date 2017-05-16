@@ -99,6 +99,19 @@ if ( $action == "getData" ) {
     $oks[] = rename( "/data/quarantine/".$parts['filename'].".".$parts['extension'], "/data/outbox/".$header."_".$parts['filename'].".".$parts['extension']);
   }
   echo(json_encode($oks));
+} elseif ($action == "deleteData" ) {
+  // we need the files and the header for this
+  $files = array();
+  if (isset($_POST['files'])) {
+     $files = json_decode($_POST['files'], true);
+  }
+
+  $oks = array();
+  foreach($files as $file) {
+    $parts = pathinfo($file);
+    $oks[] = unlink( "/data/quarantine/".$parts['filename'].".".$parts['extension']);
+  }
+  echo(json_encode($oks));
 }
 
 
