@@ -1466,15 +1466,15 @@ jQuery(document).ready(function() {
     if (!dialog.showModal) {
        dialogPolyfill.registerDialog(dialog);
     }
-    var dialog = document.querySelector('#modal-clean-quarantine');
-    if (!dialog.showModal) {
-       dialogPolyfill.registerDialog(dialog);
+    var dialogCQ = document.querySelector('#modal-clean-quarantine');
+    if (!dialogCQ.showModal) {
+       dialogPolyfill.registerDialog(dialogCQ);
     }
-    var closeButton = dialog.querySelector('#clean-quarantine-close');
-    var closeClickHandler = function (event) {
-       dialog.close();
+    var closeButtonCQ = dialogCQ.querySelector('#clean-quarantine-close');
+    var closeClickHandlerCQ = function (event) {
+       dialogCQ.close();
     }
-    closeButton.addEventListener('click', closeClickHandler);
+    closeButtonCQ.addEventListener('click', closeClickHandlerCQ);
 
 
     jQuery('#dialog-change-password-button').click(function() {
