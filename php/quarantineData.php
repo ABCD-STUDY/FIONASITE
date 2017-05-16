@@ -67,9 +67,10 @@ if ( $action == "getData" ) {
 	   $parts = pathinfo($f);
 	   if (strpos($parts['filename'], "NDAR") != 0) {
 	      continue;
-           } 	
+           }
            $header = explode("_Session", $parts['filename']);
-           $studies[$studyinstanceuid]['header'] = $header[0];
+           if (strlen($studies[$studyinstanceuid]['header']) < strlen($header[0])) 
+              $studies[$studyinstanceuid]['header'] = $header[0];
         }
 
      }
@@ -80,6 +81,24 @@ if ( $action == "getData" ) {
    }
    echo (json_encode($studies, JSON_PRETTY_PRINT));
 
+} elseif ($action == "moveData" ) {
+  // we need the files and the header for this
+  $files = array();
+  if (isset($_POST['files'])) {
+     $files = json_decode($_POST['files'], true);
+  }
+  $header = "";
+  if (isset($_POST['header'])) {
+     $header = $_POST['header'];
+  }
+
+  $oks = array();
+  foreach($files as $file) {
+    // syslog(LOG_EMERG, "save now: " . $file . " with this header: " . $header. "\n");
+    $parts = pathinfo($file);
+    $oks[] = rename( "/data/quarantine/".$parts['filename'].".".$parts['extension'], "/data/outbox/".$header."_".$parts['filename'].".".$parts['extension']);
+  }
+  echo(json_encode($oks));
 }
 
 

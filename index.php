@@ -1218,7 +1218,7 @@ function getReadableFileSizeString(fileSizeInBytes) {
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
-
+var quarantineDataTmp = []; // temporarily store the quarantine data for lookup
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
@@ -1546,18 +1546,56 @@ jQuery(document).ready(function() {
       var dialog = document.querySelector('#modal-clean-quarantine');
       dialog.showModal();
       jQuery.getJSON('php/quarantineData.php?action=getData', function(data) {
+          quarantineDataTmp = data;
 	  studies = Object.keys(data);
 	  for (var i = 0; i < studies.length; i++) {
-             jQuery('#cleanQuarantine').append("<tr>" +
+             jQuery('#cleanQuarantine').append("<tr data=\"" + studies[i] + "\">" + // data can be used to lookup in quarantineDataTmp
 					       "<td title=\""+data[studies[i]]['files'].join(", ")+"\">" + data[studies[i]]['files'].length + "</td>" +
-			                       "<td>" + "<button class=\"btn\">Delete</button>" + "</td>" +
-					       "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientID'] + "</td>" +
+			                       "<td>" /*+ "<button class=\"btn quarantine-delete-these\">Delete</button>"*/ + "<button class=\"btn quarantine-move-these\">Move to DAIC</button>" + "</td>" +
+					       "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientName'] + "</td>" +
 			                       "<td>" + data[studies[i]]['StudyDate'] + "</td>" + 
 					       "<td>" + getReadableFileSizeString(data[studies[i]]['size']) + "</td>" +
 					       "<td>" + data[studies[i]]['header'] + "</td>"
 					       + "</tr>");
           }
       });
+    });
+
+    jQuery('#cleanQuarantine').on('click', '.quarantine-move-these', function() {
+	// we got a click on a button that asks us to move data to DAIC
+	var study = jQuery(this).parent().parent().attr('data');
+	if (quarantineDataTmp[study] == 'undefined') {
+	    console.log("Error: could not find this study in the quarantine data tmp: " + study);
+	    return;
+	}
+        var files = JSON.stringify(quarantineDataTmp[study]['files']);
+	console.log("Move these datasets: " + files);
+	var row = jQuery(this).parent().parent();
+	jQuery.ajax({
+		      url: 'php/quarantineData.php?action=moveData', 
+		      data: { "action": "moveData", "files": files, "header": quarantineDataTmp[study]['header'] }, 
+		      dataType: 'json',
+		      type: "POST",
+		      success: function(data) {
+			        // request that the files are moved to DAIC with the specified header
+			        console.log("moving files returned: " + JSON.stringify(data));
+			        row.hide(); // hide this column
+		      }
+	});
+    });
+    jQuery('#cleanQuarantine').on('click', '.quarantine-delete-these', function() {
+	// we got a click on a button that asks us to move data to DAIC
+	var study = jQuery(this).parent().parent().attr('data');
+	if (quarantineDataTmp[study] == 'undefined') {
+	    console.log("Error: could not find this study in the quarantine data tmp: " + study);
+	    return;
+	}
+	console.log("Delete these datasets: " + json_encode(quarantineDataTmp[study]['files']));
+        var files = JSON.stringify(quarantineDataTmp[study]['files']);
+	console.log("Delete these datasets: " + files);
+	jQuery.getJSON('php/quarantineData.php', { "action": "deleteData", "files": files }, function(data) {
+           // request that the files are moved to DAIC with the specified header
+        });
     });
 
     jQuery('#dialog-setup-button').click(function() {
