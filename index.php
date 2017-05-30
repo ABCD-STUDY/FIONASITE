@@ -340,31 +340,32 @@
         </div>
       </header>
       <div class="demo-drawer mdl-layout__drawer mdl-color--blue-grey-900 mdl-color-text--blue-grey-50">
-        <header class="demo-drawer-header">
+        <header class="demo-drawer-header" style="position: relative;">
           <img src="images/user.jpg" class="demo-avatar">
 	  <!-- PCGC -->
 	  <!-- Dropdown selector to pick a project -->
-          <div class="demo-avatar-dropdown" id="project-dropdown-section">
-            <span>Project</span>
-            <div class="mdl-layout-spacer"></div>
-            <button id="projbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
-              <i class="material-icons" role="presentation">arrow_drop_down</i>
-              <span class="visuallyhidden">Accounts</span>
-            </button>
-            <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="projbtn">
-	      <li> </li><!-- The first menu item is not selectable -->
-	      <?php
-		 // Add a menu item for each project
-		 foreach ($sites as $site) {
+	  <div style="position: absolute; right: 10px; top: 0px;" id="project-dropdown-section">
+            <div class="demo-avatar-dropdown">
+              <!-- <button id="projbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"> -->
+              <button id="projbtn" class="mdl-button mdl-js-button mdl-button--icon">
+		<i class="material-icons" role="presentation">arrow_drop_down</i>
+              </button>
+              <!--<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="projbtn">-->
+              <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu" for="projbtn">
+		<li class="mdl-menu__item clickable-project-name" id="projAAAA"> </li>
+		<li class="mdl-menu__item clickable-project-name" id="projBBBB"> </li>
+		<?php
+		   // Add a menu item for each project
+		   foreach ($sites as $site) {
 		   echo ("<li class=\"mdl-menu__item clickable-project-name\" id=\"proj".$site."\">".strtoupper($site)."</li>");
-		 }
-	      ?>
-            </ul>
-	    <div>
-	      <!-- Display the project name -->
-	      <center><span id="projname"></span></center>
+		   }
+		   ?>
+              </ul>
+	      <div>
+		<h3 id="projname"></h3>
+	      </div>
 	    </div>
-          </div>
+	  </div>
           <div class="demo-avatar-dropdown">
             <span>Data Views</span>
             <div class="mdl-layout-spacer"></div>
@@ -1336,6 +1337,7 @@ jQuery(document).ready(function() {
         var value = jQuery(this).text();
 	jQuery('#projname').text(value);
         projname = value;
+	loadSubjects();
     });
 
     jQuery('#load-subjects').click(function() {
