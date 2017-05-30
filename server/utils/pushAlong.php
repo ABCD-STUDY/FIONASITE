@@ -195,7 +195,7 @@
 		           // we can do this by looking at the part of the filename before the Session
 		           $nameparts = explode('Session',$fn);
 		           if (count($nameparts) < 2) {
-		              echo("Cannot get header information from this file in DAIC ".$fn);
+		              echo("Cannot get header information from this file in DAIC ".$fn.". File will not be processed...\n");
 		              continue;
 		           }
 			   $spart = explode('_', $nameparts[1]);
