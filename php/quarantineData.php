@@ -68,9 +68,14 @@ if ( $action == "getData" ) {
 	   if (strpos($parts['filename'], "NDAR") != 0) {
 	      continue;
            }
-           $header = explode("_Session", $parts['filename']);
-           if (strlen($studies[$studyinstanceuid]['header']) < strlen($header[0])) 
-              $studies[$studyinstanceuid]['header'] = $header[0];
+	   if (strpos($parts['filename'], "_Session") === FALSE) {
+	     $header = explode("_SUID", $parts['filename']);
+	     $studies[$studyinstanceuid]['header'] = $header[0];
+	   } else {
+             $header = explode("_Session", $parts['filename']);
+             if (strlen($studies[$studyinstanceuid]['header']) < strlen($header[0])) 
+                $studies[$studyinstanceuid]['header'] = $header[0];
+           }
         }
 
      }
