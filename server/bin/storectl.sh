@@ -9,12 +9,32 @@
 #
 # (Hauke Bartsch)
 
-od=/data/site/archive
+SERVERDIR=`dirname "$(readlink -f "$0")"`/../
+
+DATADIR=`cat /data/config/config.json | jq -r ".DATADIR"`
+port=`cat /data/config/config.json | jq -r ".DICOMPORT"`
+pidfile=${SERVERDIR}/.pids/storescpd.pid
 pipe=/tmp/.processSingleFilePipe
 
-port=`cat /data/config/config.json | jq -r ".DICOMPORT"`
-SERVERDIR=`dirname "$(readlink -f "$0")"`/../
-pidfile=${SERVERDIR}/.pids/storescpd.pid
+projname="$2"
+if [ -z "$projname" ]; then
+    projname="ABCD"
+else
+    if [ "$projname" != "ABCD" ]; then
+	DATADIR=`cat /data/config/config.json | jq -r ".SITES.${projname}.DATADIR"`
+	port=`cat /data/config/config.json | jq -r ".SITES.${projname}.DICOMPORT"`
+	pidfile=${SERVERDIR}/.pids/storescpd${projname}.pid
+	pipe=/tmp/.processSingleFilePipe${projname}
+    fi
+fi
+ARRIVEDDIR=${DATADIR}/site/.arrived
+
+echo $projname
+echo $DATADIR
+echo $port
+
+od="${DATADIR}/site/archive"
+
 scriptfile=${SERVERDIR}/bin/receiveSingleFile.sh
 
 export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
@@ -24,10 +44,10 @@ export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 #
 case $1 in
     'start')
-        if [[ -f /data/enabled ]] && [[ -r /data/enabled ]]; then
-           v=`cat /data/enabled | head -c 1`
+        if [[ -f ${DATADIR}/enabled ]] && [[ -r ${DATADIR}/enabled ]]; then
+           v=`cat ${DATADIR}/enabled | head -c 1`
            if [[ "$v" == "0" ]]; then
-              echo "`date`: service disabled using /data/enabled control file" >> ${SERVERDIR}/logs/storescpd.log
+              echo "`date`: service disabled using /data/enabled control file" >> ${SERVERDIR}/logs/storescpd${projname}.log
               echo "service disabled using /data/enabled control file"
               exit
            fi
@@ -40,29 +60,31 @@ case $1 in
         if [[ "$(/usr/bin/test -p ${pipe})" != "0" ]]; then
             echo "Found pipe ${pipe}..."
         else
-            echo "Error: the pipe of processSingleFile.py \"$pipe\" could not be found"
+            echo "Error: the pipe of processSingleFile.py \"$pipe\" could not be found for ${projname}"
             exit -1
         fi
         echo "Check if storescp daemon is running..."
-        /usr/bin/pgrep -f -u processing "storescpFIONA "
+        /usr/bin/pgrep -f -u processing "storescpFIONA .*${port}"
         RETVAL=$?
         [ $RETVAL = 0 ] && exit || echo "storescpd process not running, start now.."
         echo "Starting storescp daemon..."
         echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescpFIONA --fork --promiscuous --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
 
         /usr/bin/nohup /var/www/html/server/bin/storescpFIONA --fork \
+	    --datadir ${ARRIVEDDIR} \
+	    --datapipe ${pipe} \
 	    --promiscuous \
             --write-xfer-little \
             --exec-on-reception "PleaseLookAtThis '#a' '#c' '#r' '#p' '#f'" \
             --sort-on-study-uid scp \
             --output-directory "$od" \
-            $port &>${SERVERDIR}/logs/storescpd.log &
+            $port &>${SERVERDIR}/logs/storescpd${projname}.log &
         pid=$!
         echo $pid > $pidfile
         ;;
     'stop')
         #/usr/bin/pkill -F $pidfile
-        /usr/bin/pkill -u processing storescpFIONA
+        /usr/bin/pkill -u processing "storescpFIONA .*${port}"
         RETVAL=$?
         # [ $RETVAL -eq 0 ] && rm -f $pidfile
         [ $RETVAL = 0 ] && rm -f ${pidfile}

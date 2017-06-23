@@ -8,18 +8,36 @@
 # */1 * * * * sleep 30; /data/code/bin/detectStudyArrival.sh
 # */1 * * * * sleep 15; /data/code/bin/detectStudyArrival.sh
 # */1 * * * * sleep 45; /data/code/bin/detectStudyArrival.sh
+# */1 * * * * /data/code/bin/detectStudyArrival.sh PCGC
+# */1 * * * * sleep 30; /data/code/bin/detectStudyArrival.sh PCGC
+# */1 * * * * sleep 15; /data/code/bin/detectStudyArrival.sh PCGC
+# */1 * * * * sleep 45; /data/code/bin/detectStudyArrival.sh PCGC
 
+SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 
+# Default directories for ABCD project
+datadir=`cat /data/config/config.json | jq -r ".DATADIR"`
+pfiledir=`cat /data/config/config.json | jq -r ".PFILEDIR"`
 DIR=/data/site/.arrived
+log=${SERVERDIR}/logs/detectStudyArrival.log
+
+projname="$1"
+if [ -z "$projname" ]; then
+    projname="ABCD"
+else
+    if [ "$projname" != "ABCD" ]; then
+	# Override directories if non-ABCD project
+	datadir=`cat /data/config/config.json | jq -r ".SITES.${projname}.DATADIR"`
+	pfiledir=`cat /data/config/config.json | jq -r ".SITES.${projname}.PFILEDIR"`
+	DIR=/data${projname}/site/.arrived
+	log=${SERVERDIR}/logs/detectStudyArrival${projname}.log
+    fi
+fi
+
 if [ ! -d "$DIR" ]; then
   mkdir -p "$DIR"
   chmod 777 "$DIR"
 fi
-
-# Where is this script? The parent directory of this script is the server dir.
-SERVERDIR=`dirname "$(readlink -f "$0")"`/../
-log=${SERVERDIR}/logs/detectStudyArrival.log
-pfiledir=`cat /data/config/config.json | jq -r ".PFILEDIR"`
 
 # only done if at least that old (in seconds)
 oldtime=15
@@ -27,6 +45,14 @@ oldtime=15
 anonymize () {
   SDIR=$1
   SSERIESDIR=$2
+  projname=$3
+  if [ -z "$projname" ]; then
+      projname = ""
+  else
+      if [ "$projname" == "ABCD" ]; then
+	  projname = ""
+      fi
+  fi
   # This loop is very inefficient, dcmodify called for each file is not good.
   # We should group files together that not exceed the limit of the command line length in bash.
   # Even better we should replace this with some GDCM code.
@@ -43,22 +69,22 @@ anonymize () {
   #	-ea "(0020,0010)" -ea "(0020,4000)" "$f"
   #done
   # run python version of anonymizer
-  echo "We will run now: ${SERVERDIR}/bin/anonymize.sh /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
-  ${SERVERDIR}/bin/anonymize.sh /data/site/raw/${SDIR}/${SSERIESDIR} 2>&1 >> $log
+  echo "We will run now: ${SERVERDIR}/bin/anonymize.sh ${datadir}/site/raw/${SDIR}/${SSERIESDIR}" >> $log
+  ${SERVERDIR}/bin/anonymize.sh ${datadir}/site/raw/${SDIR}/${SSERIESDIR} 2>&1 >> $log
 
   # we need to cache the connection information for this file, lets get the values first
-  AETitleCalled=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCalled] | jq .[]`
-  AETitleCaller=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCaller] | jq .[]`
-  CallerIP=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.CallerIP] | jq .[] | tr -d '"' | tr -d '\\'`
+  AETitleCalled=`cat ${datadir}/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCalled] | jq .[]`
+  AETitleCaller=`cat ${datadir}/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.AETitleCaller] | jq .[]`
+  CallerIP=`cat ${datadir}/site/raw/${SDIR}/${SSERIESDIR}.json | jq [.IncomingConnection.CallerIP] | jq .[] | tr -d '"' | tr -d '\\'`
 
   # We need to processSingleFile again after the anonymization is done. First delete the previous cached json file
-  echo "`date`: anonymize  - delete now /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
-  /bin/rm /data/site/raw/${SDIR}/${SSERIESDIR}.json
+  echo "`date`: anonymize  - delete now ${datadir}/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
+  /bin/rm ${datadir}/site/raw/${SDIR}/${SSERIESDIR}.json
   # then send files to processSingleFile again
-  echo "`date`: anonymize  - recreate /data/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
-  cd /data/site/raw/${SDIR}/${SSERIESDIR}
-  echo "`date`: run find -L . -type f -print | xargs -i echo \"${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${SDIR}/${SSERIESDIR},{}\" in /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log
-  find -L . -type f -print | xargs -i echo "${AETitleCalled},${AETitleCaller},${CallerIP},/data/site/raw/${SDIR}/${SSERIESDIR},{}" >> /tmp/.processSingleFilePipe
+  echo "`date`: anonymize  - recreate ${datadir}/site/raw/${SDIR}/${SSERIESDIR}.json" >> $log
+  cd ${datadir}/site/raw/${SDIR}/${SSERIESDIR}
+  echo "`date`: run find -L . -type f -print | xargs -i echo \"${AETitleCalled},${AETitleCaller},${CallerIP},${datadir}/site/raw/${SDIR}/${SSERIESDIR},{}\" in ${datadir}/site/raw/${SDIR}/${SSERIESDIR}" >> $log
+  find -L . -type f -print | xargs -i echo "${AETitleCalled},${AETitleCaller},${CallerIP},${datadir}/site/raw/${SDIR}/${SSERIESDIR},{}" >> /tmp/.processSingleFilePipe${projname}
 }
 
 runSeriesInventions () {
@@ -71,7 +97,7 @@ runSeriesInventions () {
 
   echo "`date`: series inventions only required for phantom scan" >> $log
   # test for phantom scan
-  erg=`cat /data/site/raw/${SDIR}/${SSERIESDIR}.json | jq ".ClassifyType"[] | grep -i ABCD-Phantom`
+  erg=`cat ${datadir}/site/raw/${SDIR}/${SSERIESDIR}.json | jq ".ClassifyType"[] | grep -i ABCD-Phantom`
   if [[ ! "$erg" == "" ]]; then
       # run the phantom QC on this series, create an output directory first
       d=${SDIR}/${SSERIESDIR}_`date | tr ' ' '_'`
@@ -84,7 +110,7 @@ runSeriesInventions () {
       if [ $? == "1" ]; then
         mkdir -p ${d}
         $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
-        erg=$(docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
+        erg=$(docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${datadir}/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
         echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
       fi
   fi
@@ -99,13 +125,13 @@ runStudyInventions () {
 
   echo "`date`: study inventions implements series tests for ABCD complicance" >> $log
   # run the series compliance QC on this series, create an output directory first
-  d=/data/site/output/${SDIR}/series_compliance_`date | tr ' ' '_' | tr ':' '_'`
+  d=${datadir}/site/output/${SDIR}/series_compliance_`date | tr ' ' '_' | tr ':' '_'`
   mkdir -p ${d}
   # lets move the docker's info file as documentation in there
   dproc=compliance_check
   $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
-  echo "`date`: ${SDIR} -> docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v ${SDIR}:/input ${dproc} /bin/bash -c \"/root/work.sh /input /output\"" >> $log
-  erg=$(docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v /data/site/raw/${SSDIR}:/input:ro ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
+  echo "`date`: ${SDIR} -> docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${dproc} /bin/bash -c \"/root/work.sh /input /output\"" >> $log
+  erg=$(docker run -d -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${datadir}/site/raw/${SSDIR}:/input:ro ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
   echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
 }
 
@@ -122,10 +148,10 @@ runAtInterval () {
   fi
   # if we are not running already start a job now
   echo "`date`: start the job now" >> $log
-  d=/data/site/output/${SDIR}/series_compliance
+  d=${datadir}/site/output/${SDIR}/series_compliance
   mkdir -p ${d}
-  echo "/usr/bin/nohup watch -n $interval docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &" >> $log
-  /usr/bin/nohup watch -n $interval /usr/bin/bash -c "docker run -d -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> /tmp/watch.log" &
+  echo "/usr/bin/nohup watch -n $interval docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &" >> $log
+  /usr/bin/nohup watch -n $interval /usr/bin/bash -c "docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> /tmp/watch.log" &
 }
 
 detect () {
@@ -142,12 +168,12 @@ detect () {
     SERIESDIR=`echo "$fileName" | cut -d' ' -f5`
     if [[ "${SERIESDIR}" == "" ]]; then
       # we have a study instance uid in SDIR, start the study compliance check
-      d=/data/site/output/${SDIR}/series_compliance
+      d=${datadir}/site/output/${SDIR}/series_compliance
       mkdir -p ${d}
       machineid=compliance_check
       SSDIR=${SDIR:4}
-      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
-      id=$(docker run -v /data/quarantine:/quarantine:ro -v ${d}:/output -v /data/site/archive/${SDIR}:/data/site/archive/${SDIR}:ro -v /data/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
+      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR}:ro -v ${datadir}/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
+      id=$(docker run -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR}:ro -v ${datadir}/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
       echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log
 
       # lets do some cleanup and remove any unused docker containers
@@ -197,42 +223,42 @@ detect () {
         fi
         # before we can do anything we need to anonymize this series (real file location, no symbolic links)
         anonymize=1
-        if [[ -f /data/enabled ]]; then
-          anonymize=`cat /data/enabled | head -c 3 | tail -c 1`
+        if [[ -f ${datadir}/enabled ]]; then
+          anonymize=`cat ${datadir}/enabled | head -c 3 | tail -c 1`
         fi
         if [[ "$anonymize" == "1" ]]; then
-          echo "`date`: anonymize files linked to by /data/site/raw/${SDIR}/${SSERIESDIR}" >> $log  
-   	  anonymize ${SDIR} ${SSERIESDIR}
+          echo "`date`: anonymize files linked to by ${datadir}/site/raw/${SDIR}/${SSERIESDIR}" >> $log  
+   	  anonymize ${SDIR} ${SSERIESDIR} ${projname}
           echo "`date`: anonymization is done" >> $log
         fi
-        echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR series: $SSERIESDIR" >> $log
+        echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP ${datadir}/site/raw/$SDIR series: $SSERIESDIR" >> $log
         runSeriesInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR $SSERIESDIR
 
         # we have a series store it as a tar
-        mkdir -p /data/quarantine/
+        mkdir -p ${datadir}/quarantine/
         # allow the site user to write to this directory (from the scanner)
-        chmod 777 /data/quarantine
-        echo "`date`: write tar file /data/quarantine/${SDIR}_${SSERIESDIR}.tgz, created from /data/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
-        out=/data/quarantine/${SDIR}_${SSERIESDIR}.tgz
-        cd /data/site/raw
+        chmod 777 ${datadir}/quarantine
+        echo "`date`: write tar file ${datadir}/quarantine/${SDIR}_${SSERIESDIR}.tgz, created from ${datadir}/site/raw/${SDIR}/${SSERIESDIR}/" >> $log
+        out=${datadir}/quarantine/${SDIR}_${SSERIESDIR}.tgz
+        cd ${datadir}/site/raw
         # speed up compression if we have pigz installed on this machine
 	if hash pigz 2>/dev/null; then
-	    tar --dereference -cf - "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json" | pigz --fast -p 6 > "$out"
+	    tar --dereference -cf - "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "${datadir}/site/output/${SDIR}/series_compliance/*.json" | pigz --fast -p 6 > "$out"
         else
-            GZIP=-1 tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "/data/site/output/${SDIR}/series_compliance/*.json"
+            GZIP=-1 tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "${datadir}/site/output/${SDIR}/series_compliance/*.json"
 	fi
-        md5sum -b "$out" > /data/quarantine/${SDIR}_${SSERIESDIR}.md5sum
-        cp "${SDIR}/${SSERIESDIR}.json" /data/quarantine/${SDIR}_${SSERIESDIR}.json
-        echo "`date`:    test for series compliance file /data/site/output/${SDIR}/series_compliance/compliance_output.json" >> $log
-        if [[ -f "/data/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ]]; then
-  	  cp "/data/site/output/scp_${SDIR}/series_compliance/compliance_output.json" /data/quarantine/${SDIR}.json
-          echo "`date`:    copy compliance_output.json to /data/quarantine/scp_${SDIR}.json" >> $log
+        md5sum -b "$out" > ${datadir}/quarantine/${SDIR}_${SSERIESDIR}.md5sum
+        cp "${SDIR}/${SSERIESDIR}.json" ${datadir}/quarantine/${SDIR}_${SSERIESDIR}.json
+        echo "`date`:    test for series compliance file ${datadir}/site/output/${SDIR}/series_compliance/compliance_output.json" >> $log
+        if [[ -f "${datadir}/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ]]; then
+  	  cp "${datadir}/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ${datadir}/quarantine/${SDIR}.json
+          echo "`date`:    copy compliance_output.json to ${datadir}/quarantine/scp_${SDIR}.json" >> $log
         fi
         echo "`date`: done with creating tar file and md5sum" >> $log
         # now the user interface needs to display this as new data
 
       else
-        echo "`date`: Study detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP /data/site/raw/$SDIR" >> $log
+        echo "`date`: Study detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP ${datadir}/site/raw/$SDIR" >> $log
 
         runStudyInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR
 
@@ -266,4 +292,4 @@ detect () {
   # command executed under lock
   echo "`date`: run another detectStudyArrival" >> $log
   detect
-) 9>${SERVERDIR}/.pids/detectStudyArrival.lock
+) 9>${SERVERDIR}/.pids/detectStudyArrival${projname}.lock

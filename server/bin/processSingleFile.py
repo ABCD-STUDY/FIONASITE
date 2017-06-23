@@ -8,7 +8,7 @@ The parser for the Siemens CSA header have been adapted from
 """
 
 import sys, os, time, atexit, stat, tempfile, copy, traceback
-import dicom, json, re, logging, logging.handlers, threading
+import dicom, json, re, logging, logging.handlers, threading, string
 import struct
 from signal import SIGTERM
 from dicom.filereader import InvalidDicomError
@@ -26,6 +26,8 @@ class Daemon:
                     self.stdout   = stdout
                     self.stderr   = stderr
                     self.pidfile  = pidfile
+                    self.projname = ''
+                    self.datadir = '/data'
                     self.pipename = '/tmp/.processSingleFilePipe'
                     
         def daemonize(self):
@@ -624,6 +626,16 @@ class ProcessSingleFile(Daemon):
                                 if callerip == '':
                                         callerip = "0.0.0.0"
                                 dicomdir      = responses[3]
+                                # the dicomdir will encode for the current project
+                                # if we are in abcd the path should look like /data/site/archive/<something>
+                                # if we are in another project the path looks like /dataPCGC/site/archive/<something>
+                                datadir = self.datadir
+                                logging.info(dicomdir)
+                                #print 'DEBUG: dicomdir: ', dicomdir
+                                #print 'DEBUG: datadir: ', datadir
+                                #print 'DEBUG: self.projname ', self.projname
+                                #print 'DEBUG: self.pipename ', self.pipename
+
                                 dicomfile     = responses[4]
                                 response      = ''.join([dicomdir, os.path.sep, dicomfile])
                                 try:
@@ -692,7 +704,8 @@ class ProcessSingleFile(Daemon):
                                                 ptag_ser = None
                                                 pass
 
-                                arriveddir = '/data/site/.arrived'
+                                arriveddir = datadir + '/site/.arrived'
+                                #print 'DEBUG: arriveddir: ', arriveddir
                                 if not os.path.exists(arriveddir):
                                         os.makedirs(arriveddir)
                                 # write a touch file for each image of a series (to detect series arrival)
@@ -704,10 +717,12 @@ class ProcessSingleFile(Daemon):
                                         continue
                                 with open(arrivedfile, 'a'):
                                         os.utime(arrivedfile, None)
-                                patientdir = '/data/site/participants'
+                                patientdir = datadir + '/site/participants'
+                                #print 'DEBUG: patientdir: ', patientdir
                                 if not os.path.exists(patientdir):
                                         os.makedirs(patientdir)
-                                outdir = '/data/site/raw'
+                                outdir = datadir + '/site/raw'
+                                #print 'DEBUG: outdir: ', outdir
                                 if not os.path.exists(outdir):
                                         os.makedirs(outdir)
                                         os.chmod(outdir, 0777)
@@ -1014,19 +1029,47 @@ class ProcessSingleFile(Daemon):
 # the second is the named pipe in /tmp/.processSingleFile
 #  Hauke,    July 2015               
 if __name__ == "__main__":
-        pidfilename = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '../.pids/processSingleFile.pid' ])
+        projname = ''
+        if (sys.argv[1] != "send") and (len(sys.argv) == 3):
+                projname = sys.argv[2]
+                #print ("DEBUG: projname: ", projname)
+
+        # try to read the config file from this machine
+        datadir = '/data'
+        configFilename = '/data/config/config.json'
+        settings = {}
+        with open(configFilename,'r') as f:
+                settings = json.load(f)
+
+        #print ("DEBUG: config.json: ", settings)
+
+        # Look for the datadir for the current project
+        try:
+                datadir = settings['SITES'][projname]['DATADIR'].encode("utf-8")
+                #print ("DEBUG: datadir: ", datadir)
+        except KeyError:
+                print("Could not read local config file in %s" % configFilename)
+                pass
+
+        pidfilename = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '../.pids/processSingleFile' , projname , '.pid' ])
+        #print ("DEBUG: pidfilename: ", pidfilename)
+
         p = os.path.dirname(os.path.abspath(pidfilename))
         if not os.path.exists(p):
                 print "The path to the pids does not exist (%s), use alternative location for pid file" % p
-                pidfilename = tempfile.gettempdir() + '/processSingleFile.pid'
-        lfn = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '/../logs/processSingleFile.log' ])  
+                pidfilename = tempfile.gettempdir() + '/processSingleFile' + projname + '.pid'
+        lfn = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '/../logs/processSingleFile' , projname , '.log' ])
+
         #log = logging.handlers.RotatingFileHandler(lfn, 'a', 10*1024*1024, backupCount=5)
         #log.setFormatter(logging.Formatter('%(levelname)s:%(asctime)s: %(message)s'))
         logging.basicConfig(filename=lfn,format='%(levelname)s:%(asctime)s: %(message)s',level=logging.DEBUG)
         daemon = ProcessSingleFile(pidfilename)
         daemon.init()
-        if len(sys.argv) == 2:
+        if (sys.argv[1] != "send") and (len(sys.argv) > 1):
                 if 'start' == sys.argv[1]:
+                        daemon.projname = projname
+                        daemon.pipename = ''.join([daemon.pipename, projname])
+                        daemon.datadir = datadir
                         try:
                                 daemon.start()
                         except:
