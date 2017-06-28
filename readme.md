@@ -48,7 +48,8 @@ Configuration
   "MPPSMODE":           "mppson" | "mppsoff",
   "CONNECTION":         "<REDCap token for participant list>",
   "WEBPROXY":           "<web proxy IP if one is used to connect to the internet>",
-  "WEBPROXYPORT":       "<port of the web proxy>"
+  "WEBPROXYPORT":       "<port of the web proxy>",
+  "DATADIR": 		"<default projects data directory - (default /data)>"
 }
 ```
 
