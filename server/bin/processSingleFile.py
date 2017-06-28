@@ -1048,7 +1048,7 @@ if __name__ == "__main__":
                 datadir = settings['SITES'][projname]['DATADIR'].encode("utf-8")
                 #print ("DEBUG: datadir: ", datadir)
         except KeyError:
-                print("Could not read local config file in %s" % configFilename)
+                print("Could not read local config files DATADIR value for project \"%s\" in %s, assume ABCD default: %s" % (projname, configFilename, datadir))
                 pass
 
         pidfilename = ''.join([ os.path.dirname(os.path.abspath(__file__)), os.path.sep, '../.pids/processSingleFile' , projname , '.pid' ])

@@ -12,6 +12,13 @@
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 
 DATADIR=`cat /data/config/config.json | jq -r ".DATADIR"`
+# if datadir has not be set in config
+if [ "$DATADIR" == "null" ]; then
+   echo "no datadir set in config file, assume ABCD default directory /data/"
+   DATADIR="/data"
+fi
+
+
 port=`cat /data/config/config.json | jq -r ".DICOMPORT"`
 pidfile=${SERVERDIR}/.pids/storescpd.pid
 pipe=/tmp/.processSingleFilePipe
@@ -29,9 +36,9 @@ else
 fi
 ARRIVEDDIR=${DATADIR}/site/.arrived
 
-echo $projname
-echo $DATADIR
-echo $port
+#echo $projname
+#echo $DATADIR
+#echo $port
 
 od="${DATADIR}/site/archive"
 
