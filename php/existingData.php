@@ -2,6 +2,7 @@
 
 $action = "";
 $study = "";
+$project = "";
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];
@@ -17,6 +18,18 @@ if (isset($_GET['study'])) {
     return;
 }
 
+if (isset($_GET['project'])) {
+    $project = $_GET['project'];
+} else {
+    echo ("{ \"ok\": 0, \"message\": \"project not set\" }");
+    return;
+}
+
+if ($project == "ABCD") {
+   // default project setting
+   $project = "";
+}
+
 if ( $action == "getStudy" ) {
 
     // run compliance check here
@@ -29,7 +42,8 @@ if ( $action == "getStudy" ) {
     }
     rename('/tmp/'.$study, $cpath.DIRECTORY_SEPARATOR.$study);    
 
-    $d = 'output/scp_'.$study.'/series_compliance/compliance_output.json';
+    //$d = 'output/scp_'.$study.'/series_compliance/compliance_output.json';
+    $d = '/data'.$project.'/site/output/scp_'.$study.'/series_compliance/compliance_output.json';
     if (!file_exists($d)) {
         echo ("{ \"ok\": 0, \"message\": \"file could not be found\" }");
         return;
@@ -41,7 +55,8 @@ if ( $action == "getStudy" ) {
     // or just return everything
 
     // data is located in /data/site/output/scp_<study instance uid>/
-    $d = 'output';
+    //$d = 'output';
+    $d = '/data'.$project.'/site/output';
     
     $studydirs = glob($d."/scp_*");
     

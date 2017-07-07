@@ -1410,7 +1410,8 @@ jQuery(document).ready(function() {
 
         var options = {
             "action": "getStudy",
-            "study": studyinstanceuid
+            "study": studyinstanceuid,
+            "project": projname
         };
         jQuery.getJSON('/php/existingData.php', options, function(data) {
             dataSec1 = {};
