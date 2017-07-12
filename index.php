@@ -1168,7 +1168,7 @@ function displayAdditionalScans(data, StudyInstanceUID) {
 
 // get valid session names                                                                                                                                                                  
 function getSessionNamesFromREDCap() {
-    jQuery.getJSON('/php/getRCEvents.php', function(data) {
+    jQuery.getJSON('/php/getRCEvents.php?project=' + projname, function(data) {
         jQuery('#session-name').children().remove();
         for (var i = 0; i < data.length; i++) {
             val = "";
@@ -1182,7 +1182,7 @@ function getSessionNamesFromREDCap() {
 }
 
 function getParticipantNamesFromREDCap() {
-    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php', function(data) {
+    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php?project=' + projname, function(data) {
 	jQuery('#session-participant').select2({
 	    dropdownParent: jQuery('#modal-study-info'),
 	    placeholder: 'Select a REDCap participant',

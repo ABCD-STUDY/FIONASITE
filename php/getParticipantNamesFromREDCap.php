@@ -1,6 +1,13 @@
 <?php
 
 // get the token from the config file
+$project = "";
+if (isset($_GET['project'])) {
+   $project = $_GET['project'];
+}
+if ($project == "ABCD") {
+   $project = "";
+}
 
 if (! file_exists("config.json")) {
    echo ("{ \"message\": \"Error: could not read the config file\", \"ok\": \"0\" }");
@@ -11,7 +18,13 @@ if (!isset($configs['CONNECTION'])) {
    echo ("{ \"message\": \"Error: could not find CONNECTION setting in the config file\", \"ok\": \"0\" }");
    return;
 }
-$token = $configs['CONNECTION'];
+
+$token = "";
+if ($project != "") {
+   $token = $configs['SITES'][$project]['CONNECTION'];
+} else {
+  $token = $configs['CONNECTION'];
+}
 if ($token == "") {
    echo ("{ \"message\": \"Error: no token found in config file\", \"ok\": \"0\" }");
    return;
