@@ -851,7 +851,7 @@ function loadSystem() {
             rp3.value(100-data.memory_free_percent).render();
 	}
     });
-    jQuery.get('/php/startstop.php', function(data) {
+    jQuery.get('/php/startstop.php?project=' + projname, function(data) {
         console.log('change checked to reflect system status ' + data);
         // we expect two values here
         var vals = data.split('');
@@ -939,7 +939,7 @@ function changeSystemStatus() {
    var a = jQuery('#receive-dicom')[0].checked ? 1:0;
    var b = jQuery('#receive-mpps')[0].checked ? 1:0;
    var c = jQuery('#anonymize')[0].checked ? 1:0;
-   jQuery.get('/php/startstop.php?enable='+a+""+b+""+c);
+   jQuery.get('/php/startstop.php?project='+projname+'&enable='+a+""+b+""+c);
 }
 
 function displayHeaderSection(data) {
@@ -1338,6 +1338,7 @@ jQuery(document).ready(function() {
 	jQuery('#projname').text(value);
         projname = value;
 	loadSubjects();
+        loadSystem();
     });
 
     jQuery('#load-subjects').click(function() {
