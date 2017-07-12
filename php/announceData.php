@@ -12,6 +12,13 @@ if (isset($_GET['pGUID'])) {
   echo "Error: no pGUID specified";
   return;
 }
+$project = "";
+if (isset($_GET['project'])) {
+   $project = $_GET['project'];
+}
+if ($project == "ABCD") {
+   $project = "";
+}  
 
 $config = json_decode(file_get_contents('config.json'), TRUE);
 $proxy = "";
@@ -32,6 +39,9 @@ if (!isset($configs['CONNECTION'])) {
    return;
 }
 $token = $configs['CONNECTION'];
+if ($project != "") { // use this projects token to announce the data
+   $token = $configs['SITES'][$project]['CONNECTION'];
+}
 if ($token == "") {
    echo ("{ \"message\": \"Error: no token found in config file\", \"ok\": \"0\" }");
    return;

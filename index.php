@@ -1684,7 +1684,8 @@ jQuery(document).ready(function() {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
 	     "redcap_event_name": jQuery('#session-name').val(),
-             "run": jQuery('#session-run').val()
+             "run": jQuery('#session-run').val(),
+	     "project": projname
           };
           jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
               // alert(JSON.stringify(data));
@@ -1696,7 +1697,7 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-study-info');
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        dialog.close();
-       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val() }, function(data) {
+       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val(), 'project': projname }, function(data) {
 	  console.log("tried to announce data, got: " + data);
        });
     });
