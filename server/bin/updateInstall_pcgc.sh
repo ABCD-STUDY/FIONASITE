@@ -7,7 +7,7 @@
 # -repair     - attempt to repair directories, files, permissions, owners and cronjobs
 #
 
-log=/var/www/html/server/logs/updateInstall.log
+log=/var/www/html/server/logs/updateInstall_pcgc.log
 
 todo=(
     'existsDirectory' '/dataPCGC' ''
@@ -60,7 +60,7 @@ todo=(
     'owner' '/var/www/html/server/.pids' 'processing:processing'
     'owner' '/var/www/html/server/logs' 'processing:processing'
 
-    'existsFile' '/dataPCGC/enabled' '111'
+    'existsFile' '/dataPCGC/enabled' '110'
     'existsFile' '/var/www/html/server/logs/audit.log' ''
     'owner' '/var/www/html/server/logs/audit.log' 'apache:apache'
     'existsFile' '/dataPCGC/config/config.json' '{ "DICOMIP": "137.110.181.168", "DICOMPORT": "4006", "DICOMAETITLE": "UCSDFIONA", "SCANNERIP": "172.20.141.70", "SCANNERPORT": "4006", "SCANNERAETITLE": "CTIPMUCSD1", "SCANNERTYPE": "SIEMENS", "MPPSPORT": "4007", "SERVERUSER": "daic", "DAICSERVER": "137.110.181.166", "PFILEDIR": "/dataPCGC/DAIC", "CONNECTION": "" }'
