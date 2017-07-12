@@ -1,7 +1,18 @@
 <?php
+  $project = "";
+  if (isset($_GET['project'])) {
+     $project = $_GET['project'];
+  }
+  if ($project == "ABCD") { // default project is just /data/
+     $project = "";
+  }
 
   // control file that contains something like  "000"
   $fn="/data/enabled";
+
+  if ($project !== "") {
+     $fn = '/data'.$project.'/enabled';
+  }
 
   // enable disable the system services
   $enable="0";
