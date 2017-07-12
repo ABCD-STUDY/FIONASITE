@@ -1107,7 +1107,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          //jQuery('#detected-scans').append(str);
 
          // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
-         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath, (function(id) {
+         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(id) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
 	         if (data.length == 0) {
