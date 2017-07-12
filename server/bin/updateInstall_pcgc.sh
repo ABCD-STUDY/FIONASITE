@@ -51,6 +51,7 @@ todo=(
 
     'owner' '/dataPCGC' 'processing:processing'
     'owner' '/dataPCGC/DAIC' 'processing:processing'
+    'owner' '/dataPCGC/outbox' 'processing:processing'
     'owner' '/dataPCGC/active-scans' 'processing:processing'
     'owner' '/dataPCGC/config' 'processing:processing'
     'owner' '/dataPCGC/failed-scans' 'processing:processing'

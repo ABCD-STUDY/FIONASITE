@@ -51,6 +51,7 @@ todo=(
 
     'owner' '/data' 'processing:processing'
     'owner' '/data/DAIC' 'processing:processing'
+    'owner' '/data/outbox' 'processing:processing'
     'owner' '/data/active-scans' 'processing:processing'
     'owner' '/data/config' 'processing:processing'
     'owner' '/data/failed-scans' 'processing:processing'
