@@ -1558,7 +1558,7 @@ if(typeof cornerstone === 'undefined'){
         }
         else {
             context.imageSmoothingEnabled = true;
-            context.mozImageSmoothingEnabled = true;
+            context.imageSmoothingEnabled = true;
         }
 
         // save the canvas context state and apply the viewport properties
