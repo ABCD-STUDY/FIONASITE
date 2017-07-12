@@ -12,6 +12,7 @@ log=/var/www/html/server/logs/updateInstall.log
 todo=(
     'existsDirectory' '/data' ''
     'existsDirectory' '/data/DAIC' ''
+    'existsDirectory' '/data/outbox' ''
     'existsDirectory' '/data/active-scans' ''
     'existsDirectory' '/data/config' ''
     'existsDirectory' '/data/failed-scans' ''
@@ -33,6 +34,7 @@ todo=(
 
     'permission' '/data' '777'
     'permission' '/data/DAIC' '755'
+    'permission' '/data/outbox' '755'
     'permission' '/data/active-scans' '755'
     'permission' '/data/config' '755'
     'permission' '/data/failed-scans' '755'

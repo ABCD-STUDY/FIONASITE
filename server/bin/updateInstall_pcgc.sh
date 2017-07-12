@@ -12,6 +12,7 @@ log=/var/www/html/server/logs/updateInstall_pcgc.log
 todo=(
     'existsDirectory' '/dataPCGC' ''
     'existsDirectory' '/dataPCGC/DAIC' ''
+    'existsDirectory' '/dataPCGC/outbox' ''
     'existsDirectory' '/dataPCGC/active-scans' ''
     'existsDirectory' '/dataPCGC/config' ''
     'existsDirectory' '/dataPCGC/failed-scans' ''
@@ -33,6 +34,7 @@ todo=(
 
     'permission' '/dataPCGC' '777'
     'permission' '/dataPCGC/DAIC' '755'
+    'permission' '/dataPCGC/outbox' '755'
     'permission' '/dataPCGC/active-scans' '755'
     'permission' '/dataPCGC/config' '755'
     'permission' '/dataPCGC/failed-scans' '755'
