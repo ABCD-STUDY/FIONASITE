@@ -134,6 +134,9 @@
 <!-- try to load DICOM via http -->
 <script src="js/cornerstoneHTTPImageLoader.js"></script>
 
+<!-- try to load DICOM via https -->
+<script src="js/cornerstoneHTTPSImageLoader.js"></script>
+
 <!-- include the cornerstoneWebImageLoader library -->
 <!-- <script src="js/cornerstoneWebImageLoader.js"></script> -->
 
