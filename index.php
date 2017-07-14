@@ -1722,7 +1722,8 @@ jQuery(document).ready(function() {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
 	     "redcap_event_name": jQuery('#session-name').val(),
-             "run": jQuery('#session-run').val()
+             "run": jQuery('#session-run').val(),
+             "project": projname
          };
          jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
              alert(JSON.stringify(data));

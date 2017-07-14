@@ -34,7 +34,7 @@ todo=(
 
     'permission' '/data' '777'
     'permission' '/data/DAIC' '755'
-    'permission' '/data/outbox' '755'
+    'permission' '/data/outbox' '777'
     'permission' '/data/active-scans' '755'
     'permission' '/data/config' '755'
     'permission' '/data/failed-scans' '755'

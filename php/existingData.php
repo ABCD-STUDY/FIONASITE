@@ -28,19 +28,24 @@ if (isset($_GET['project'])) {
 if ($project == "ABCD") {
    // default project setting
    $project = "";
-}
+} 
 
 if ( $action == "getStudy" ) {
 
     // run compliance check here
     //echo ("study: ".$study);
-    file_put_contents('/tmp/'.$study, "study: ".$study." please run compliance check now");
+
+    $fname = '/tmp/'.$study;
+    if ( $project != "") {
+        $fname = "_".$project;
+    }
+    file_put_contents($fname, "study: ".$study." please run compliance check now");
     chmod ('/tmp/'.$study, 0777);
     $cpath = 'request_compliance_check';
     if(!is_dir($cpath)) {
        mkdir($cpath, 0777);
     }
-    rename('/tmp/'.$study, $cpath.DIRECTORY_SEPARATOR.$study);    
+    rename($fname, $cpath.DIRECTORY_SEPARATOR.$study);    
 
     //$d = 'output/scp_'.$study.'/series_compliance/compliance_output.json';
     $d = '/data'.$project.'/site/output/scp_'.$study.'/series_compliance/compliance_output.json';

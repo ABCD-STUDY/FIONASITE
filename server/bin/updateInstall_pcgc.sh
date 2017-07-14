@@ -34,7 +34,7 @@ todo=(
 
     'permission' '/dataPCGC' '777'
     'permission' '/dataPCGC/DAIC' '755'
-    'permission' '/dataPCGC/outbox' '755'
+    'permission' '/dataPCGC/outbox' '777'
     'permission' '/dataPCGC/active-scans' '755'
     'permission' '/dataPCGC/config' '755'
     'permission' '/dataPCGC/failed-scans' '755'
