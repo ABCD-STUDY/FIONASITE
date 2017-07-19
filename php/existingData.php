@@ -36,9 +36,10 @@ if ( $action == "getStudy" ) {
     //echo ("study: ".$study);
 
     $fname = '/tmp/'.$study;
-    if ( $project != "") {
-        $fname = "_".$project;
+    if ( $project != "" ) {
+        $fname = $fname."_".$project;
     }
+
     file_put_contents($fname, "study: ".$study." please run compliance check now");
     chmod ('/tmp/'.$study, 0777);
     $cpath = 'request_compliance_check';
