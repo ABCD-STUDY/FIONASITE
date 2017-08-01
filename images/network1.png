@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+            <title>Log In - ABCD Internal</title>
+    
+        
+
+                        
+    
+                        
+    
+                        
+    
+
+    <meta http-equiv="X-UA-Compatible" content="IE=EDGE,chrome=IE7">
+<meta charset="UTF-8">
+<meta id="confluence-context-path" name="confluence-context-path" content="/confluence">
+<meta id="confluence-base-url" name="confluence-base-url" content="https://abcd-internal.ucsd.edu/confluence">
+
+<meta id="atlassian-token" name="atlassian-token" content="70b26f2aeb9b7d7df2166b5c43db2293fcf0f955">
+
+
+<script type="text/javascript">
+        var contextPath = '/confluence';
+</script>
+
+    
+
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="robots" content="noarchive">
+    <meta name="confluence-request-time" content="1501603673991">
+        
+    
+        
+            <meta name="ajs-is-space-admin" content=""> <meta name="ajs-has-space-config" content="">
+            <meta name="ajs-use-keyboard-shortcuts" content="true">
+            <meta name="ajs-discovered-plugin-features" content="$discoveredList">
+            <meta name="stp-license-product-name" content="Confluence"/> <meta name="stp-license-days-to-expiry" content="133"/> <meta name="stp-license-is-admin" content="false"/> <meta name="stp-license-should-keep-banner-hidden" content="true"/>
+            <meta name="ajs-keyboardshortcut-hash" content="7d14db3faee59cf37cdbf4e7e18bd268">
+            <meta name="ajs-is-confluence-admin" content="false">
+            <meta name="ajs-connection-timeout" content="20000">
+            
+    
+    
+            <meta name="ajs-context-path" content="/confluence">
+            <meta name="ajs-base-url" content="https://abcd-internal.ucsd.edu/confluence">
+            <meta name="ajs-version-number" content="5.9.1">
+            <meta name="ajs-build-number" content="6207">
+            <meta name="ajs-remote-user" content="">
+            <meta name="ajs-remote-user-key" content="">
+            <meta name="ajs-remote-user-has-licensed-access" content="false">
+            <meta name="ajs-current-user-fullname" content="">
+            <meta name="ajs-current-user-avatar-url" content="">
+            <meta name="ajs-static-resource-url-prefix" content="/confluence/s/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/_">
+            <meta name="ajs-global-settings-attachment-max-size" content="960857600">
+            <meta name="ajs-user-locale" content="en_GB">
+            <meta name="ajs-enabled-dark-features" content="clc.quick.create,confluence.view.edit.transition,cql.search.screen,confluence-inline-comments-resolved,notification.plugin.api.enabled.com.atlassian.confluence.plugins.sharepage.api.ShareContentEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.mentions.api.ConfluenceMentionEvent,nps.survey.inline.dialog,confluence.efi.onboarding.new.templates,notification.plugin.api.enabled.com.atlassian.confluence.event.events.security.ForgotPasswordEvent,pdf-preview,notification.plugin.api.enabled.com.atlassian.confluence.plugins.tasklist.event.SendTaskEmailEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.page.async.PageMovedEvent,previews.sharing,previews.versions,notification.plugin.api.enabled.com.atlassian.confluence.plugins.files.notifications.event.FileContentUpdateEvent,file-annotations,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.attachment.AttachmentBatchUploadCompletedEvent,confluence.efi.onboarding.rich.space.content,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.comment.CommentCreateEvent,notification.plugin.api.enabled.com.atlassian.confluence.efi.emails.events.OnboardingLessUsersEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.files.notifications.event.FileContentRemoveEvent,confluence.wrap.macro,atlassian.aui.raphael.disabled,previews.conversion-service,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.comment.CommentUpdateEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.follow.FollowEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.page.async.PageEditedEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.blogpost.BlogPostCreateEvent,previews.trigger-all-file-types,notification.plugin.api.enabled.com.atlassian.confluence.plugins.inlinecomments.events.InlineCommentResolveEvent,notification.plugin.api.enabled.com.atlassian.confluence.event.events.like.LikeCreatedEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.inlinecomments.events.InlineCommentCreateEvent,previews.sharing.pushstate,confluence-inline-comments-rich-editor,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.blogpost.BlogPostUpdateEvent,file-annotations.likes,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.page.async.PageCreatedEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.files.notifications.event.FileContentMentionUpdateEvent,notification.plugin.api.enabled.com.atlassian.confluence.efi.emails.events.OnboardingNoSpaceCreatedEvent,notification.plugin.api.enabled.com.atlassian.confluence.plugins.hipchat.api.events.HipChatUserMapped,notification.plugin.api.enabled.com.atlassian.confluence.plugins.sharepage.api.ShareAttachmentEvent,confluence-inline-comments,quick-reload-inline-comments-flags,confluence-inline-comments-dangling-comment,notification.plugin.api.enabled.com.atlassian.confluence.event.events.content.blogpost.BlogPostMovedEvent">
+            <meta name="ajs-atl-token" content="70b26f2aeb9b7d7df2166b5c43db2293fcf0f955">
+            <meta name="ajs-confluence-flavour" content="VANILLA">
+            <meta name="ajs-user-date-pattern" content="dd MMM yyyy">
+            <meta name="ajs-date.format" content="MMM dd, yyyy">
+    
+    <link rel="shortcut icon" href="/confluence/s/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/_/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="/confluence/s/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/_/favicon.ico">
+
+<link rel="search" type="application/opensearchdescription+xml" href="/confluence/opensearch/osd.action" title="ABCD Internal"/>
+
+<script>
+window.WRM=window.WRM||{};window.WRM._unparsedData=window.WRM._unparsedData||{};
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-rest:web-resource-manager.resource-base-url-pattern"]="\"(?:/confluence(?:/s/.*?/_)?/download)\"";
+WRM._unparsedData["com.atlassian.confluence.plugins.confluence-license-banner:confluence-license-banner-resources.license-details"]="{\"daysBeforeLicenseExpiry\":0,\"daysBeforeMaintenanceExpiry\":0,\"showLicenseExpiryBanner\":false,\"showMaintenanceExpiryBanner\":false,\"renewUrl\":null,\"salesEmail\":null}";
+WRM._unparsedData["com.atlassian.plugins.atlassian-plugins-webresource-plugin:context-path.context-path"]="\"/confluence\"";
+WRM._unparsedData["com.atlassian.plugins.atlassian-nps-plugin:nps-acknowledgement-resources.analytics-enabled-data-provider"]="\"false\"";
+WRM._unparsedData["com.atlassian.plugins.atlassian-nps-plugin:nps-acknowledgement-resources.sen-data-provider"]="\"SEN-6327068\"";
+WRM._unparsedData["com.atlassian.confluence.plugins.confluence-feature-discovery-plugin:confluence-feature-discovery-plugin-resources.test-mode"]="false";
+WRM._unparsedData["com.atlassian.plugins.atlassian-nps-plugin:atlassian-nps-plugin-resources.is-server-instance-data-provider"]="true";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-common.applinks-context"]="{\"hostApplication\":{\"id\":\"e24d5cec-1222-31b1-83f6-3b0659313481\",\"type\":\"confluence\"}}";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-common.applinks-features"]="{\"BITBUCKET_REBRAND\":true,\"V3_UI_OPT_IN\":false,\"V3_UI\":false}";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-common.applinks-discovered-features"]="[]";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-util-js.applinks-context"]="{\"hostApplication\":{\"id\":\"e24d5cec-1222-31b1-83f6-3b0659313481\",\"type\":\"confluence\"}}";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-util-js.applinks-features"]="{\"BITBUCKET_REBRAND\":true,\"V3_UI_OPT_IN\":false,\"V3_UI\":false}";
+WRM._unparsedData["com.atlassian.applinks.applinks-plugin:applinks-util-js.applinks-discovered-features"]="[]";
+WRM._unparsedData["com.atlassian.plugins.browser.metrics.browser-metrics-plugin:browser-metrics.feature-data-provider-legacy"]="true";
+</script>
+<link type="text/css" rel="stylesheet" href="/confluence/s/b539f73038eb1af0e6e8dfeba90baa9a-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/68/_/download/superbatch/css/batch.css" media="all">
+<!--[if lt IE 9]>
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/68/_/download/superbatch/css/batch.css?conditionalComment=lt+IE+9" media="all">
+<![endif]-->
+<!--[if lte IE 9]>
+<link type="text/css" rel="stylesheet" href="/confluence/s/d41d8cd98f00b204e9800998ecf8427e-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/68/_/download/superbatch/css/batch.css?conditionalComment=lte+IE+9" media="all">
+<![endif]-->
+<link type="text/css" rel="stylesheet" href="/confluence/s/bfa2f3f04ca5a6969166e8d298646476-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/9a6ec7d6ef835b22f63862363ae5bdba/_/download/contextbatch/css/main,atl.general/batch.css?custom-site-logo=true" media="all">
+<link type="text/css" rel="stylesheet" href="/confluence/s/1d190746af3d73bd416b43250fd05961-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/97dc6390d588612f887919b07575c554/_/download/contextbatch/css/login/batch.css" media="all">
+<!--[if lte IE 9]>
+<link type="text/css" rel="stylesheet" href="/confluence/s/1d190746af3d73bd416b43250fd05961-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/97dc6390d588612f887919b07575c554/_/download/contextbatch/css/login/batch.css?conditionalComment=lte+IE+9" media="all">
+<![endif]-->
+<script type="text/javascript" src="/confluence/s/b5041722346a7574e2fdeb61b0309428-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/68/_/download/superbatch/js/batch.js?atlassian.aui.raphael.disabled=true&amp;locale=en-GB" ></script>
+<script type="text/javascript" src="/confluence/s/9195503652045fb68d69ba937c81e311-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/9a6ec7d6ef835b22f63862363ae5bdba/_/download/contextbatch/js/main,atl.general/batch.js?locale=en-GB&amp;is-server-instance=true&amp;nps-enabled=true&amp;nps-acknowledged=true&amp;hostenabled=true" ></script>
+<script type="text/javascript" src="/confluence/s/6c0981174e94142364564819dc0d1413-CDN/en_GB/6207/0c7cba54ff3925d4d57a63f5dc42940bd53cea47.6/1.0/_/download/batch/confluence.web.resources:login/confluence.web.resources:login.js?locale=en-GB" ></script>
+
+    
+        
+            <meta name="stp-license-product-name" content="Confluence"/> <meta name="stp-license-days-to-expiry" content="133"/> <meta name="stp-license-is-admin" content="false"/> <meta name="stp-license-should-keep-banner-hidden" content="true"/>
+    
+
+            
+            
+            
+            
+	    		    
+		    
+			
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script>
+function disableWatchers() {
+  setTimeout(disableWatchers, 1000);
+  if ( $('#notifyWatchers').attr( "mz" ) != 1) {
+    setTimeout(function() {$('#notifyWatchers').removeAttr('checked');}, 1000);
+    $('#notifyWatchers').attr( "mz", 1);
+  }
+}
+disableWatchers();
+</script>
+
+<script type="text/javascript">
+<!--
+AJS.$(document).ready(function() {
+  AJS.$('#content .wiki-content table').find('tr:first > th,tr:first > td').each(function() {
+    var match = /^\s*((\d+)(px|%)?)\s*\|(.*)/.exec(this.textContent)
+    if (match != null) {
+      this.width = match[1]
+      this.textContent = match[4]
+    }
+  })
+})
+-->
+</script>
+
+    
+
+</head>
+
+<body             onload="placeFocus()"
+     id="com-atlassian-confluence" class="theme-default login aui-layout aui-theme-default">
+    
+        
+            <div id='stp-licenseStatus-banner'></div>
+    <div id="page">
+    <div id="full-height-container">
+        <div id="header-precursor">
+            <div class="cell">
+                
+                                    </div>
+        </div>
+            
+
+
+
+
+
+<header id="header" role="banner">
+    <nav class="aui-header aui-dropdown2-trigger-group" role="navigation"><div class="aui-header-inner"><div class="aui-header-primary"><h1 id="logo" class="aui-header-logo aui-header-logo-custom"><a href="/confluence/"><img src="/confluence/download/attachments/524290/atl.site.logo?version=2&amp;modificationDate=1450979768044&amp;api=v2" alt="ABCD Internal" /><span class="aui-header-logo-text">ABCD Internal</span></a></h1><ul class="aui-nav">
+                                                <li class="aui-buttons">
+            </li>
+    </ul>
+</div><div class="aui-header-secondary"><ul class="aui-nav">
+                        <li>
+            
+        <a id="help-menu-link" class="aui-nav-link aui-dropdown2-trigger" href="#" aria-haspopup="true" aria-owns="help-menu-link-content" title="Help">
+        <span class="aui-icon aui-icon-small aui-iconfont-help">Help</span>
+    </a>
+    <nav id="help-menu-link-content" class="aui-dropdown2 aui-style-default" aria-hidden="true">
+                    <div class="aui-dropdown2-section">
+                                <ul  id="help-menu-link-leading" class="aui-list-truncate section-leading first">
+                                            <li>
+        
+            
+<a  id="confluence-help-link" href="https://docs.atlassian.com/confluence/docs-59/Getting+Help+And+Support" class="    "      title="Visit the Confluence documentation home"  target="_blank"
+>
+        Online Help
+</a>
+</li>
+                                            <li>
+    
+            
+<a  id="keyboard-shortcuts-link" href="/confluence" class="    "      title="View available keyboard shortcuts" >
+        Keyboard Shortcuts
+</a>
+</li>
+                                            <li>
+    
+            
+<a  id="feed-builder-link" href="/confluence/dashboard/configurerssfeed.action" class="    "      title="Create your custom RSS feed." >
+        Feed Builder
+</a>
+</li>
+                                            <li>
+    
+            
+<a  id="gadget-directory-link" href="/confluence" class="   user-item administration-link "      title="Browse gadgets provided by Confluence" >
+        Available Gadgets
+</a>
+</li>
+                                            <li>
+    
+            
+<a  id="confluence-about-link" href="/confluence/aboutconfluencepage.action" class="    "      title="Get more information about Confluence" >
+        About Confluence
+</a>
+</li>
+                                    </ul>
+            </div>
+            </nav>
+    
+    </li>
+        <li>
+                
+    
+    </li>
+        <li>
+            
+    </li>
+        <li>
+                                            <li>
+        
+            
+<a  id="login-link" href="/confluence/login.action" class="   user-item login-link "      title="" >
+        Log in
+</a>
+</li>
+                        
+    </li>
+    </ul>
+</div></div><!-- .aui-header-inner--></nav><!-- .aui-header -->
+    <br class="clear">
+</header>
+    
+                <!-- \#header -->
+
+            
+        <div id="main" class=" aui-page-panel">
+            
+
+            <div id="sidebar-container">
+                                                                        </div><!-- \#sidebar-container -->
+
+            
+		
+        
+		
+        <div id="login-container" >
+        			<div class="login-section ">
+                                                                                                                                                                
+    <form     name="loginform" method="POST" action="/confluence/dologin.action" class="aui login-form-container" >
+
+                                                                                                    
+                    <h2>Log in</h2>
+
+                                        
+
+<div id="action-messages">
+                        </div>
+                    <fieldset class="compact-form-fields">
+                            
+
+    <legend class="assistive"><span>Log in to Confluence</span></legend>
+                        
+
+<div class="field-group
+    "
+        >
+    <label id="os_username-label" for="os_username">
+    Username
+        </label>
+
+                <input type="text" name="os_username" id="os_username"                                   class="text   "               placeholder="Username"     data-focus="0"     />
+                      </div>                        
+
+<div class="field-group">
+    <label id="os_password-label" for="os_password">
+    Password
+        </label>
+    <input type="password" name="os_password" id="os_password"                                   class="password "               placeholder="Password"          />
+                  </div>                        
+                                                    
+
+<div class="group">
+        
+<div class="checkbox">
+    <input type="checkbox" class="checkbox" value="true" name="os_cookie"
+                id="os_cookie">
+    <label for="os_cookie">Remember me</label>
+    </div>
+</div>                                                <div class="field-group form-buttons compact-form-buttons">
+                            <input id="loginButton" class="aui-button aui-style aui-button-primary" name="login" type="submit" value="Log in"/>
+                                                            <a id="forgot-password" class="aui-button aui-style aui-button-link" href="/confluence/forgotuserpassword.action">Forgot your password?</a>
+                                                    </div>
+                        <input type="hidden" name="os_destination" value="/download/attachments/885137/image2016-4-5%2016:46:55.png?version=1"/>
+                    </fieldset>
+                                    
+
+</form>                </div> 
+                            </div>
+                    
+        	
+        </div><!-- \#main -->
+    
+        
+                        
+            
+            
+
+<div id="footer" role="contentinfo">
+    <section class="footer-body">
+
+                                                            <p class="license license-opensource">
+                    Powered by a free <b>Atlassian Confluence Open Source Project License</b> granted to Adolescent Brain Cognitive Development Study. <a href="http://www.atlassian.com/c/conf/11461">Evaluate Confluence today</a>.<br>
+                </p>
+                    
+        
+                <ul id="login-language">
+                                            <li>
+                            <a href="/confluence/login.action?language=de_DE">Deutsch</a>
+                        </li>
+                                            <li>
+                            <a href="/confluence/login.action?language=en_GB">English</a>
+                        </li>
+                                            <li>
+                            <a href="/confluence/login.action?language=es_ES">Español</a>
+                        </li>
+                                            <li>
+                            <a href="/confluence/login.action?language=fr_FR">Français</a>
+                        </li>
+                                            <li>
+                            <a href="/confluence/login.action?language=ja_JP">日本語</a>
+                        </li>
+                                    </ul>
+            
+
+        <ul id="poweredby">
+            <li class="noprint">Powered by <a href="http://www.atlassian.com/software/confluence" class="hover-footer-link">Atlassian Confluence</a> <span id='footer-build-information'>5.9.1</span>, <a href="http://www.atlassian.com/software/confluence/overview/team-collaboration-software?utm_source=confluence-footer" class="hover-footer-link">Team Collaboration Software</a></li>
+            <li class="print-only">Printed by Atlassian Confluence 5.9.1, Team Collaboration Software.</li>
+            <li class="noprint"><a href="https://jira.atlassian.com/browse/CONF" class="hover-footer-link">Report a bug</a></li>
+            <li class="noprint"><a href="http://www.atlassian.com/about/connected.jsp?s_kwcid=Confluence-stayintouch" class="hover-footer-link">Atlassian News</a></li>
+        </ul>
+
+        
+
+        <div id="footer-logo"><a href="http://www.atlassian.com/">Atlassian</a></div>
+
+                    
+        
+    </section>
+</div>
+
+        </div><!-- \#full-height-container -->
+</div><!-- \#page -->
+</body>
+</html>
