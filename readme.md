@@ -40,7 +40,14 @@ Configuration
   "SCANNERIP":          "<IP of the scanner console sending DICOM data>",
   "SCANNERPORT":        "<Port on the scanner console receiving findscu/storescu messages (4006)>",
   "SCANNERAETITLE":     "<Application Entity Title of the scanner console>",
-  "SCANNERTYPE":        "<SIEMENS|GE>",
+  "SCANNERTYPE":        "<SIEMENS|GE|PHILIPS>",
+  "OTHERSCANNER": [
+                        {
+			  "SCANNERIP":      "<IP of an additional scanner that is sending k-space data>",
+			  "SCANNERAETITLE": "<Application Entity Title of the scanner console>",
+			  "SCANNERPORT":    "<Port on the scanner console receiving findscu/storescu messages (4006)>"
+			}
+  ],
   "MPPSPORT":           "<Multiple Performed Procedure Steps port number on this system (4007)>",
   "SERVERUSER":         "<Name of the user account on the DAIC server system>",
   "DAICSERVER":         "137.110.181.166",
@@ -51,6 +58,29 @@ Configuration
   "WEBPROXYPORT":       "<port of the web proxy>",
   "DATADIR": 		"<default projects data directory - (default /data)>"
 }
+```
+
+#### Multiple projects on FIONA
+With the latest version of FIONA more than one project is now supported. Additionally to the default location /data/ a number of further directories - one per new project - can be specified. For example your second project might be called ABCDF. Your configuration file contain one more key with a section for each additional scanner connection:
+```
+    "SITES": {
+        "ABCDE": {
+            "DICOMIP":        "<IP of this computer as seen by the scanner>",
+            "DICOMPORT":      "<Port number that receives DICOM data (4006)>",
+            "DICOMAETITLE":   "<Application Entity Title of this system <site>FIONA>",
+            "SCANNERIP":      "<IP of the scanner console sending DICOM data",
+            "SCANNERPORT":    "<Port on the scanner console receiving findscu/storescu messages (4006)>",
+            "SCANNERAETITLE": "<Application Entity Title of the scanner console>",
+            "SCANNERTYPE":    "SIEMENS|GE|PHILIPS",
+            "MPPSPORT":       "<Multiple Performed Procedure Steps port number on this system (4007)>",
+            "SERVERUSER":     "<Name of the user account on the DAIC server system>",
+            "DAICSERVER":     "137.110.180.232",
+            "DATADIR":	      "/data<SITE>",
+            "PFILEDIR":       "\/data<SITE>\/outbox",
+            "CONNECTION":     "<REDCap token for participant list>"
+        }
+    }
+
 ```
 
 ### Web interface:
