@@ -43,7 +43,7 @@ $oksessions = array();
 $failedsessions = array();
 foreach($f as $fi) {
   $path_parts = pathinfo($fi);
-  file_put_contents($log, date(DATE_ATOM)." Move file to /data/outbox now ".$fi."\n", FILE_APPEND); 
+  file_put_contents($log, date(DATE_ATOM)." Move file to /data/outbox now ".$fi." (header: ".$id_redcap."_".$redcap_event_name."_".$run.")\n", FILE_APPEND); 
   $prefix = $id_redcap."_".$redcap_event_name."_".$run;
   $ok = rename($fi, '/data/outbox'.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
   if (!$ok) {
