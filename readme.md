@@ -125,7 +125,6 @@ Is says that FIONA is not rack mountable. But can it be?
 --------------------------------------------------------
 
 The dimensions of FIONA (height: 18’’ with detachable feet, depth: 26’’, width: 9’') would allow it to be rack-mounted side-ways. On its side the machine does fit into a 19'' rack (4 poster) well enough to not impede air flow. There are no rack-mounts or slides that come with the machine nor are there any holes to attach them. The machine can be placed on its side on top of an existing unit. Below is a picture taken in our server room at UCSD. The FIONA system (Microway 5U) is placed on top of a UPS.
-FIONA in a 19'' rack, sideways, 5U in height
 
 Our site requires all scans to be submitted for a clinical read
 ---------------------------------------------------------------
@@ -137,9 +136,9 @@ Is there a network diagram we can use to show how FIONA is integrated?
 
 You can use one of the following two options for integrating the FIONA system into your site network.
 
-![Network 1](/images/network1.png?raw=true "Network Layout 1")
+![Network 1](/images/network1.png "Network Layout 1")
 
-![Network 2](/images/network2.png?raw=true "Network Layout 2")
+![Network 2](/images/network2.png "Network Layout 2")
 
 
 Configuration
@@ -149,22 +148,23 @@ Configuration
 
 ```
 /data/
-├── active-scans                // StudyInstanceUID touch files for active scans
-├── config
-│   └── config.json             // system configuration (see below)
-├── DAIC                        // files that have been copied to the DAIC (permanent storage)
-├── enabled                     // text file 0/1 to disable/enable data receive (incron by root)
-├── failed-scans                // MPPS files with old dates or too fiew images per series
-├── finished-scans              // MPPS files after data is received
-├── outbox                      
-├── scanner                     // MPPS file storage received from scanner
-├── site                        
-│   ├── archive                 // receives incoming DICOM, sorted by StudyInstanceUID
-│   ├── participants            // receives incoming DICOM, sorted by PatientID/Date_Time
-│   └── raw                     // receives incoming DICOM, sorted by Study/Series/
-├── DAIC                        // files that could be send successfully to the DAIC
-├── outbox                      // files submitted by the user for send to DAIC
-└── quarantine                  // receives p-files+MD5SUM by scp from scanner + tgz'ed DICOM
+ ├── active-scans                // StudyInstanceUID touch files for active scans
+ ├── config
+ │   └── config.json             // system configuration (see below)
+ ├── DAIC                        // files that have been copied to the DAIC (permanent storage)
+ ├── enabled                     // text file 0/1 to disable/enable data receive (incron by root)
+ ├── failed-scans                // MPPS files with old dates or too fiew images per series
+ ├── finished-scans              // MPPS files after data is received
+ ├── outbox                      
+ ├── inbox			// DICOM data placed into this directory will be imported                      
+ ├── scanner                     // MPPS file storage received from scanner
+ ├── site                        
+ │   ├── archive                 // receives incoming DICOM, sorted by StudyInstanceUID
+ │   ├── participants            // receives incoming DICOM, sorted by PatientID/Date_Time
+ │   └── raw                     // receives incoming DICOM, sorted by Study/Series/
+ ├── DAIC                        // files that could be send successfully to the DAIC
+ ├── outbox                      // files submitted by the user for send to DAIC
+ └── quarantine                  // receives p-files+MD5SUM by scp from scanner + tgz'ed DICOM
 ```
 
 (/data/config/config.json)
@@ -178,11 +178,11 @@ Configuration
   "SCANNERAETITLE":     "<Application Entity Title of the scanner console>",
   "SCANNERTYPE":        "<SIEMENS|GE|PHILIPS>",
   "OTHERSCANNER": [
-                        {
-			  "SCANNERIP":      "<IP of an additional scanner that is sending k-space data>",
-			  "SCANNERAETITLE": "<Application Entity Title of the scanner console>",
-			  "SCANNERPORT":    "<Port on the scanner console receiving findscu/storescu messages (4006)>"
-			}
+      {
+         "SCANNERIP":      "<IP of an additional scanner that is sending k-space data>",
+	 "SCANNERAETITLE": "<Application Entity Title of the scanner console>",
+	 "SCANNERPORT":    "<Port on the scanner console receiving findscu/storescu messages (4006)>"
+      }
   ],
   "MPPSPORT":           "<Multiple Performed Procedure Steps port number on this system (4007)>",
   "SERVERUSER":         "<Name of the user account on the DAIC server system>",
@@ -197,7 +197,8 @@ Configuration
 ```
 
 #### Multiple projects on FIONA
-With the latest version of FIONA more than one project is now supported. Additionally to the default location /data/ a number of further directories - one per new project - can be specified. For example your second project might be called ABCDF. Your configuration file contain one more key with a section for each additional scanner connection:
+With the latest version of FIONA more than one project can now be hosted on FIONA. Additionally to the default location /data/ a number of further directories - one per new project - can be specified. For example your second project might be called ABCDF. Your configuration file contain one more key with a section for each additional scanner connection:
+
 ```
     "SITES": {
         "ABCDE": {
