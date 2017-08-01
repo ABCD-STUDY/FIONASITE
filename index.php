@@ -851,7 +851,7 @@ function loadSystem() {
             rp3.value(100-data.memory_free_percent).render();
 	}
     });
-    jQuery.get('/php/startstop.php', function(data) {
+    jQuery.get('/php/startstop.php?project=' + projname, function(data) {
         console.log('change checked to reflect system status ' + data);
         // we expect two values here
         var vals = data.split('');
@@ -939,7 +939,7 @@ function changeSystemStatus() {
    var a = jQuery('#receive-dicom')[0].checked ? 1:0;
    var b = jQuery('#receive-mpps')[0].checked ? 1:0;
    var c = jQuery('#anonymize')[0].checked ? 1:0;
-   jQuery.get('/php/startstop.php?enable='+a+""+b+""+c);
+   jQuery.get('/php/startstop.php?project='+projname+'&enable='+a+""+b+""+c);
 }
 
 function displayHeaderSection(data) {
@@ -1107,7 +1107,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          //jQuery('#detected-scans').append(str);
 
          // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
-         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath, (function(id) {
+         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(id) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
 	         if (data.length == 0) {
@@ -1168,7 +1168,7 @@ function displayAdditionalScans(data, StudyInstanceUID) {
 
 // get valid session names                                                                                                                                                                  
 function getSessionNamesFromREDCap() {
-    jQuery.getJSON('/php/getRCEvents.php', function(data) {
+    jQuery.getJSON('/php/getRCEvents.php?project=' + projname, function(data) {
         jQuery('#session-name').children().remove();
         for (var i = 0; i < data.length; i++) {
             val = "";
@@ -1182,7 +1182,7 @@ function getSessionNamesFromREDCap() {
 }
 
 function getParticipantNamesFromREDCap() {
-    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php', function(data) {
+    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php?project=' + projname, function(data) {
 	jQuery('#session-participant').select2({
 	    dropdownParent: jQuery('#modal-study-info'),
 	    placeholder: 'Select a REDCap participant',
@@ -1338,6 +1338,7 @@ jQuery(document).ready(function() {
 	jQuery('#projname').text(value);
         projname = value;
 	loadSubjects();
+        loadSystem();
     });
 
     jQuery('#load-subjects').click(function() {
@@ -1410,7 +1411,8 @@ jQuery(document).ready(function() {
 
         var options = {
             "action": "getStudy",
-            "study": studyinstanceuid
+            "study": studyinstanceuid,
+            "project": projname
         };
         jQuery.getJSON('/php/existingData.php', options, function(data) {
             dataSec1 = {};
@@ -1682,7 +1684,8 @@ jQuery(document).ready(function() {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
 	     "redcap_event_name": jQuery('#session-name').val(),
-             "run": jQuery('#session-run').val()
+             "run": jQuery('#session-run').val(),
+	     "project": projname
           };
           jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
               // alert(JSON.stringify(data));
@@ -1694,7 +1697,7 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-study-info');
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        dialog.close();
-       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val() }, function(data) {
+       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val(), 'project': projname }, function(data) {
 	  console.log("tried to announce data, got: " + data);
        });
     });
@@ -1719,7 +1722,8 @@ jQuery(document).ready(function() {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
 	     "redcap_event_name": jQuery('#session-name').val(),
-             "run": jQuery('#session-run').val()
+             "run": jQuery('#session-run').val(),
+             "project": projname
          };
          jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
              alert(JSON.stringify(data));

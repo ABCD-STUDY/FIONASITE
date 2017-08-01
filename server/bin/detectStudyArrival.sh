@@ -192,7 +192,8 @@ detect () {
   #do
   #    echo " -> \"$file\"    \n" >> $log
   #done
-  find "$DIR" -print0 | while read -d $'\0' file
+  #find "$DIR" -print0 | while read -d $'\0' file
+  find "$DIR" -print0 | while IFS= read -r -d '' file
   do
     valid=1
     if [ "$file" == "$DIR" ]; then
@@ -200,8 +201,9 @@ detect () {
         valid=0
     fi
     #echo " RUN2 \"$file\"  stat: \"`stat -c "%Y" "$file"`\"  \n" >> $log
-
-    if [ "$(( $(date +"%s") - $(stat -c "%Y" "$file") ))" -lt "$oldtime" ]; then
+    sft=`/usr/bin/stat -c "%Y" "${file}"`
+    echo "file is\"${file}\" and stat returns: \"$sftp\""
+    if [ "$(( $(date +"%s") - $sft ))" -lt "$oldtime" ]; then
         echo "`date`: too young $file" >> $log
         valid=0
     fi

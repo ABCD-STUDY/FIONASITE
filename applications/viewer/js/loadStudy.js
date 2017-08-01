@@ -186,7 +186,7 @@ function loadStudy(studyViewer, viewportModel, studyInstanceUID) {
         function resizeStudyViewer() {
             var studyRow = $(studyViewer).find('.studyContainer')[0];
             var height = $(studyRow).height();
-            var width = $(studyRow).width();console.log($(studyRow).innerWidth(),$(studyRow).outerWidth(),$(studyRow).width());
+            var width = $(studyRow).width();  //console.log($(studyRow).innerWidth(),$(studyRow).outerWidth(),$(studyRow).width());
             $(seriesList).height("100%");
             $(parentDiv).width(width - $(studyViewer).find('.thumbnailSelector:eq(0)').width());
             $(parentDiv).css({height : '100%'});
@@ -209,7 +209,7 @@ function loadStudy(studyViewer, viewportModel, studyInstanceUID) {
         $(window).resize(function() {
             resizeStudyViewer();
         });
-        resizeStudyViewer();
+        setTimeout(function() { resizeStudyViewer(); }, 200);
         if (imageViewer.isSingle())
             useItemStack(0, 0);
 

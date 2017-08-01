@@ -5,6 +5,7 @@ $id_redcap = "";
 $redcap_event_name = "";
 $run = "";
 $log = '/var/www/html/server/logs/sendToDAIC.log';
+$project = "";
 
 if (!file_exists($log)) {
    // try to create empty log file
@@ -35,17 +36,24 @@ if (isset($_GET['run'])) {
     echo ("{ \"ok\": 0, \"message\": \"run not set\" }");
     return;
 }
+if (isset($_GET['project'])) {
+   $project = $_GET['project'];
+}  
+if ($project == "ABCD") {
+   $project = "";
+}
+
 
 $path_info = pathinfo($filename);
 
-$f = glob('/data/quarantine/'.$path_info['filename'].'.*');
+$f = glob('/data'.$project.'/quarantine/'.$path_info['filename'].'.*');
 $oksessions = array();
 $failedsessions = array();
 foreach($f as $fi) {
   $path_parts = pathinfo($fi);
   file_put_contents($log, date(DATE_ATOM)." Move file to /data/outbox now ".$fi." (header: ".$id_redcap."_".$redcap_event_name."_".$run.")\n", FILE_APPEND); 
   $prefix = $id_redcap."_".$redcap_event_name."_".$run;
-  $ok = rename($fi, '/data/outbox'.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
+  $ok = rename($fi, '/data'.$project.'/outbox'.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
   if (!$ok) {
      $failedsessions[] = $prefix. " " . $fi;
   } else {

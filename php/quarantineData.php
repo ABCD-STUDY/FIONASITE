@@ -25,9 +25,9 @@ if ( $action == "getData" ) {
         continue;
      }
      $studyinstanceuid = "";
-     if (strpos($value, "SUID_") == 0) {
+     if (strpos($value, "SUID_") === 0) {
      	$a = explode("_", $value);
-	if (count($a) > 2) {
+	if (count($a) >= 2) {
           $studyinstanceuid = $a[1];
         }
      } else {

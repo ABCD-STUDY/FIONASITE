@@ -897,6 +897,12 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        rmp = str(dataset[0x18,0x1020].value)
+                                        searchThat = re.compile(r'release:(?P<SystemOS>[^_"]+)')
+                                        data['OSLevel'] = searchThat.search(rmp).group('SystemOS')
+                                except:
+                                        pass
+                                try:
                                         data['AccessionNumber'] = str(dataset[0x08,0x50].value)
                                 except:
                                         pass

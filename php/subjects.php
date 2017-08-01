@@ -7,8 +7,8 @@
   }
 
   $d = 'raw';
-  if ($projname == "PCGC") {
-      $d = 'rawPCGC';
+  if ($projname != "ABCD" && $projname != "") {
+      $d = 'raw'.$projname;
   }
   $results = scandir($d);
 

@@ -33,11 +33,11 @@ do
    fi
    if [ -s "$file" ]; then
       # will be executed by root so we can become someone else here (owner of data in /data/site/scanner-share)
-      su -s /usr/bin/bash -c "/usr/bin/rm -- $file" nobody
+      su -s /usr/bin/bash -c "/usr/bin/rm -- \"$file\"" root
       if [ ! -f "$file" ]; then
          echo "`date`: removed $file"
       else
-         echo "`date`: error, count not remove $file"
+         echo "`date`: error, could not remove $file"
       fi
    fi
 done
