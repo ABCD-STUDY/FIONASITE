@@ -86,11 +86,14 @@ With the latest version of FIONA more than one project can now be hosted on FION
 
 ```
 
-### Web interface:
+### Web interface
 
-/var/www/html/ (git clone https://github.com/ABCD-STUDY/FIONASITE.git)
+The content of this git repository should be placed in the website directory of your system:
+```
+cd /var/www/html/ &&  git clone https://github.com/ABCD-STUDY/FIONASITE.git
+```
 
-In order to provide secure access to the web-interface the following permission levels are supported:
+In order to provide secure access to the web-interface for data transfer the following permission levels are supported:
 
 #### Permission level "abcd-data-entry"
 
@@ -108,10 +111,7 @@ Only user that have the permission "see-scanner" will be able to see the current
 
 Only user that have the permission level "developer" will be able to create new processing buckets (docker container) using the web-interface.
 
-### Server components:
-
-See readme in server directory.
-
+The admin component of the web-interface provides access to a role-based account system that can be used to change and add permissions. 
 
 Debug
 ======
