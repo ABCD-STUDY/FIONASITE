@@ -42,7 +42,7 @@ SCANNERIP=`cat /data/config/config.json | jq -r ".SCANNERIP"`
 OTHERSCANNERIPS=`cat /data/config/config.json | jq -r ".OTHERSCANNER[].SCANNERIP"`
 
 setupMounts () {
-    # by default we will use no scanner id
+    # by default we will use the no IP
     scannerid=""
     if [ ! -z "$1" ]; then
 	scannerid="$1"
@@ -72,8 +72,14 @@ setupMounts () {
 	fi
 	
 	# try to create the mount point
-	/usr/bin/mount -t cifs //${SCANNERIP}/ABCD_streaming_USB3 /mnt/host_usb3${scannerid} -o credentials=/data/config/cifs-credentials_unix${scannerid}.txt
-	
+        if [ ! -z "$1" ]; then
+	    # if we have an 'other' IP we need to mark the directories
+  	    /usr/bin/mount -t cifs //${scannerid}/ABCD_streaming_USB3 /mnt/host_usb3${scannerid} -o credentials=/data/config/cifs-credentials_unix${scannerid}.txt
+	else
+	    # the default mounts don't have the IP in the name
+	    /usr/bin/mount -t cifs //${SCANNERIP}/ABCD_streaming_USB3 /mnt/host_usb3 -o credentials=/data/config/cifs-credentials_unix.txt
+	fi
+
 	# test if the mount point could be created
 	if grep -qs '/mnt/host_usb3${scannerid}' /proc/mounts; then
 	    echo "Ok, mount point could be created."
@@ -103,11 +109,11 @@ setupMounts () {
     fi
 }    
 
-# create mounts for the default SCANNERIP
+# create mounts for the default scanner with IP in SCANNERIP
 setupMounts && importDatLocations="/mnt/host_usb3"
 
 
-# do potential other scanners setup mounts, identify the scanner by IP
+# do other scanners setup mounts, identify the scanner by IP
 for u in $OTHERSCANNERIPS; do
   if [ ! -z "$u" ]; then
     setupMounts $u && importDatLocations="${importDatLocations} /mnt/host_usb3${u}"
