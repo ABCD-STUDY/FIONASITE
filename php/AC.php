@@ -5,7 +5,10 @@
  # ToDo: implement digest based authentication
  #
 
- date_default_timezone_set('America/Los_Angeles');
+ $config = json_decode(file_get_contents('config.json'), TRUE);
+ if (isset($config['LOCALTIMEZONE'])) {
+   date_default_timezone_set($config['LOCALTIMEZONE']);
+ }
 
  $pw_file = "/var/www/html/php/passwords.json";
  $audit_file = "/var/www/html/server/logs/audit.log";
