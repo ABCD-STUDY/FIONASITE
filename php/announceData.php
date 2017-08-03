@@ -27,6 +27,9 @@ if (isset($config['WEBPROXY'])) {
   $proxy=$config['WEBPROXY'];
   $proxyport=$config['WEBPROXYPORT'];
 }
+if (isset($config['LOCALTIMEZONE'])) {
+  date_default_timezone_set($config['LOCALTIMEZONE']);
+}
 
 // get the token from the config file
 if (! file_exists("config.json")) {
@@ -53,6 +56,7 @@ if ($token == "") {
 
 // call redcap to check if a pguid has been consented and the baseline date
 function getConsentInfo( $pguid, $token ) {
+    global $proxy, $proxyport;
 
     // consent information is stored at baseline
     $baselineEventName = "baseline_year_1_arm_1";
@@ -81,6 +85,11 @@ function getConsentInfo( $pguid, $token ) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_VERBOSE, 0);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    if ($proxy != "") {
+       curl_setopt($ch, CURLOPT_PROXY, $proxy);
+       curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+       curl_setopt($ch, CURLOPT_PROXYPORT, $proxyport);
+    }
     curl_setopt($ch, CURLOPT_AUTOREFERER, true);
     curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -96,6 +105,7 @@ function getConsentInfo( $pguid, $token ) {
 
 // get the list of events from redcap
 function getListOfEvents( $token ) {
+    global $proxy, $proxyport;
     
     $args = array(
         'token' => $token,
@@ -109,6 +119,11 @@ function getListOfEvents( $token ) {
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($ch, CURLOPT_VERBOSE, 0);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    if ($proxy != "") {
+       curl_setopt($ch, CURLOPT_PROXY, $proxy);
+       curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+       curl_setopt($ch, CURLOPT_PROXYPORT, $proxyport);
+    }
     curl_setopt($ch, CURLOPT_AUTOREFERER, true);
     curl_setopt($ch, CURLOPT_MAXREDIRS, 10);
     curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
@@ -193,6 +208,8 @@ curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
 curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
 curl_setopt($ch, CURLOPT_TIMEOUT, 400);
 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
+
+
 $output = curl_exec($ch);
 curl_close($ch);
 echo ($output);
