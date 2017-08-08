@@ -488,6 +488,10 @@ loading configuration file...
 
 <dialog class="mdl-dialog" id="modal-clean-quarantine">
     <div class="mdl-dialog__content">
+	<div style="position: absolute; right: 40px;">
+	  <label for="show-suid-only">Show SUID entries only</label>
+	  <input type="checkbox" id="show-suid-only">
+	</div>
         <div style="font-size: 32pt; margin-bottom: 25px;">
             Quarantine Data
         </div>
@@ -506,6 +510,7 @@ loading configuration file...
 
             </tbody>
           </table>
+          <div class="loading"><img style="position: absolute; top: 50%; left: 50%;" src="/images/loader.gif"></div>
         </div>
       </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
@@ -1236,6 +1241,24 @@ jQuery(document).ready(function() {
 	deselect(jQuery(this));
     });
 
+    jQuery('#show-suid-only').on('change', function() {
+       var onlySUID = this.checked;
+       // hide rows for which the entries don't start with SUID
+       jQuery('#cleanQuarantine tr').each(function(a) {
+            var t = jQuery(this).find('td').first().attr('title');
+            if (onlySUID) {
+               if (t.indexOf('SUID') !== -1) {
+                   jQuery(this).show();
+               } else {
+                   jQuery(this).hide(); 
+               }
+            } else {
+	       jQuery(this).show();
+            }
+       });
+    });   
+
+
     jQuery('#modal-data-flow').on('click', '.item', function(e) {
 	// create a popover for this item
 	if (jQuery(this).hasClass('selected')) {
@@ -1548,8 +1571,12 @@ jQuery(document).ready(function() {
 
     jQuery('#dialog-clean-quarantine-button').click(function() {
       var dialog = document.querySelector('#modal-clean-quarantine');
+      jQuery('#cleanQuarantine').children().remove();
+      jQuery('#show-suid-only').prop('checked', false);
       dialog.showModal();
+      jQuery('#modal-clean-quarantine div.loading').show();
       jQuery.getJSON('php/quarantineData.php?action=getData', function(data) {
+          jQuery('#modal-clean-quarantine div.loading').hide();
           quarantineDataTmp = data;
 	  studies = Object.keys(data);
 	  for (var i = 0; i < studies.length; i++) {
