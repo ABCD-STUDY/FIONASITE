@@ -1,6 +1,9 @@
 <?php
 
-  date_default_timezone_set('America/Los_Angeles');
+  $config = json_decode(file_get_contents('config.json'), TRUE);
+  if (isset($config['LOCALTIMEZONE'])) {
+    date_default_timezone_set($config['LOCALTIMEZONE']);
+  }
 	
   if (isset($_GET["start"]))
     $start = rawurldecode($_GET["start"]);

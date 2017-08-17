@@ -58,7 +58,8 @@ Configuration
   "CONNECTION":         "<REDCap token for participant list>",
   "WEBPROXY":           "<web proxy IP if one is used to connect to the internet>",
   "WEBPROXYPORT":       "<port of the web proxy>",
-  "DATADIR": 		"<default projects data directory - (default /data)>"
+  "DATADIR": 		"<default projects data directory - (default /data)>",
+  "LOCALTIMEZONE":      "<php formatted local timezone identifier e.g. America/Chicago>"
 }
 ```
 
