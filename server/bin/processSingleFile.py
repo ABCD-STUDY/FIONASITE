@@ -821,6 +821,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['PatientSex'] = dataset.PatientSex
+                                except:
+                                        pass
+                                try:
                                         data['StudyDate'] = dataset.StudyDate
                                 except:
                                         pass
