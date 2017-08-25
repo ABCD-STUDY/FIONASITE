@@ -1229,7 +1229,6 @@ var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
-    // PCGC
     if (sites.length < 1) {
         // hide project-dropdown-section
         jQuery('#project-dropdown-section').hide();
@@ -1258,6 +1257,9 @@ jQuery(document).ready(function() {
        });
     });   
 
+    jQuery('#calendar-loc').on('click', '.fc-title', function() {
+       jQuery('#search-list').val(jQuery(this).text()).trigger('keyup');		    
+    });
 
     jQuery('#modal-data-flow').on('click', '.item', function(e) {
 	// create a popover for this item
