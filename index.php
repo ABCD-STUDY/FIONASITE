@@ -1198,8 +1198,11 @@ function getParticipantNamesFromREDCap() {
 
 function traverse(elem, s) {
   $(elem).children().each(function(i,e){
-    //console.log($(e).text());
-    s = jQuery(e).text() + traverse($(e), s);
+    var title = jQuery(e).attr('title');
+    if (typeof attr !== typeof undefined && attr !== false) {
+       s = s + title;
+    }
+    s = jQuery(e).text() + " " + traverse($(e), s);
   });
   return s;
 }
