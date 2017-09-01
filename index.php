@@ -932,9 +932,28 @@ function createCalendar() {
             }
 	},
 	viewRender: function(view) {
+	   console.log("ViewRender for calendar called");
 	   try { 
               //setTimeline(view);
            } catch( err ) {}
+        },
+	eventAfterRender: function(event, element, view) {
+	    var title = event['title'];
+	    var colored = false;
+	    // change the background based on the type of event
+            m = title.match(/NDAR_INV[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]/);
+	    if (m !== null) {
+		jQuery(element).css('background-color', '#a1d99b');
+		colored = true;
+	    }
+	    m = title.match(/ABCDPhantom/);
+	    if (m !== null) {
+		jQuery(element).css('background-color', '#a6bddb');
+		colored = true;
+	    }
+	    if (!colored) {
+		jQuery(element).css('background-color', '#fff7bc');		
+	    }
         },
     });
     
@@ -1203,8 +1222,11 @@ function getParticipantNamesFromREDCap() {
 
 function traverse(elem, s) {
   $(elem).children().each(function(i,e){
-    //console.log($(e).text());
-    s = jQuery(e).text() + traverse($(e), s);
+    var title = jQuery(e).attr('title');
+    if (typeof attr !== typeof undefined && attr !== false) {
+       s = s + title;
+    }
+    s = jQuery(e).text() + " " + traverse($(e), s);
   });
   return s;
 }
