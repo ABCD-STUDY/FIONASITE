@@ -969,6 +969,10 @@ function displayHeaderSection(data) {
              console.log("ERROR: displayHeaderSection: PatientName not found");
          }
 
+         if (data["PatientSex"] == null) {
+             console.log("ERROR: displayHeaderSection: PatientSex not found");
+         }
+
          if (data["StudyDate"] == null) {
              console.log("ERROR: displayHeaderSection: StudyDate not found");
          }
@@ -1004,6 +1008,7 @@ function displayHeaderSection(data) {
             str = str.concat("<div class='shortmessage'>Short Message: " + data["shortmessage"] + "</div>");
          str = str.concat("<div class='PatientID'>Patient ID: " + data["PatientID"] + "</div>");
          str = str.concat("<div class='PatientName'>Patient Name: " + data["PatientName"] + "</div>");
+         str = str.concat("<div class='PatientSex'>Patient Sex: " + data["PatientSex"] + "</div>");
          str = str.concat("<div class='StudyDate'>Study Date: " + data["StudyDate"] + "</div>");
          str = str.concat("<div class='StudyTime'>Study Time: " + data["StudyTime"] + "</div>");
          str = str.concat("<div class='StudyInstanceUID'>Study Instance UID: " + data["StudyInstanceUID"] + "</div>");
