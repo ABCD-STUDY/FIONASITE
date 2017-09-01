@@ -1223,7 +1223,7 @@ function getParticipantNamesFromREDCap() {
 function traverse(elem, s) {
   $(elem).children().each(function(i,e){
     var title = jQuery(e).attr('title');
-    if (typeof attr !== typeof undefined && attr !== false) {
+    if (typeof title !== typeof undefined && title !== false) {
        s = s + title;
     }
     s = jQuery(e).text() + " " + traverse($(e), s);
