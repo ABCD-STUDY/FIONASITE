@@ -488,6 +488,10 @@ loading configuration file...
 
 <dialog class="mdl-dialog" id="modal-clean-quarantine">
     <div class="mdl-dialog__content">
+	<div style="position: absolute; right: 40px;">
+	  <label for="show-suid-only">Show SUID entries only</label>
+	  <input type="checkbox" id="show-suid-only">
+	</div>
         <div style="font-size: 32pt; margin-bottom: 25px;">
             Quarantine Data
         </div>
@@ -506,6 +510,7 @@ loading configuration file...
 
             </tbody>
           </table>
+          <div class="loading"><img style="position: absolute; top: 50%; left: 50%;" src="/images/loader.gif"></div>
         </div>
       </div>
     <div class="mdl-dialog__actions mdl-dialog__actions--full-width">
@@ -741,7 +746,7 @@ function loadSubjects() {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	    shortname = shortenName( shortname );
 
-	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 15px;">'+shortname+'</div></a></div>');
+	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 15px; right: 10px;">'+shortname+'</div></a></div>');
 	}
     });
 }
@@ -851,7 +856,7 @@ function loadSystem() {
             rp3.value(100-data.memory_free_percent).render();
 	}
     });
-    jQuery.get('/php/startstop.php', function(data) {
+    jQuery.get('/php/startstop.php?project=' + projname, function(data) {
         console.log('change checked to reflect system status ' + data);
         // we expect two values here
         var vals = data.split('');
@@ -927,9 +932,28 @@ function createCalendar() {
             }
 	},
 	viewRender: function(view) {
+	   console.log("ViewRender for calendar called");
 	   try { 
               //setTimeline(view);
            } catch( err ) {}
+        },
+	eventAfterRender: function(event, element, view) {
+	    var title = event['title'];
+	    var colored = false;
+	    // change the background based on the type of event
+            m = title.match(/NDAR_INV[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]/);
+	    if (m !== null) {
+		jQuery(element).css('background-color', '#a1d99b');
+		colored = true;
+	    }
+	    m = title.match(/ABCDPhantom/);
+	    if (m !== null) {
+		jQuery(element).css('background-color', '#a6bddb');
+		colored = true;
+	    }
+	    if (!colored) {
+		jQuery(element).css('background-color', '#fff7bc');		
+	    }
         },
     });
     
@@ -939,7 +963,7 @@ function changeSystemStatus() {
    var a = jQuery('#receive-dicom')[0].checked ? 1:0;
    var b = jQuery('#receive-mpps')[0].checked ? 1:0;
    var c = jQuery('#anonymize')[0].checked ? 1:0;
-   jQuery.get('/php/startstop.php?enable='+a+""+b+""+c);
+   jQuery.get('/php/startstop.php?project='+projname+'&enable='+a+""+b+""+c);
 }
 
 function displayHeaderSection(data) {
@@ -962,6 +986,10 @@ function displayHeaderSection(data) {
 
          if (data["PatientName"] == null) {
              console.log("ERROR: displayHeaderSection: PatientName not found");
+         }
+
+         if (data["PatientSex"] == null) {
+             console.log("ERROR: displayHeaderSection: PatientSex not found");
          }
 
          if (data["StudyDate"] == null) {
@@ -999,6 +1027,7 @@ function displayHeaderSection(data) {
             str = str.concat("<div class='shortmessage'>Short Message: " + data["shortmessage"] + "</div>");
          str = str.concat("<div class='PatientID'>Patient ID: " + data["PatientID"] + "</div>");
          str = str.concat("<div class='PatientName'>Patient Name: " + data["PatientName"] + "</div>");
+         str = str.concat("<div class='PatientSex'>Patient Sex: " + data["PatientSex"] + "</div>");
          str = str.concat("<div class='StudyDate'>Study Date: " + data["StudyDate"] + "</div>");
          str = str.concat("<div class='StudyTime'>Study Time: " + data["StudyTime"] + "</div>");
          str = str.concat("<div class='StudyInstanceUID'>Study Instance UID: " + data["StudyInstanceUID"] + "</div>");
@@ -1107,7 +1136,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          //jQuery('#detected-scans').append(str);
 
          // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
-         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath, (function(id) {
+         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(id) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
 	         if (data.length == 0) {
@@ -1168,7 +1197,7 @@ function displayAdditionalScans(data, StudyInstanceUID) {
 
 // get valid session names                                                                                                                                                                  
 function getSessionNamesFromREDCap() {
-    jQuery.getJSON('/php/getRCEvents.php', function(data) {
+    jQuery.getJSON('/php/getRCEvents.php?project=' + projname, function(data) {
         jQuery('#session-name').children().remove();
         for (var i = 0; i < data.length; i++) {
             val = "";
@@ -1182,7 +1211,7 @@ function getSessionNamesFromREDCap() {
 }
 
 function getParticipantNamesFromREDCap() {
-    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php', function(data) {
+    jQuery.getJSON('/php/getParticipantNamesFromREDCap.php?project=' + projname, function(data) {
 	jQuery('#session-participant').select2({
 	    dropdownParent: jQuery('#modal-study-info'),
 	    placeholder: 'Select a REDCap participant',
@@ -1195,8 +1224,11 @@ function getParticipantNamesFromREDCap() {
 
 function traverse(elem, s) {
   $(elem).children().each(function(i,e){
-    //console.log($(e).text());
-    s = jQuery(e).text() + traverse($(e), s);
+    var title = jQuery(e).attr('title');
+    if (typeof title !== typeof undefined && title !== false) {
+       s = s + title;
+    }
+    s = jQuery(e).text() + " " + traverse($(e), s);
   });
   return s;
 }
@@ -1226,7 +1258,6 @@ var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
 
-    // PCGC
     if (sites.length < 1) {
         // hide project-dropdown-section
         jQuery('#project-dropdown-section').hide();
@@ -1236,6 +1267,27 @@ jQuery(document).ready(function() {
 
     jQuery('.pop').on('click', function(e) {
 	deselect(jQuery(this));
+    });
+
+    jQuery('#show-suid-only').on('change', function() {
+       var onlySUID = this.checked;
+       // hide rows for which the entries don't start with SUID
+       jQuery('#cleanQuarantine tr').each(function(a) {
+            var t = jQuery(this).find('td').first().attr('title');
+            if (onlySUID) {
+               if (t.indexOf('SUID') !== -1) {
+                   jQuery(this).show();
+               } else {
+                   jQuery(this).hide(); 
+               }
+            } else {
+	       jQuery(this).show();
+            }
+       });
+    });   
+
+    jQuery('#calendar-loc').on('click', '.fc-title', function() {
+       jQuery('#search-list').val(jQuery(this).text()).trigger('keyup');		    
     });
 
     jQuery('#modal-data-flow').on('click', '.item', function(e) {
@@ -1340,6 +1392,7 @@ jQuery(document).ready(function() {
 	jQuery('#projname').text(value);
         projname = value;
 	loadSubjects();
+        loadSystem();
     });
 
     jQuery('#load-subjects').click(function() {
@@ -1412,7 +1465,8 @@ jQuery(document).ready(function() {
 
         var options = {
             "action": "getStudy",
-            "study": studyinstanceuid
+            "study": studyinstanceuid,
+            "project": projname
         };
         jQuery.getJSON('/php/existingData.php', options, function(data) {
             dataSec1 = {};
@@ -1548,8 +1602,12 @@ jQuery(document).ready(function() {
 
     jQuery('#dialog-clean-quarantine-button').click(function() {
       var dialog = document.querySelector('#modal-clean-quarantine');
+      jQuery('#cleanQuarantine').children().remove();
+      jQuery('#show-suid-only').prop('checked', false);
       dialog.showModal();
+      jQuery('#modal-clean-quarantine div.loading').show();
       jQuery.getJSON('php/quarantineData.php?action=getData', function(data) {
+          jQuery('#modal-clean-quarantine div.loading').hide();
           quarantineDataTmp = data;
 	  studies = Object.keys(data);
 	  for (var i = 0; i < studies.length; i++) {
@@ -1684,7 +1742,8 @@ jQuery(document).ready(function() {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
 	     "redcap_event_name": jQuery('#session-name').val(),
-             "run": jQuery('#session-run').val()
+             "run": jQuery('#session-run').val(),
+	     "project": projname
           };
           jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
               // alert(JSON.stringify(data));
@@ -1696,7 +1755,7 @@ jQuery(document).ready(function() {
        var dialog = document.querySelector('#modal-study-info');
        jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
        dialog.close();
-       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val() }, function(data) {
+       jQuery.get('php/announceData.php', { 'pGUID' : jQuery('#session-participant').val(), 'project': projname }, function(data) {
 	  console.log("tried to announce data, got: " + data);
        });
     });
@@ -1721,7 +1780,8 @@ jQuery(document).ready(function() {
              "filename": filename,
 	     "id_redcap" : jQuery('#session-participant').val(),
 	     "redcap_event_name": jQuery('#session-name').val(),
-             "run": jQuery('#session-run').val()
+             "run": jQuery('#session-run').val(),
+             "project": projname
          };
          jQuery.getJSON('/php/sendToDAIC.php', options, function(data) {
              alert(JSON.stringify(data));

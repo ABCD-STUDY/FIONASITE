@@ -10,6 +10,9 @@
 #
 # */30 * * * * /var/www/html/server/bin/importSiemensKSPACE.sh >> /var/www/html/server/logs/importSiemensKSPACE.log 2>&1
 #
+# If more than one scanner is specified in the /data/config/config.json script all scanners will be checked.
+#   # jq -r ".OTHERSCANNER[].SCANNERIP" /data/config/config.json
+#
 
 # A .dat file needs to be at least that many seconds old (modification time) before it will be copied
 oldtime=15
@@ -36,65 +39,91 @@ done
 
 # The scanner host exports the usb3 drive with the data 
 SCANNERIP=`cat /data/config/config.json | jq -r ".SCANNERIP"`
+OTHERSCANNERIPS=`cat /data/config/config.json | jq -r ".OTHERSCANNER[].SCANNERIP"`
 
-#
-# make sure we have the correct mount to the usb drive that holds the data
-#
-if grep -qs '/mnt/host_usb3' /proc/mounts; then
-    echo "Ok, mount point /mnt/host_usb3 exists."
-else
-    echo "The mount point /mnt/host_usb3 does not exist. Trying to create the mount now..."
-    # check if we have the cifs credentials file
-    if [ ! -f /data/config/cifs-credentials_unix.txt ]; then
-	echo "A credentials file (/data/config/cifs-credentials_unix.txt) is required to mount the scanner hosts usb drive."
-        echo "You can find the file on your system's reconstruction machine (MARS) in the /root/ directory. Place it in"
-        echo "   /data/config/cifs-credentials_unix.txt"
-        exit
+setupMounts () {
+    # by default we will use the no IP
+    scannerid=""
+    if [ ! -z "$1" ]; then
+	scannerid="$1"
     fi
-    # set the permissions of this file to read by root only
-    chmod 0600 /data/config/cifs-credentials_unix.txt
 
-    # make sure mount directory exists on FIONA
-    dirloc=/mnt/host_usb3 
-    if [[ ! -d "$dirlock" ]]; then
-      mkdir -p -m 0777 "$dirloc"
-    fi
-    
-    # try to create the mount point
-    /usr/bin/mount -t cifs //${SCANNERIP}/ABCD_streaming_USB3 /mnt/host_usb3 -o credentials=/data/config/cifs-credentials_unix.txt
-    
-    # test if the mount point could be created
-    if grep -qs '/mnt/host_usb3' /proc/mounts; then
-	echo "Ok, mount point could be created."
+    #
+    # make sure we have the correct mount to the usb drive that holds the data
+    #
+    if grep -qs '/mnt/host_usb3${scannerid}' /proc/mounts; then
+	echo "Ok, mount point /mnt/host_usb3${scannerid} exists."
     else
-        echo "Error: mount point could not be found after calling mount. Quit now."
-	exit
+	echo "The mount point /mnt/host_usb3${scannerid} does not exist. Trying to create the mount now..."
+	# check if we have the cifs credentials file
+	if [ ! -f /data/config/cifs-credentials_unix${scannerid}.txt ]; then
+	    echo "A credentials file (/data/config/cifs-credentials_unix${scannerid}.txt) is required to mount the scanner hosts usb drive."
+            echo "You can find the file on your system's reconstruction machine (MARS) in the /root/ directory. Place it in"
+            echo "   /data/config/cifs-credentials_unix${scannerid}.txt"
+            return
+	fi
+	# set the permissions of this file to read by root only
+	chmod 0600 /data/config/cifs-credentials_unix${scannerid}.txt
+	
+	# make sure mount directory exists on FIONA
+	dirloc="/mnt/host_usb3${scannerid}"
+	if [ ! -d "$dirloc" ]; then
+	    mkdir -p -m 0777 "$dirloc"
+	fi
+	
+	# try to create the mount point
+        if [ ! -z "$1" ]; then
+	    # if we have an 'other' IP we need to mark the directories
+  	    /usr/bin/mount -t cifs //${scannerid}/ABCD_streaming_USB3 /mnt/host_usb3${scannerid} -o credentials=/data/config/cifs-credentials_unix${scannerid}.txt
+	else
+	    # the default mounts don't have the IP in the name
+	    /usr/bin/mount -t cifs //${SCANNERIP}/ABCD_streaming_USB3 /mnt/host_usb3 -o credentials=/data/config/cifs-credentials_unix.txt
+	fi
+
+	# test if the mount point could be created
+	if grep -qs '/mnt/host_usb3${scannerid}' /proc/mounts; then
+	    echo "Ok, mount point could be created."
+	else
+            echo "Error: mount point could not be found after calling mount. Quit now."
+	    return
+	fi
     fi
-fi
+
+    #
+    # create the shares on FIONA (if they don't exist yet)
+    #
+    a=/data/site/scanner-share/ABCDstream/dicom_stream
+    b=/data/site/scanner-share/ABCDstream/kspace_stream
+    c=/data/site/scanner-share/ABCDstream/yarra_export
+    if [ ! -d "$a" ]; then
+	mkdir -p "$a"
+	chmod 777 "$a"
+    fi
+    if [ ! -d "$b" ]; then
+	mkdir -p "$b"
+	chmod 777 "$b"
+    fi
+    if [ ! -d "$c" ]; then
+	mkdir -p "$c"
+	chmod 777 "$c"
+    fi
+}    
+
+# create mounts for the default scanner with IP in SCANNERIP
+setupMounts && importDatLocations="/mnt/host_usb3"
+
+
+# do other scanners setup mounts, identify the scanner by IP
+for u in $OTHERSCANNERIPS; do
+  if [ ! -z "$u" ]; then
+    setupMounts $u && importDatLocations="${importDatLocations} /mnt/host_usb3${u}"
+  fi
+done
 
 #
-# create the shares on FIONA (if they don't exist yet)
+# now go through all the files on the external drives
 #
-a=/data/site/scanner-share/ABCDstream/dicom_stream
-b=/data/site/scanner-share/ABCDstream/kspace_stream
-c=/data/site/scanner-share/ABCDstream/yarra_export
-if [ ! -d "$a" ]; then
-   mkdir -p "$a"
-   chmod 777 "$a"
-fi
-if [ ! -d "$b" ]; then
-   mkdir -p "$b"
-   chmod 777 "$b"
-fi
-if [ ! -d "$c" ]; then
-   mkdir -p "$c"
-   chmod 777 "$c"
-fi
-
-#
-# now go through all the files on the external drive
-#
-find /mnt/host_usb3/ -type f -name *.dat -print0 | while read -d $'\0' file
+find ${importDatLocations} -type f -name *.dat -print0 | while read -d $'\0' file
 do
   # only look at files that are at least oldtime seconds old
   if [ "$(( $(date +"%s") - $(stat -c "%Y" "$file") ))" -lt "$oldtime" ]; then
@@ -253,7 +282,7 @@ do
       # If we are done with packaging and we have all data in there we should remove the files from the external usb
       # and from the hdr location, but not the DICOM or the json.
       echo "  REMOVE:  /bin/rm -f $file ${hdrs}"
-      /bin/rm -f ${file} ${hdrs}
+      /bin/rm -f "${file}" "${hdrs}"
   done
 
 done

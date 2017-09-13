@@ -6,6 +6,16 @@
 
 $filename = "";
 
+$project = "";
+
+if (isset($_GET['project'])) {
+  $project = $_GET['project'];
+}
+
+if ($project == "ABCD") {
+   $project = "";
+}
+
 if (isset($_GET['filename'])) {
    $filename = $_GET['filename'];
 } else {
@@ -18,9 +28,9 @@ $path_info = pathinfo($filename);
 
 // we can find this study/series in three locations
 // we will assume that the naming convention ensures that the series instance uid is in the filename
-$q = glob('/data/quarantine/'.$path_info['filename'].".".$path_info['extension']);
-$o = glob('/data/outbox/*'.$path_info['filename'].".".$path_info['extension']);
-$d = glob('/data/DAIC/*'.$path_info['filename'].".".$path_info['extension']);
+$q = glob('/data'.$project.'/quarantine/'.$path_info['filename'].".".$path_info['extension']);
+$o = glob('/data'.$project.'/outbox/*'.$path_info['filename'].".".$path_info['extension']);
+$d = glob('/data'.$project.'/DAIC/*'.$path_info['filename'].".".$path_info['extension']);
 
 // we should check if we have an md5sum file for each one
 $qvalid = array();

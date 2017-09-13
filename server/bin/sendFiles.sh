@@ -10,14 +10,23 @@
 # be send using local and DAIC md5sum files.
 #
 
+project=""
+if [ "$#" -eq 1 ]; then
+  project="$1"
+fi
+
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
-log=${SERVERDIR}/logs/sendFiles.log
+log=${SERVERDIR}/logs/sendFiles${project}.log
 commandScript=${SERVERDIR}/bin/CommandScript
 commandScriptMD5s=${SERVERDIR}/bin/CommandScriptMD5s
 user=`cat /data/config/config.json | jq -r ".SERVERUSER"`
 # directory storing the files that are ok to send
-pfiles=/data/outbox
-
+pfiles=/data${project}/outbox
+endpoint=abcd-workspace.ucsd.edu
+if [ "$project" != "" ]; then
+    endpoint=`cat /data/config/config.json | jq -r ".SITES.${project}.DAICSERVER"`
+fi
+echo "Endpoint selected: $endpoint"
 
 #
 # connect to abcd-workspace.ucsd.edu using keyless ssh access
@@ -28,7 +37,7 @@ sendAllFiles () {
   # all md5sums calculated at the destination
   d=`mktemp -d /tmp/md5sums_server_XXXX`
   cd "$d"
-  sftp -p -b ${commandScriptMD5s} ${user}@abcd-workspace.ucsd.edu
+  sftp -p -b ${commandScriptMD5s} ${user}@${endpoint}
   if [[ -e md5server_cache.tar ]]; then
      # untar the md5server file into the current directory, and go on
      tar xf md5server_cache.tar
@@ -70,7 +79,7 @@ sendAllFiles () {
   # add limit here to prevent too much traffic on the ABCD transfer
   echo "`date`: now copy everything else to the DAIC" >> $log  
   START=$(date +%s.%N)
-  sftp -p -b ${commandScript} ${user}@abcd-workspace.ucsd.edu
+  sftp -p -b ${commandScript} ${user}@${endpoint}
   END=$(date +%s.%N)
   dur=$(echo "$END - $START" | bc)
   echo "`date`: copy done (${dur}sec)" >> $log  

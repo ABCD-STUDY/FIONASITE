@@ -821,6 +821,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['PatientSex'] = dataset.PatientSex
+                                except:
+                                        pass
+                                try:
                                         data['StudyDate'] = dataset.StudyDate
                                 except:
                                         pass
@@ -894,6 +898,12 @@ class ProcessSingleFile(Daemon):
                                         pass
                                 try:
                                         data['ImagesInAcquisition'] = str(dataset[0x20,0x1002].value)
+                                except:
+                                        pass
+                                try:
+                                        rmp = str(dataset[0x18,0x1020].value)
+                                        searchThat = re.compile(r'release:(?P<SystemOS>[^_"]+)')
+                                        data['OSLevel'] = searchThat.search(rmp).group('SystemOS')
                                 except:
                                         pass
                                 try:
@@ -992,7 +1002,11 @@ class ProcessSingleFile(Daemon):
                                 # this will overwrite the currently created data again - but only if it exists already (add after this section if you want to update every slice)
                                 if os.path.exists(fn3):
                                         with open(fn3, 'r') as f:
-                                                data = json.load(f)
+                                                try:
+                                                        data = json.load(f)
+                                                except ValueError:
+                                                        print("Error: could not read json file in %s, ValueError" % fn3)
+                                                        pass
 
                                 if currentSliceLocation != None:
                                         try:

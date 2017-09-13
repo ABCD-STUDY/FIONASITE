@@ -1,15 +1,15 @@
 #!/bin/bash
 
 #
-# Called from cron-job, checks the study data in /data/active-scans for things to pull from the scanner.
+# Called from cron-job, checks the study data in /dataPCGC/active-scans for things to pull from the scanner.
 # If all images are already found (only checks number of images) the series will not be pulled again.
-# If all images of all series are present on the system the /data/active-scans/<StudyInstanceUID> file
-# is copied to the /data/finished-scans/ folder.
+# If all images of all series are present on the system the /dataPCGC/active-scans/<StudyInstanceUID> file
+# is copied to the /dataPCGC/finished-scans/ folder.
 #
-# This script will only run if there is no "/var/www/html/server/.pids/moveFromScanner.lock". This prevents
+# This script will only run if there is no "/var/www/html/server/.pids/moveFromScannerPCGC.lock". This prevents
 # multiple executions of this script in cases that a single processing steps takes more than 15 seconds.
 #
-# This script will only run if there is no "0" in the second /data/enabled bin (like in "101").
+# This script will only run if there is no "0" in the second /dataPCGC/enabled bin (like in "101").
 #
 # This script depends on the following dcmtk tools: dcm2dump, findscu, movescu.
 #
@@ -18,27 +18,49 @@
 #  */1 * * * * sleep 30; /var/www/html/server/bin/moveFromScanner.sh
 #  */1 * * * * sleep 15; /var/www/html/server/bin/moveFromScanner.sh
 #  */1 * * * * sleep 45; /var/www/html/server/bin/moveFromScanner.sh
+#  */1 * * * * /var/www/html/server/bin/moveFromScanner.sh PCGC
+#  */1 * * * * sleep 30; /var/www/html/server/bin/moveFromScanner.sh PCGC
+#  */1 * * * * sleep 15; /var/www/html/server/bin/moveFromScanner.sh PCGC
+#  */1 * * * * sleep 45; /var/www/html/server/bin/moveFromScanner.sh PCGC
 
 export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
-log=${SERVERDIR}/logs/moveFromScanner.log
 
-# logger lock file is in ${SERVERDIR}/.pids/moveFromScanner.lock
-# echo "`date`: lock file is at: ${SERVERDIR}/.pids/moveFromScanner.lock" >> $log
-
+DATADIR=`cat /data/config/config.json | jq -r ".DATADIR"`
 # Scanner we will ask for our images
 SCANNERIP=`cat /data/config/config.json | jq -r ".SCANNERIP"`
 SCANNERPORT=`cat /data/config/config.json | jq -r ".SCANNERPORT"`
 SCANNERAETITLE=`cat /data/config/config.json | jq -r ".SCANNERAETITLE"`
 # The aetitle of this fiona system (known to the scanner)
 DICOMAETITLE=`cat /data/config/config.json | jq -r ".DICOMAETITLE"`
+pidfile=${SERVERDIR}/.pids/moveFromScanner.lock
+log=${SERVERDIR}/logs/moveFromScanner.log
 
+projname="$1"
+if [ -z "$projname" ]; then
+    projname="ABCD"
+else
+    if [ "$1" != "ABCD" ]; then
+	DATADIR=`cat /data/config/config.json | jq -r ".SITES.${projname}.DATADIR"`
+	# Scanner we will ask for our images
+	SCANNERIP=`cat /data/config/config.json | jq -r ".SITES.PCGC.SCANNERIP"`
+	SCANNERPORT=`cat /data/config/config.json | jq -r ".SITES.PCGC.SCANNERPORT"`
+	SCANNERAETITLE=`cat /data/config/config.json | jq -r ".SITES.PCGC.SCANNERAETITLE"`
+	# The aetitle of this fiona system (known to the scanner)
+	DICOMAETITLE=`cat /data/config/config.json | jq -r ".SITES.PCGC.DICOMAETITLE"`
+	pidfile=${SERVERDIR}/.pids/moveFromScanner${projname}.lock
+	log=${SERVERDIR}/logs/moveFromScanner${projname}.log
+    fi
+fi
+
+# logger lock file is in ${SERVERDIR}/.pids/moveFromScannerPCGC.lock
+# echo "`date`: lock file is at: ${SERVERDIR}/.pids/moveFromScannerPCGC.lock" >> $log
 
 enabled=0
-if [[ -f /data/enabled ]]; then
-  # this will only work if there is no file named '2' in the /data directory
-  enabled=`cat /data/enabled | head -c 2| tail -c 1`
+if [[ -f ${DATADIR}/enabled ]]; then
+  # this will only work if there is no file named '2' in the ${DATADIR} directory
+  enabled=`cat ${DATADIR}/enabled | head -c 2| tail -c 1`
 fi
 
 getSeries () {
@@ -63,7 +85,7 @@ getSeries () {
 getScans () {
 
   # go through the list of studies
-  find /data/active-scans/ -type f -print0 | while read -d $'\0' file
+  find ${DATADIR}/active-scans/ -type f -print0 | while read -d $'\0' file
   do
     echo "`date`: PROCESS: $file" >> $log
     numSeries=0
@@ -89,9 +111,9 @@ getScans () {
          numSeries=$((numSeries + 1))
 
 	 # check if study directory exists
-         if [[ -d /data/site/raw/${studyInstanceUID} ]]; then
+         if [[ -d ${DATADIR}/site/raw/${studyInstanceUID} ]]; then
            # check how many images we have already for this series
-           numImages=`/bin/ls -1 /data/site/raw/${studyInstanceUID}/${seriesInstanceUID}/* | wc -l`
+           numImages=`/bin/ls -1 ${DATADIR}/site/raw/${studyInstanceUID}/${seriesInstanceUID}/* | wc -l`
            if [ "$imagesInAcquisition" == "$numImages" ]; then
              # we are done
              echo "`date`: ${studyInstanceUID}/${seriesInstanceUID}, we do have $numImages of $imagesInAcquisition" >> $log
@@ -116,7 +138,7 @@ getScans () {
 
     # if the study is in progress we will not have a PerformedProcedureStepEndTime yet, don't close the study in that case
     # MPPS files are named after their MediaStorageInstanceUID, we need to find the correct one for our current studyInstanceUID
-    mppsfile=`grep -l ${studyInstanceUID} /data/scanner/*`
+    mppsfile=`grep -l ${studyInstanceUID} ${DATADIR}/scanner/*`
     stillInProcess=1
     if [[ -f "$mppsfile" ]]; then
         l=`/usr/bin/dcmdump +P "PerformedProcedureStepEndTime" "${mppsfile}"`
@@ -131,14 +153,14 @@ getScans () {
 	    stillInProcess=0
         fi
     else
-	echo "`date`: could not find ${studyInstanceUID} MPPS file in /data/scanner/" >> $log
+	echo "`date`: could not find ${studyInstanceUID} MPPS file in ${DATADIR}/scanner/" >> $log
     fi
 
     # are we done with this study?
     if [[ $stillInProcess == 0 ]] && [[ "$numSeries" == "$numFinishedSeries" ]]; then
 	# we are done if we have all images for all series
-        echo "`date`: JOB $file to /data/finished-scans" >> $log
-	mv "$file" /data/finished-scans/
+        echo "`date`: JOB $file to ${DATADIR}/finished-scans" >> $log
+	mv "$file" ${DATADIR}/finished-scans/
     else
         echo "`date`: we are not done yet with this job" >> $log
     fi
@@ -148,7 +170,7 @@ getScans () {
        echo "`date`: \"$file\" is too new, keep it around longer" >> $log
     else
        echo "`date`: \"$file\" is old, download seems to have failed" >> $log
-       mv "$file" /data/failed-scans/
+       mv "$file" ${DATADIR}/failed-scans/
     fi
     
   done
@@ -169,4 +191,4 @@ clearScans () {
     echo "`date`: move disabled, start clearScans" >> $log
     clearScans
   fi 
-) 9>${SERVERDIR}/.pids/moveFromScanner.lock
+) 9>${pidfile}

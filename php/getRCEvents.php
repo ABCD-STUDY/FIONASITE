@@ -1,5 +1,12 @@
 <?php
 
+$project = "";
+if (isset($_GET['project'])) {
+   $project = $_GET['project'];
+}
+if ($project == "ABCD") {
+  $project = "";
+}
 $config = json_decode(file_get_contents('config.json'), TRUE);
 $proxy = "";
 $proxyport = 3128;
@@ -18,7 +25,12 @@ if (!isset($configs['CONNECTION'])) {
    echo ("{ \"message\": \"Error: could not find CONNECTION setting in the config file\", \"ok\": \"0\" }");
    return;
 }
-$token = $configs['CONNECTION'];
+$token = "";
+if ($project !== "") {
+   $token = $configs['SITES'][$project]['CONNECTION'];
+} else {
+   $token = $configs['CONNECTION'];
+}
 if ($token == "") {
    echo ("{ \"message\": \"Error: no token found in config file\", \"ok\": \"0\" }");
    return;
