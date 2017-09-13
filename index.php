@@ -1188,6 +1188,8 @@ function getParticipantNamesFromREDCap() {
 	    placeholder: 'Select a REDCap participant',
 	    data: data.map(function(v,i) { return { id:v, text:v }; })
 	});
+    }).fail(function(jqxhr, textStatus, error) {
+        alert("could not get participants names - not JSON? " + error);
     });
 }
 
