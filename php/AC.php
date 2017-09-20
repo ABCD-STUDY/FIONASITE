@@ -5,7 +5,7 @@
  # ToDo: implement digest based authentication
  #
 
- $config = json_decode(file_get_contents('config.json'), TRUE);
+ $config = json_decode(file_get_contents('/data/config/config.json'), TRUE);
  if (isset($config['LOCALTIMEZONE'])) {
    date_default_timezone_set($config['LOCALTIMEZONE']);
  }
