@@ -916,6 +916,7 @@ function setTimeline(view) {
 }
 
 function createCalendar() {
+    jQuery('#calendar-loc').fullCalendar('destroy');
     var cal = jQuery('#calendar-loc').fullCalendar({
 	header: {
 	    left: 'prev,next today',
@@ -924,7 +925,7 @@ function createCalendar() {
 	},
         defaultView: 'month', // only month is working here, would be good to switch to agendaDay instead
         timezone: 'America/Los_Angeles',
-	eventSources: [ { url: "php/events.php", color: '#dddddd', textColor: 'black' } ],
+	eventSources: [ { url: "php/events.php", data: { project: projname }, color: '#dddddd', textColor: 'black' } ],
 	eventResize: function(calEvent, jsEvent, view) {
 	    alert("eventResize: function(calEvent, jsEvent, view)");
             if (!updateEvent(calEvent)) {
@@ -1117,6 +1118,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          } else {
              filePath = series["file"][0]["path"];
              transferStatus = filePath.substring(0,filePath.lastIndexOf("/")+1);
+console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath);
          }
 
          var str = "";
@@ -1128,6 +1130,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          if (typeof series["SeriesNumber"] != 'undefined') { 
            str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + (series["SeriesNumber"]==null?"":series["SeriesNumber"]) + "</div>");
          }
+console.log('transferStatus: ' + transferStatus);				  
          if (transferStatus == "/quarantine/") {
              str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          }
@@ -1392,7 +1395,8 @@ jQuery(document).ready(function() {
 	jQuery('#projname').text(value);
         projname = value;
 	loadSubjects();
-        loadSystem();
+        loadSystem(); 
+        createCalendar();
     });
 
     jQuery('#load-subjects').click(function() {
