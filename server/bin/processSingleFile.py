@@ -869,6 +869,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['Slices'] = str(dataset[0x21,0x104f].value)
+                                except:
+                                        pass
+                                try:
                                         data['ScanningSequence'] = str(dataset[0x18,0x20].value)
                                 except:
                                         pass

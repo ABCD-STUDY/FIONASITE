@@ -746,7 +746,7 @@ function loadSubjects() {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	    shortname = shortenName( shortname );
 
-	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 15px;">'+shortname+'</div></a></div>');
+	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 15px; right: 10px;">'+shortname+'</div></a></div>');
 	}
     });
 }
@@ -916,6 +916,7 @@ function setTimeline(view) {
 }
 
 function createCalendar() {
+    jQuery('#calendar-loc').fullCalendar('destroy');
     var cal = jQuery('#calendar-loc').fullCalendar({
 	header: {
 	    left: 'prev,next today',
@@ -924,7 +925,7 @@ function createCalendar() {
 	},
         defaultView: 'month', // only month is working here, would be good to switch to agendaDay instead
         timezone: 'America/Los_Angeles',
-	eventSources: [ { url: "php/events.php", color: '#dddddd', textColor: 'black' } ],
+	eventSources: [ { url: "php/events.php", data: { project: projname }, color: '#dddddd', textColor: 'black' } ],
 	eventResize: function(calEvent, jsEvent, view) {
 	    alert("eventResize: function(calEvent, jsEvent, view)");
             if (!updateEvent(calEvent)) {
@@ -932,9 +933,28 @@ function createCalendar() {
             }
 	},
 	viewRender: function(view) {
+	   console.log("ViewRender for calendar called");
 	   try { 
               //setTimeline(view);
            } catch( err ) {}
+        },
+	eventAfterRender: function(event, element, view) {
+	    var title = event['title'];
+	    var colored = false;
+	    // change the background based on the type of event
+            m = title.match(/NDAR_INV[A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9][A-Z0-9]/);
+	    if (m !== null) {
+		jQuery(element).css('background-color', '#a1d99b');
+		colored = true;
+	    }
+	    m = title.match(/ABCDPhantom/);
+	    if (m !== null) {
+		jQuery(element).css('background-color', '#a6bddb');
+		colored = true;
+	    }
+	    if (!colored) {
+		jQuery(element).css('background-color', '#fff7bc');		
+	    }
         },
     });
     
@@ -967,6 +987,10 @@ function displayHeaderSection(data) {
 
          if (data["PatientName"] == null) {
              console.log("ERROR: displayHeaderSection: PatientName not found");
+         }
+
+         if (data["PatientSex"] == null) {
+             console.log("ERROR: displayHeaderSection: PatientSex not found");
          }
 
          if (data["StudyDate"] == null) {
@@ -1004,6 +1028,7 @@ function displayHeaderSection(data) {
             str = str.concat("<div class='shortmessage'>Short Message: " + data["shortmessage"] + "</div>");
          str = str.concat("<div class='PatientID'>Patient ID: " + data["PatientID"] + "</div>");
          str = str.concat("<div class='PatientName'>Patient Name: " + data["PatientName"] + "</div>");
+         str = str.concat("<div class='PatientSex'>Patient Sex: " + data["PatientSex"] + "</div>");
          str = str.concat("<div class='StudyDate'>Study Date: " + data["StudyDate"] + "</div>");
          str = str.concat("<div class='StudyTime'>Study Time: " + data["StudyTime"] + "</div>");
          str = str.concat("<div class='StudyInstanceUID'>Study Instance UID: " + data["StudyInstanceUID"] + "</div>");
@@ -1093,6 +1118,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          } else {
              filePath = series["file"][0]["path"];
              transferStatus = filePath.substring(0,filePath.lastIndexOf("/")+1);
+console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath);
          }
 
          var str = "";
@@ -1104,6 +1130,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          if (typeof series["SeriesNumber"] != 'undefined') { 
            str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + (series["SeriesNumber"]==null?"":series["SeriesNumber"]) + "</div>");
          }
+console.log('transferStatus: ' + transferStatus);				  
          if (transferStatus == "/quarantine/") {
              str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          }
@@ -1193,13 +1220,18 @@ function getParticipantNamesFromREDCap() {
 	    placeholder: 'Select a REDCap participant',
 	    data: data.map(function(v,i) { return { id:v, text:v }; })
 	});
+    }).fail(function(jqxhr, textStatus, error) {
+        alert("could not get participants names - not JSON? " + error);
     });
 }
 
 function traverse(elem, s) {
   $(elem).children().each(function(i,e){
-    //console.log($(e).text());
-    s = jQuery(e).text() + traverse($(e), s);
+    var title = jQuery(e).attr('title');
+    if (typeof title !== typeof undefined && title !== false) {
+       s = s + title;
+    }
+    s = jQuery(e).text() + " " + traverse($(e), s);
   });
   return s;
 }
@@ -1363,7 +1395,8 @@ jQuery(document).ready(function() {
 	jQuery('#projname').text(value);
         projname = value;
 	loadSubjects();
-        loadSystem();
+        loadSystem(); 
+        createCalendar();
     });
 
     jQuery('#load-subjects').click(function() {

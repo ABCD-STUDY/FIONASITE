@@ -19,13 +19,21 @@
   else
     $timezone = null;
 
+  $project = "ABCD";
+  if (isset($_GET['project'])) {
+    $project = $_GET['project'];
+  }
+  if ($project == "ABCD") {
+    $project = "";
+  }
+
 
   $startdateIn = DateTime::createFromFormat("Y-m-d", $start);
   $enddateIn   = DateTime::createFromFormat("Y-m-d", $end);
   $events = [];
 
   // add the events that exist on this machine
-  $files = glob("/data/site/raw/*/*.json");
+  $files = glob("/data" . $project . "/site/raw/*/*.json");
   foreach($files as $key => $value) {
     if (in_array($value, array(".",".."))) {
        continue;
