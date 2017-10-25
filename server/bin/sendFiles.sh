@@ -62,7 +62,7 @@ sendAllFiles () {
         #echo "compare MD5s $serverFileMD5 and $localFileMD5" >> $log
 	if [[ "$serverFileMD5" == "$localFileMD5" ]]; then
 	    # we don't have to transfer this file, move it to local permanent storage
-	    mv "${file%.*}"* /data/DAIC/
+	    mv "${file%.*}"* /data${project}/DAIC/
             echo "`date`: we are done with ${file}, move to /data/DAIC now for posterity" >> $log
 	else
             echo "`date`: MD5SUM for ${file} does not match with server, send this file again" >> $log
