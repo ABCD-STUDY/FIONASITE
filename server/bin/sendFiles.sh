@@ -17,7 +17,7 @@ fi
 
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/sendFiles${project}.log
-commandScript=${SERVERDIR}/bin/CommandScript
+commandScript=${SERVERDIR}/bin/CommandScript${project}
 commandScriptMD5s=${SERVERDIR}/bin/CommandScriptMD5s
 user=`cat /data/config/config.json | jq -r ".SERVERUSER"`
 # directory storing the files that are ok to send
