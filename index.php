@@ -345,15 +345,15 @@
 	  <!-- PCGC -->
 	  <!-- Dropdown selector to pick a project -->
 	  <div style="position: absolute; right: 10px; top: 0px;" id="project-dropdown-section">
-            <div class="demo-avatar-dropdown">
+            <div class="demo-avatar-dropdown" style="z-index: 99;">
               <!-- <button id="projbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"> -->
               <button id="projbtn" class="mdl-button mdl-js-button mdl-button--icon">
 		<i class="material-icons" role="presentation">arrow_drop_down</i>
               </button>
               <!--<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="projbtn">-->
               <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu" for="projbtn">
-		<li class="mdl-menu__item clickable-project-name" id="projAAAA"> </li>
-		<li class="mdl-menu__item clickable-project-name" id="projBBBB"> </li>
+		<!-- <li class="mdl-menu__item clickable-project-name" id="projAAAA"> </li>
+		<li class="mdl-menu__item clickable-project-name" id="projBBBB"> </li> -->
 		<?php
 		   // Add a menu item for each project
 		   foreach ($sites as $site) {
