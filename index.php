@@ -1737,6 +1737,8 @@ jQuery(document).ready(function() {
        if (jQuery('#session-participant').val() == "" || 
            jQuery('#session-participant').val() == null || 
            jQuery('#session-name').val() == null || 
+           jQuery('#session-name').val() == "" || 
+           jQuery('#session-run').val() == "" ||
            jQuery('#session-run').val() == null) {
    	  alert("Please select a valid (screened) participant before uploading data");
 	  return;
@@ -1749,7 +1751,9 @@ jQuery(document).ready(function() {
           var filename = jQuery(value).attr('filename');
 	  if ( jQuery('#session-participant').val() == "" || 
 	       jQuery('#session-participant').val() == null || 
+               jQuery('#session-name').val() == "" || 
                jQuery('#session-name').val() == null || 
+               jQuery('#session-run').val() == "" ||
                jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant before uploading data");
 		return;

@@ -23,6 +23,11 @@
       $force = false;
    } 
 
+   $config = json_decode(file_get_contents("/data/config/config.json"), TRUE);
+   if (isset($config['LOCALTIMEZONE'])) {
+     date_default_timezone_set($config['LOCALTIMEZONE']);
+   }
+
    //
    // get the data we need
    //
@@ -79,9 +84,23 @@
 	 $daics = glob('data/DAIC/*'.$studyInstanceUID.'*');
 	 $header = "";
 	 if ( count($daics) > 0 ) {
-	    $path = pathinfo($daics[0]);
-	    // get the header for the first file
-	    $header = explode($studyInstanceUID, $path['filename'])[0];
+	    // try to find a good header from these image series - only if we find a good one continue
+	    foreach($daics as $da) {
+	       $path = pathinfo($da);
+	       // get the header for the first file
+	       $header = explode($studyInstanceUID, $path['filename'])[0];
+	       if ($header !== "" && strpos($header, 'Session') !== false) {
+	          break;
+	       } else {
+	          // reset the header to empty to indicate that we did not find a good enough header
+                  $header = "";
+               }
+            }
+            if ($header === "") {
+	       echo("Could not get a header from any files for ".$studyInstanceUID.". Skip processing...\n");
+               continue;
+            } 
+            echo("Continue with this header: \"".$header."\" for ".$studyInstanceUID."\n");
          }
 
          $quarantineButNotOutboxOrDAIC = array();
@@ -164,12 +183,12 @@
 		      }		      
 		  }
 		  if ($ok) {
-		      echo("OK, moved over one series ->".$seriesInstanceUID."\n");
+		      echo("OK, moved over one series ->".$seriesInstanceUID." using header: \"".$header."\"\n");
                   } else {
-		      echo("FAILED, moved over one series ->".$seriesInstanceUID."\n");
+		      echo("FAILED, moved over one series ->".$seriesInstanceUID." using header: \"".$header."\"\n");
 		  }
                } else {
-	          echo("Error: NOT ok to move these files ".json_encode($tgz)."\n");
+	          echo("Error: NOT ok to move these files ".json_encode($tgz)." with header: \"".$header."\"\n");
                }
 	    }
          }
@@ -195,12 +214,12 @@
 		           // we can do this by looking at the part of the filename before the Session
 		           $nameparts = explode('Session',$fn);
 		           if (count($nameparts) < 2) {
-		              echo("Cannot get header information from this file in DAIC ".$fn.". File will not be processed...\n");
+		              echo("Cannot get header information from this file in DAIC ".$fn." [".date('Y-m-d',filemtime($tgzDAIC[$i]))."]. File will not be processed...\n");
 		              continue;
 		           }
 			   $spart = explode('_', $nameparts[1]);
 			   if (count($spart) < 2) {
-		              echo("Cannot get header information from this file in DAIC ".$fn);
+		              echo("Cannot get all header information from this file in DAIC ".$fn." [".date('Y-m-d',filemtime($tgzDAIC[$i]))."]. File will not be processed...\n");
 		              continue;			      
 			   }
 			   $header = $nameparts[0] . "Session" . $spart[0]; // created the new prefix for this file
