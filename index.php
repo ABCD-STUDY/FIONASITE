@@ -345,15 +345,15 @@
 	  <!-- PCGC -->
 	  <!-- Dropdown selector to pick a project -->
 	  <div style="position: absolute; right: 10px; top: 0px;" id="project-dropdown-section">
-            <div class="demo-avatar-dropdown">
+            <div class="demo-avatar-dropdown" style="z-index: 99;">
               <!-- <button id="projbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"> -->
               <button id="projbtn" class="mdl-button mdl-js-button mdl-button--icon">
 		<i class="material-icons" role="presentation">arrow_drop_down</i>
               </button>
               <!--<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="projbtn">-->
               <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu" for="projbtn">
-		<li class="mdl-menu__item clickable-project-name" id="projAAAA"> </li>
-		<li class="mdl-menu__item clickable-project-name" id="projBBBB"> </li>
+		<!-- <li class="mdl-menu__item clickable-project-name" id="projAAAA"> </li>
+		<li class="mdl-menu__item clickable-project-name" id="projBBBB"> </li> -->
 		<?php
 		   // Add a menu item for each project
 		   foreach ($sites as $site) {
@@ -1256,6 +1256,16 @@ function getReadableFileSizeString(fileSizeInBytes) {
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
+function goodHeader( header ) {
+    if (header == "") {
+	return false;
+    }
+    if (header.indexOf("NDAR") === 0) {
+	return true;
+    }
+    return false;
+}
+
 var quarantineDataTmp = []; // temporarily store the quarantine data for lookup
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
@@ -1615,14 +1625,17 @@ jQuery(document).ready(function() {
           quarantineDataTmp = data;
 	  studies = Object.keys(data);
 	  for (var i = 0; i < studies.length; i++) {
-             jQuery('#cleanQuarantine').append("<tr data=\"" + studies[i] + "\">" + // data can be used to lookup in quarantineDataTmp
-					       "<td title=\""+data[studies[i]]['files'].join(", ")+"\">" + data[studies[i]]['files'].length + "</td>" +
-			                       "<td>" + "<button class=\"btn quarantine-delete-these\">Delete</button>" + "<button class=\"btn quarantine-move-these\">Move to DAIC</button>" + "</td>" +
-					       "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientName'] + "</td>" +
-			                       "<td>" + data[studies[i]]['StudyDate'] + "</td>" + 
-					       "<td>" + getReadableFileSizeString(data[studies[i]]['size']) + "</td>" +
-					       "<td>" + data[studies[i]]['header'] + "</td>"
-					       + "</tr>");
+	      var it = "<tr data=\"" + studies[i] + "\">" +
+		  "<td title=\""+data[studies[i]]['files'].join(", ")+"\">" + data[studies[i]]['files'].length + "</td>" +
+                  "<td>" + "<button class=\"btn quarantine-delete-these\">Delete</button>" + 
+		  "<button class=\"btn quarantine-move-these\" " + (goodHeader(data[studies[i]]['header'])?"":"disabled title=\"First send this study on Study Transfer to create proper parts\"") + ">Move to DAIC</button>" + "</td>" +
+                  "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientName'] + "</td>" +
+                  "<td>" + data[studies[i]]['StudyDate'] + "</td>" +
+                  "<td>" + getReadableFileSizeString(data[studies[i]]['size']) + "</td>" +
+                  "<td>" + data[studies[i]]['header'] + "</td>"
+                  + "</tr>";
+	      
+             jQuery('#cleanQuarantine').append(it);
           }
       });
     });
@@ -1724,6 +1737,8 @@ jQuery(document).ready(function() {
        if (jQuery('#session-participant').val() == "" || 
            jQuery('#session-participant').val() == null || 
            jQuery('#session-name').val() == null || 
+           jQuery('#session-name').val() == "" || 
+           jQuery('#session-run').val() == "" ||
            jQuery('#session-run').val() == null) {
    	  alert("Please select a valid (screened) participant before uploading data");
 	  return;
@@ -1736,7 +1751,9 @@ jQuery(document).ready(function() {
           var filename = jQuery(value).attr('filename');
 	  if ( jQuery('#session-participant').val() == "" || 
 	       jQuery('#session-participant').val() == null || 
+               jQuery('#session-name').val() == "" || 
                jQuery('#session-name').val() == null || 
+               jQuery('#session-run').val() == "" ||
                jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant before uploading data");
 		return;

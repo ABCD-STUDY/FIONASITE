@@ -949,6 +949,25 @@
       ]
   },
   {
+      "type" : "ABCD-DTI",
+      "id" : "GEDTI",
+      "description": "GE based MMIL DTI format for DV26",
+      "rules": [
+          {"rule": "GEBYMANUFACTURER"
+	  },{
+	     "tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "8424"
+      }
+	  
+      ]
+  },
+  {
       "type" : "ABCD-Diffusion-FM",
       "description": "GE based DTI field map",
       "rules": [
@@ -963,6 +982,24 @@
       },{ 
         "tag": [ "ImagesInAcquisition" ],
         "value": "189"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-Diffusion-FM",
+      "description": "GE based DTI field map for DV26",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "648"
       }
       ]
   },
@@ -1006,6 +1043,24 @@
       },{ 
         "tag": [ "ImagesInAcquisition" ],
         "value": "297"
+      }
+      ]
+  },
+  {
+      "type" : "ABCD-Diffusion-QA",
+      "description": "QA for diffusion on GE scanners for DV26",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi2"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
+        "tag": [ "ImagesInAcquisition" ],
+        "value": "810"
       }
       ]
   },
@@ -1138,11 +1193,30 @@
       }
       ]
   },
-  { "type" : "ABCD-T2",
+  {
+      "type" : "ABCD-MB-fMRI-QA",
+      "description": "GE ABCD fMRI MultiBand QA for DV26",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/ABCD/muxepi$"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "22500"
+      }
+      ]
+  },
+  { 
+    "type" : "ABCD-T2",
     "description" : "A T2 weighted image from GE with ABCD resolution",
     "rules" : [
       {
-	"rule" : "GEBYMANUFACTURER"
+	  "rule" : "GEBYMANUFACTURER"
       },{ 
         "tag": [ "AcquisitionMatrix" ],
         "value": "0, 256, 256, 0"

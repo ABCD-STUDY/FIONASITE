@@ -24,13 +24,13 @@ if (isset($_GET['id_redcap']) && $_GET['id_redcap'] != "") {
     echo ("{ \"ok\": 0, \"message\": \"id_redcap not set\" }");
     return;
 }
-if (isset($_GET['redcap_event_name'])) {
+if (isset($_GET['redcap_event_name']) && $_GET['redcap_event_name'] != "") {
     $redcap_event_name = $_GET['redcap_event_name'];
 } else {
     echo ("{ \"ok\": 0, \"message\": \"redcap_event_name not set\" }");
     return;
 }
-if (isset($_GET['run'])) {
+if (isset($_GET['run']) && $_GET['run'] != "") {
     $run = $_GET['run'];
 } else {
     echo ("{ \"ok\": 0, \"message\": \"run not set\" }");
