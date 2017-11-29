@@ -22,7 +22,7 @@ commandScriptMD5s=${SERVERDIR}/bin/CommandScriptMD5s
 user=`cat /data/config/config.json | jq -r ".SERVERUSER"`
 # directory storing the files that are ok to send
 pfiles=/data${project}/outbox
-endpoint=abcd-workspace.ucsd.edu
+endpoint=`cat /data/config/config.json | jq -r ".DAICSERVER"`
 if [ "$project" != "" ]; then
     endpoint=`cat /data/config/config.json | jq -r ".SITES.${project}.DAICSERVER"`
 fi
