@@ -1138,7 +1138,7 @@ console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath)
            str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + (series["SeriesNumber"]==null?"":series["SeriesNumber"]) + "</div>");
          }
 console.log('transferStatus: ' + transferStatus);				  
-         if (transferStatus == "/quarantine/") {
+         if (transferStatus == "/quarantine/" && project_name == "ABCD") { // this might be ok for ABCD, but not for other projects
              str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          }
          str = str.concat("</li>");
@@ -1150,16 +1150,21 @@ console.log('transferStatus: ' + transferStatus);
              // return a function that knows about our series Instance UID variable
              return function(data) {
 	         if (data.length == 0) {
-		   jQuery('#'+id).text("TransferStatus: FILE_NOT_FOUND_ERROR");
+		     jQuery('#'+id).text("TransferStatus: FILE_NOT_FOUND_ERROR");
                  }
 		 for (var i = 0; i < data.length; i++) {
-	           console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
-	           var fname = data[i].filename.replace(/^.*[\\\/]/, '').split("_");
-		   if (fname.length > 2)
-                       fname = fname.slice(0,2).join("_");
-		   else
-		       fname = "unknown";
-		   jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path)</span>");
+	             console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
+	             var fname = data[i].filename.replace(/^.*[\\\/]/, '').split("_");
+		     if (fname.length > 2)
+			 fname = fname.slice(0,2).join("_");
+		     else
+			 fname = "unknown";
+		     jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path)</span>");
+		     // here we would also need to add the button - if it does not exist yet
+		     if (data[i].message == "readyToSend" && jQuery('#'+id).parent().find('button').length === 0) {
+			 //jQuery('#'+id).parent().append("Should show send button here " + data[i].filename);
+			 jQuery('#'+id).parent().append("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + data[i].filename + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button>");
+		     }
                  }
              };
            })(id)
