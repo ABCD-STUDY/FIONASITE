@@ -31,42 +31,49 @@
 
    include("php/AC.php");
    $user_name = check_logged();
-  echo('<script type="text/javascript"> user_name = "'.$user_name.'"; </script>'."\n");
-  // print out all the permissions
-  $permissions = list_permissions_for_user($user_name);
-  $p = '<script type="text/javascript"> permissions = [';
-  foreach($permissions as $perm) {
-    $p = $p."\"".$perm."\",";
-  }
-  echo ($p."]; </script>\n");
+   echo('<script type="text/javascript"> user_name = "'.$user_name.'"; </script>'."\n");
+   // print out all the permissions
+   $permissions = list_permissions_for_user($user_name);
+   $p = '<script type="text/javascript"> permissions = [';
+   foreach($permissions as $perm) {
+     $p = $p."\"".$perm."\",";
+   }
+   echo ($p."]; </script>\n"); 
 
-  // PCGC
-  // For each $permissions: "SiteABCD", "SitePCGC"
-  // get the site name: "ABCD", "PCGC"
-  // and create and array of $sites
-  $sites = array();
-  foreach ($permissions as $perm) {
-     $parts = explode("Site", $perm);
-     if (count($parts) > 1) {
-        $sites[] = $parts[1];
-     }
-  }
-  $p = '<script type="text/javascript"> sites = [';
-  foreach($sites as $s) {
-    $p = $p."\"".$s."\",";
-  }
-  echo ($p."]; </script>\n");
+   // what is the current project name?
+   $project = getUserVariable( $user_name, "project_name");
+   if ($project === FALSE) {
+      $project = "ABCD";
+   }
+   echo('<script type="text/javascript"> project_name = "' . $project . '";</script>');
 
-  $admin = false;
-  if (check_role( "admin" )) {
-     $admin = true;
-  }
-  if (check_permission( "developer" )) {
-     $developer = true;
-  }
-  if (check_permission( "see-scanner" )) {
-     $seescanner = true;
-  }
+   // PCGC
+   // For each $permissions: "SiteABCD", "SitePCGC"
+   // get the site name: "ABCD", "PCGC"
+   // and create and array of $sites
+   $sites = array();
+   foreach ($permissions as $perm) {
+      $parts = explode("Site", $perm);
+      if (count($parts) > 1) {
+         $sites[] = $parts[1];
+      }
+   }
+   $p = '<script type="text/javascript"> sites = [';
+   foreach($sites as $s) {
+     $p = $p."\"".$s."\",";
+   }
+   echo ($p."]; </script>\n");   
+
+   $admin = false;
+   if (check_role( "admin" )) {
+      $admin = true;
+   }
+   if (check_permission( "developer" )) {
+      $developer = true;
+   }
+   if (check_permission( "see-scanner" )) {
+      $seescanner = true;
+   }
 ?>
 
     <style>
@@ -670,7 +677,7 @@ loading information...
 
       // PCGC
       // ABCD is the default project name
-      var projname = "ABCD";
+      var projname = project_name;
 
       // logout the current user
       function logout() {
@@ -1404,6 +1411,10 @@ jQuery(document).ready(function() {
         var value = jQuery(this).text();
 	jQuery('#projname').text(value);
         projname = value;
+	// store this choice
+	jQuery.get('/php/setProject.php?project_name=' + projname, function(data) {
+	   console.log("got back: " + JSON.stringify(data));
+	});
 	loadSubjects();
         loadSystem(); 
         createCalendar();
