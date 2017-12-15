@@ -538,8 +538,9 @@
         "tag": [ "0x18", "0x24" ],
         "value": "fl2d1"
       },{ 
-        "tag": [ "AcquisitionMatrix" ],
-        "value": "0, 256, 233, 0"
+        "tag": [ "0x18", "0x89" ],
+        "operator": "==",
+        "value": "233" 
       },{ 
        "tag": [ "0x51", "0x100f" ],
         "operator": "contains",
