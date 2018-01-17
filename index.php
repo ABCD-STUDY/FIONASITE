@@ -779,6 +779,9 @@ function loadStudies() {
 	str = "<ul id=\"study-list-bonsai\" class=\"data\">";
         var studies = Object.keys(data);
         for (var i = 0; i < studies.length; i++) {
+            if (typeof data[studies[i]][0] === 'undefined' || data[studies[i]][0] === null) {
+               continue;
+            }
 	    str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientName'] + "-" + data[studies[i]][0]['PatientID'] + "<ul>";
             var seriesList = data[studies[i]];
 	    seriesList.sort(function(a,b) { 
