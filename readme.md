@@ -59,7 +59,8 @@ Configuration
   "WEBPROXY":           "<web proxy IP if one is used to connect to the internet>",
   "WEBPROXYPORT":       "<port of the web proxy>",
   "DATADIR": 		"<default projects data directory - (default /data)>",
-  "LOCALTIMEZONE":      "<php formatted local timezone identifier e.g. America/Chicago>"
+  "LOCALTIMEZONE":      "<php formatted local timezone identifier e.g. America/Chicago>",
+  "SUBJECTID":      	"<REDCap id, first field in project, default=id_redcap>"
 }
 ```
 
@@ -81,7 +82,8 @@ With the latest version of FIONA more than one project can now be hosted on FION
             "DAICSERVER":     "137.110.180.232",
             "DATADIR":	      "/data<SITE>",
             "PFILEDIR":       "\/data<SITE>\/outbox",
-            "CONNECTION":     "<REDCap token for participant list>"
+            "CONNECTION":     "<REDCap token for participant list>",
+	    "SUBJECTID":      "<REDCap id, first field in project, default=id_redcap>"
         }
     }
 

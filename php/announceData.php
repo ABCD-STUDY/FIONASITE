@@ -18,7 +18,7 @@ if (isset($_GET['project'])) {
 }
 if ($project == "ABCD") {
    $project = "";
-}  
+}
 
 // get the token from the config file
 if (! file_exists("config.json")) {
@@ -42,8 +42,14 @@ if (!isset($configs['CONNECTION'])) {
    return;
 }
 $token = $configs['CONNECTION'];
+$subject_id = "id_redcap";
 if ($project != "") { // use this projects token to announce the data
    $token = $configs['SITES'][$project]['CONNECTION'];
+   $subject_id = $configs['SITES'][$project]['SUBJECTID'];
+} else {
+  if (isset($configs['SUBJECTID'])) {
+     $subject_id = $configs['SUBJECTID'];
+  }
 }
 if ($token == "") {
    echo ("{ \"message\": \"Error: no token found in config file\", \"ok\": \"0\" }");
@@ -96,7 +102,7 @@ function getConsentInfo( $pguid, $token ) {
     curl_setopt($ch, CURLOPT_FRESH_CONNECT, 1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($args, '', '&'));
     $output = curl_exec($ch);
-    $consented = json_decode($output, true)[0]['cp_consent_sign_v2'];
+    $consented    = json_decode($output, true)[0]['cp_consent_sign_v2'];
     $baselineDate = json_decode($output, true)[0]['cp_timestamp_v2'];
     curl_close($ch);
     
@@ -149,7 +155,7 @@ function getEventName( $baselineDate, $assessmentDate, $events ) {
     $eventName = "";
     $currEvents = array();
     foreach($events as $event){
-        if ($event["event_name"] == ".Screener"){
+        if ($event["event_name"] == ".Screener") {
             continue;
         }
         $lower_bound = $event["day_offset"] - $event["offset_min"];
@@ -173,13 +179,20 @@ $result = getConsentInfo( $pGUID, $token );
 $now = date('m/d/Y');
 $baselineDate = date_create_from_format('Y-m-d H:i', $result['baselineDate']);
 //echo ($baselineDate->format('m/d/Y') . " " . $result['baselineDate']);
-$event_name = getEventName( $baselineDate->format('m/d/Y'), $now, $events );
+$event_name = '';
+if ($baselineDate === False) {
+   // if we are not in the ABCD project we might not get a baselineDate, assume in this case that we are in the baseline event (PCGC)
+   $event_name = 'baseline_year_1_arm_1';
+} else {
+   $event_name = getEventName( $baselineDate->format('m/d/Y'), $now, $events );
+}
 
 $payload = array(
-	 "id_redcap" => $pGUID,
+	 //"id_redcap" => $pGUID,
 	 "redcap_event_name" => $event_name,
 	 "image_data_send_date" => date('Y-m-d H:i')
 );
+$payload[$subject_id] = $pGUID;
 
 $data = array(
     'token'             => $token,

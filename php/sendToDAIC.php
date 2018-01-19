@@ -7,6 +7,11 @@ $run = "";
 $log = '/var/www/html/server/logs/sendToDAIC.log';
 $project = "";
 
+$config = json_decode(file_get_contents('config.json'), TRUE);
+if (isset($config['LOCALTIMEZONE'])) {
+   date_default_timezone_set($config['LOCALTIMEZONE']);
+}
+
 if (!file_exists($log)) {
    // try to create empty log file
    file_put_contents($log, "");
