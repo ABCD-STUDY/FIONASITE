@@ -33,8 +33,69 @@
   $events = [];
 
   // add the events that exist on this machine
+
+  // (speedup) Instead of glob which lists all the json files we might get by using readdir and look 
+  // at the first two files, we only need a single json from that directory as all StudyTimes should be the 
+  // same in all series.
   $files = glob("/data" . $project . "/site/raw/*/*.json");
-  foreach($files as $key => $value) {
+  $seriesdir = "/data" . $project . "/site/raw/";
+  if ($seriesdir_handle = opendir($seriesdir)) {
+     while (false !== ($study = readdir($seriesdir_handle))) {
+	 $st = $seriesdir.DIRECTORY_SEPARATOR.$study;
+         if ($study == "." || $study == ".." || !is_dir($st)) {
+	    continue;
+ 	 }
+	 $found = false;
+         $firstJSON = "";
+	 if ($st_handle = opendir($st)) {
+	    // find the first json file in the directory
+	    while ( false !== ($series = readdir($st_handle))) {
+ 	 	$seriespath = $st.DIRECTORY_SEPARATOR.$series;
+                if ($series == "." || $series == ".." || is_dir($seriespath)) {
+	           continue;
+ 	        }
+	 	// we only want to have files here, check extension
+	 	$path_parts = pathinfo($seriespath);
+	 	if ($path_parts['extension'] == "json") {
+	 	    // found a json file for this series
+	 	    $found = true;
+		    $firstJSON = $seriespath;
+		    break;
+	 	}
+            }
+         }
+	 closedir($st_handle);
+
+	 if ($found == true) {
+	     $value = $firstJSON;
+             $data = json_decode(file_get_contents($value), TRUE);    
+
+             // time could have fractional seconds, use up to seconds only
+             $tim = explode(".", $data['SeriesTime']);
+
+             $D = DateTime::createFromFormat("Ymd His", $data['StudyDate']. " " . $tim[0]);
+             if ($D == null) { // ignore these
+                 continue;
+             }
+             $D2 = $D;
+             $D2->add(new DateInterval('PT1H'));
+             if ( $D > $startdateIn && $D < $enddateIn ) {
+                  $a = array( 'title' => $data['PatientID'], 'start' => $D->format(DateTime::ATOM), 
+                              'end' => $D2->format(DateTime::ATOM), 'PatientID' => $data['PatientID'], 
+                              'PatientName' => $data['PatientName'], 'StudyInstanceUID' => $data['StudyInstanceUID'] );
+                  $events[] = $a;
+             }
+         } else {
+	    // no JSON file in this directory - should be investigated
+	    // echo("Warning: no json file in " . $st);
+	 }
+     }
+  }
+  closedir($seriesdir_handle);
+
+
+// old version
+/*  foreach($files as $key => $value) {
     if (in_array($value, array(".",".."))) {
        continue;
     }
@@ -67,8 +128,9 @@
          $events[] = $a;
        }
     }
-  }
+  } */
 
+// old version
 /*
   $d = "/data/scanner";
   $dirs = scandir($d);
