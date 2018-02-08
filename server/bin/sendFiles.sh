@@ -162,4 +162,4 @@ sendAllFiles () {
   flock -n 9 || exit 1
   # command executed under lock
   sendAllFiles
-) 9>${SERVERDIR}/.pids/sendFiles.lock
+) 9>${SERVERDIR}/.pids/sendFiles${project}.lock
