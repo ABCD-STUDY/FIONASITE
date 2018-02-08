@@ -1,6 +1,8 @@
 FIONA Site Component for Data Capture
 ======================================
 
+[![RRID:SCR_016012](/images/rrid.svg)](https://scicrunch.org/resources/Tools/search?q=SCR_016012)
+
 Simple system to capture MR images and k-space data from medical image systems. Imaging data is received from an MRI scanner, anonymized and uploaded to a centralized storage server. The ABCD project is using this software at its 21 data collection sites. The systems name is derived from a NSF funded project creating a Flash-memory based Input/Output Network Appliance (http://qi.ucsd.edu/news-article.php?id=2342&go=newer). This hardware platform is running the FIONASITE software that provides a web-interface to automate the data review (image viewer), to integrate with the centralized electronic data record for assigning anonymized id's and to forward the data to the central archive.
 
 ![Web Interface](/images/webinterface.png "Web Interface")
