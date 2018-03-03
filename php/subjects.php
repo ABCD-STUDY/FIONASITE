@@ -1,6 +1,11 @@
 <?php
   // we can only see things that are in our current directory
 
+  $config = json_decode(file_get_contents('config.json'), TRUE);
+  if (isset($config['LOCALTIMEZONE'])) {
+     date_default_timezone_set($config['LOCALTIMEZONE']);
+  }
+
   $projname = "";
   if (isset($_GET['project'])) {
      $projname = $_GET['project'];
