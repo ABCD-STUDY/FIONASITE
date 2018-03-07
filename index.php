@@ -659,7 +659,7 @@ loading information...
     </div>
 </dialog>
 
-<div id="message-window" style="display: none;">
+<div id="message-window" class="mdl-shadow--2dp mdl-color--white" style="display: none;">
    <div id="message-window-header"></div>
    <div id="message-window-body" style="height: 60px; overflow-y: scroll;"></div>
 </div>
