@@ -67,6 +67,7 @@ todo=(
     'owner' '/var/www/html/server/logs' 'processing:processing'
 
     'existsFile' '/data/enabled' '110'
+    'existsFile' '/var/www/html/php/repush.jobs' ''
     'existsFile' '/var/www/html/server/logs/audit.log' ''
     'owner' '/var/www/html/server/logs/audit.log' 'apache:apache'
     'existsFile' '/data/config/config.json' '{ "DICOMIP": "137.110.181.168", "DICOMPORT": "4006", "DICOMAETITLE": "UCSDFIONA", "SCANNERIP": "172.20.141.70", "SCANNERPORT": "4006", "SCANNERAETITLE": "CTIPMUCSD1", "SCANNERTYPE": "SIEMENS", "MPPSPORT": "4007", "SERVERUSER": "daic", "DAICSERVER": "137.110.181.166", "PFILEDIR": "/data/DAIC", "CONNECTION": "" }'
@@ -75,9 +76,11 @@ todo=(
     'permission' '/data/config/machines.json' '644'
 
     'permission' '/data/enabled' '666'
+    'permission' '/var/www/html/php/repush.jobs' '666'
     'permission' '/data/config/config.json' '644'
 
     'owner' '/data/enabled' 'apache:apache'
+    'owner' '/var/www/html/php/repush.jobs' 'apache:apache'
     'owner' '/data/config/config.json' 'apache:apache'
 )
 
