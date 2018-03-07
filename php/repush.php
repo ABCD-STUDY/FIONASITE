@@ -28,6 +28,10 @@ session_start(); /// initialize session
 include("AC.php");
 $user_name = check_logged(); /// function checks if visitor is logged.
 if (!$user_name) {
+    if (!file_exists('/var/www/html/php/repush.jobs')) {
+       exit();
+    }
+
     // if we are not logged in we can still repush something that is queued
     // echo("user name:".json_encode(posix_getpwuid(posix_geteuid()))."\n"); 
     if ( posix_getpwuid(posix_geteuid())['name'] == "processing" ) {  // this only works if php-posix is installed on this system
@@ -57,7 +61,7 @@ if (!$user_name) {
         if ($project == "ABCD") {
             $project = "";
         }
-        
+
         $content = explode("\n", file_get_contents('/var/www/html/php/repush.jobs'));
         if (count($content) > 0) {
             // only run the first job
