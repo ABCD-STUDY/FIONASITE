@@ -659,6 +659,11 @@ loading information...
     </div>
 </dialog>
 
+<div id="message-window" style="display: none;">
+   <div id="message-window-header"></div>
+   <div id="message-window-body" style="height: 60px; overflow-y: scroll;"></div>
+</div>
+
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" style="position: fixed; left: -1000px; height: -1000px;">
         <defs>
           <mask id="piemask" maskContentUnits="objectBoundingBox">
@@ -1298,10 +1303,29 @@ function goodHeader( header ) {
     return false;
 }
 
+function checkMessageWindow() {
+  jQuery.ajax({
+       url: 'php/repush.jobs', 
+       dataType: 'text'			     
+  }).done(function(data) {
+       data = data.split("\n");
+       if (data.length > 1) {
+  	  jQuery('#message-window').show();
+          jQuery('#message-window-header').html("List of currently queued repush jobs");
+          jQuery('#message-window-body').html(data.join("<br>"));
+       } else {
+	  jQuery('#message-window').hide();
+       }	    
+  });			     
+  setTimeout(checkMessageWindow, 5000);
+}
+
 var quarantineDataTmp = []; // temporarily store the quarantine data for lookup
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
+
+    checkMessageWindow();
 
     if (sites.length < 1) {
         // hide project-dropdown-section

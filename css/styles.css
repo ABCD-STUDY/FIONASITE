@@ -601,3 +601,19 @@ div.message {
 .messagepop .messagepop-content {
   overflow-x: scroll;
 }
+
+#message-window {
+    position: absolute;
+    bottom: 10px;
+    right: 20px;
+    width: 40%;
+    height: 80px;
+    background-color: white;
+    z-index:100001;
+    overflow: hidden;
+    padding: 10px;
+    border: 1px solid grey;
+}
+#message-window-header {
+    font-size: 16px;
+}
