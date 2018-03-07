@@ -21,7 +21,7 @@
        return;
 
     if (!is_writable( $audit_file )) {
-       syslog(LOG_EMERG, 'ERROR: could not write audit log file in '.$audit_file);
+       //syslog(LOG_EMERG, 'ERROR: could not write audit log file in '.$audit_file);
        return;
     }
     $e = new Exception;
@@ -375,7 +375,7 @@
     foreach ($d['roles'] as $key => $role) {
        if ($role['name'] != $roleName)
          continue;
-syslog(LOG_EMERG, 'try to remove permission '.$name.' ('.$id.') from '.$role['name']);
+//syslog(LOG_EMERG, 'try to remove permission '.$name.' ('.$id.') from '.$role['name']);
        if (in_array($id, $role['permissions'])) {
             $d['roles'][$key]['permissions'] = array_diff($d['roles'][$key]['permissions'], array( $id ));
             //unset($d['roles'][$name]);
