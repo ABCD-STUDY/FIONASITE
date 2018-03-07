@@ -626,6 +626,23 @@ loading information...
     </div>
 </dialog>
 
+<dialog class="mdl-dialog" id="modal-repush">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 24pt; margin-bottom: 20px;">
+            Recreate send buttons for this study
+        </div>
+        <div>
+<p style="line-height: 1.1em;">Do you want to recreate the send buttons for this study?</p>
+<p style="line-height: 1.1em;">Upon request from the central data repository you may use this functionality to re-create the data package for this participant. Once started this operation may take a long time - at most 1 hour depended on the load on the machine. Please be patient and wait until all the Send buttons appear again on the Study Transfer dialog before using the "Send all series" button.</p>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button" id="repush-cancel">cancel</button>
+        <button type="button" class="mdl-button" id="repush-ok">ok</button>
+    </div>
+</dialog>
+
+
 <dialog class="mdl-dialog" id="modal-about">
     <div class="mdl-dialog__content">
         <div style="font-size: 22pt; margin-bottom: 20px;">
@@ -1476,6 +1493,40 @@ jQuery(document).ready(function() {
         if (!dialog.showModal) {
         dialogPolyfill.registerDialog(dialog);
     }
+
+
+    jQuery('#list-of-subjects').contextmenu(function(e) {
+        e.preventDefault();
+        var studyinstanceuid  = jQuery(e.target).parent().attr('studyinstanceuid');
+        if (studyinstanceuid == undefined) { // try the parent
+	       studyinstanceuid = jQuery(e.target).parent().parent().attr('studyinstanceuid');
+        }
+        if (studyinstanceuid == undefined) {
+           alert("Error: could not find the study instance uid for this study. Try again?");
+           return false;
+        }
+        jQuery('#repush-ok').attr('studyinstanceuid', studyinstanceuid);
+        var dialog = document.querySelector('#modal-repush');
+        if (!dialog.showModal) {
+            dialogPolyfill.registerDialog(dialog);
+        }
+        dialog.showModal();
+        return false;
+    });
+    var dialogRepush = document.querySelector('#modal-repush');
+    var closeButton = dialogRepush.querySelector('#repush-cancel');
+    var closeClickHandler = function (event) {
+       dialogRepush.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+    jQuery('#repush-ok').on('click', function() {
+	var dialogRepush = document.querySelector('#modal-repush');
+	dialogRepush.close();
+	jQuery.post('php/repush.php', { 'studyinstanceuid': jQuery(this).attr('studyinstanceuid') }, function(data) {
+
+	});
+    });
+
     var studyinstanceuid;
     jQuery('#list-of-subjects').on('click', '.open-study-info', function() {
         console.log("clicked on study: ");
