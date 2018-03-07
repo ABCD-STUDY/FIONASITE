@@ -46,15 +46,16 @@ if [[ "$1" == "last" ]]; then
 
     find /data${project}/site/archive/ -mindepth 1 -type d -mtime "-$days" -print0 | while read -d $'\0' file
     do
-	    dir=`realpath "$file"`
-	    echo "Send data in \"$dir\" to $myip : $myport"
-	    # make sure that we redirect stdin, otherwise this line will eat up the file variable in our loop and we can only submit a single line
-	    /bin/bash -c "docker run -i -v ${dir}:/input dcmtk /bin/bash -c \"/usr/bin/storescu -v +sd +r -nh $myip $myport /input; exit\" </dev/null"
+	dir=`realpath "$file"`
+	echo "Send data in \"$dir\" to $myip : $myport"
+	# make sure that we redirect stdin, otherwise this line will eat up the file variable in our loop and we can only submit a single line
+	/bin/bash -c "docker run -i -v ${dir}:/input dcmtk /bin/bash -c \"/usr/bin/storescu -v +sd +r -nh $myip $myport /input; exit\" </dev/null"
         if [[ $? -ne "0" ]]; then
 	        # sending using docker is fastest, but it can fail due to network issues, lets send straight using storescu in that case
 	        echo "sending with docker failed, send using storescu instead"
+		export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 	        /usr/bin/storescu -v -aet me -aec me +sd +r -nh $myip $myport "${dir}"
-	    fi
+        fi
     done
     exit
 fi
@@ -90,6 +91,7 @@ docker run -it -v ${dir}:/input dcmtk /bin/bash -c "/usr/bin/storescu -v +sd +r 
 if [[ $? -ne "0" ]]; then
     # sending using docker is fastest, but it can fail due to network issues, lets send straight using storescu in that case
     echo "sending with docker failed, send using storescu instead"
+    export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
     /usr/bin/storescu -v -aet me -aec me +sd +r -nh $myip $myport "${dir}"
 fi
 exit
