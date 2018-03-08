@@ -12,6 +12,26 @@ if (isset($config['LOCALTIMEZONE'])) {
    date_default_timezone_set($config['LOCALTIMEZONE']);
 }
 
+if (isset($_GET['project'])) {
+   $project = $_GET['project'];
+}  
+if ($project == "ABCD") {
+   $project = "";
+}
+
+// find out if we have anonymization enabled
+$fn="/data/enabled";
+if ($project !== "") {
+   $fn = '/data'.$project.'/enabled';
+}
+$enable = file_get_contents($fn);
+$ar = str_split($enable);
+$val = array(0,0,0);
+if (count($ar) > 2) {
+  $val[2] = ($ar[2] == "0"?"0":"1");
+}
+$need_to_anonymize = ($val[2]==1);
+
 if (!file_exists($log)) {
    // try to create empty log file
    file_put_contents($log, "");
@@ -41,13 +61,6 @@ if (isset($_GET['run']) && $_GET['run'] != "") {
     echo ("{ \"ok\": 0, \"message\": \"run not set\" }");
     return;
 }
-if (isset($_GET['project'])) {
-   $project = $_GET['project'];
-}  
-if ($project == "ABCD") {
-   $project = "";
-}
-
 
 $path_info = pathinfo($filename);
 
@@ -56,9 +69,24 @@ $oksessions = array();
 $failedsessions = array();
 foreach($f as $fi) {
   $path_parts = pathinfo($fi);
-  file_put_contents($log, date(DATE_ATOM)." Move file to /data/outbox now ".$fi." (header: ".$id_redcap."_".$redcap_event_name."_".$run.")\n", FILE_APPEND); 
+  $destination = '/data'.$project.'/outbox';
+  if ($need_to_anonymize) {
+     file_put_contents($log, date(DATE_ATOM)." Move file to " . $destination . " now ".$fi." (header: ".$id_redcap."_".$redcap_event_name."_".$run.")\n", FILE_APPEND); 
+     $destination = '/data'.$project.'/outbox_anonymize';
+     if (!is_dir($destination)) {
+        // try to create the directory
+	mkdir($destination);
+	if (!is_dir($destination)) {
+	   file_put_contents($log, date(DATE_ATOM)." Error creating " . $destination . " directory. Permission problem?\n", FILE_APPEND);
+           echo("{ \"message\": \"Error, could not create directory: ".$destination."\" }");
+	   return; // quit here
+	}
+     }
+  } else {
+     file_put_contents($log, date(DATE_ATOM)." Move file to " . $destination . " now ".$fi." (header: ".$id_redcap."_".$redcap_event_name."_".$run.")\n", FILE_APPEND); 
+  }
   $prefix = $id_redcap."_".$redcap_event_name."_".$run;
-  $ok = rename($fi, '/data'.$project.'/outbox'.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
+  $ok = rename($fi, $destination.DIRECTORY_SEPARATOR.$prefix."_".$path_parts['filename'].'.'.$path_parts['extension']);
   if (!$ok) {
      $failedsessions[] = $prefix. " " . $fi;
   } else {

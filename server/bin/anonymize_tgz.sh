@@ -40,10 +40,11 @@ def anonymize( df, anonInfo ):
                 return 0
 
 
+        # keep the DeviceSerialNumber, we will remove it once we share the data
         #hash for DeviceSerialNumber
-        encoded = dataset[int("0x18",0),int("0x1000",0)].value.encode('utf-8')
-        h = "anon%s" % hashlib.sha224(encoded).hexdigest()
-        dataset[int("0x18",0),int("0x1000",0)].value = h[0:8]
+        #encoded = dataset[int("0x18",0),int("0x1000",0)].value.encode('utf-8')
+        #h = "anon%s" % hashlib.sha224(encoded).hexdigest()
+        #dataset[int("0x18",0),int("0x1000",0)].value = h[0:8]
 
         # reset patient name and patient id
         dataset[int("0x10",0),int("0x10",0)].value = anonInfo['PatientName']
@@ -142,12 +143,17 @@ if __name__ == "__main__":
                         patientName = arg
 
         if not os.path.isfile(inputfile):
-                print("Error: file \"%s\" does not exist" % inputfile)
-                log.error("Error: path %s does not exist" % inputfile)
+                if inputfile == "":
+                        print('Usage:\n  anonymize_tgz.sh -i <input tgz> -o <output tgz> -n <patient name>')
+                        sys.exit(-1)
+                print("Error: input file \"%s\" does not exist" % inputfile)
+                log.error("Error: input file \"%s\" does not exist" % inputfile)
+                print('Usage:\n  anonymize_tgz.sh -i <input tgz> -o <output tgz> -n <patient name>')
                 sys.exit(-1)
 
         if outputfile == '':
                 print("Error: no outputfile given")
+                print('Usage:\n  anonymize_tgz.sh -i <input tgz> -o <output tgz> -n <patient name>')
                 log.error('Error: no outputfile given')
                 sys.exit(-1)
 

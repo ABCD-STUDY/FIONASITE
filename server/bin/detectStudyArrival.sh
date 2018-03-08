@@ -228,10 +228,12 @@ detect () {
         if [[ -f ${datadir}/enabled ]]; then
           anonymize=`cat ${datadir}/enabled | head -c 3 | tail -c 1`
         fi
+        # This functionality has been replaced, instead of anonymizing on receiving a study we now anonymize if we send the study out
+        # This way we can anonymize both the patient ID and the patient name as well. 
         if [[ "$anonymize" == "1" ]]; then
-          echo "`date`: anonymize files linked to by ${datadir}/site/raw/${SDIR}/${SSERIESDIR}" >> $log  
-   	  anonymize ${SDIR} ${SSERIESDIR} ${projname}
-          echo "`date`: anonymization is done" >> $log
+          #echo "`date`: anonymize files linked to by ${datadir}/site/raw/${SDIR}/${SSERIESDIR}" >> $log  
+   	      #anonymize ${SDIR} ${SSERIESDIR} ${projname}
+          #echo "`date`: anonymization is done" >> $log
         fi
         echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP ${datadir}/site/raw/$SDIR series: $SSERIESDIR" >> $log
         runSeriesInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR $SSERIESDIR
@@ -244,16 +246,16 @@ detect () {
         out=${datadir}/quarantine/${SDIR}_${SSERIESDIR}.tgz
         cd ${datadir}/site/raw
         # speed up compression if we have pigz installed on this machine
-	if hash pigz 2>/dev/null; then
-	    tar --dereference -cf - "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "${datadir}/site/output/${SDIR}/series_compliance/*.json" | pigz --fast -p 6 > "$out"
+        if hash pigz 2>/dev/null; then
+           tar --dereference -cf - "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "${datadir}/site/output/${SDIR}/series_compliance/*.json" | pigz --fast -p 6 > "$out"
         else
-            GZIP=-1 tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "${datadir}/site/output/${SDIR}/series_compliance/*.json"
-	fi
+           GZIP=-1 tar --dereference -cvzf "$out" "${SDIR}/${SSERIESDIR}/" "${SDIR}/${SSERIESDIR}.json" "${datadir}/site/output/${SDIR}/series_compliance/*.json"
+        fi
         md5sum -b "$out" > ${datadir}/quarantine/${SDIR}_${SSERIESDIR}.md5sum
         cp "${SDIR}/${SSERIESDIR}.json" ${datadir}/quarantine/${SDIR}_${SSERIESDIR}.json
         echo "`date`:    test for series compliance file ${datadir}/site/output/${SDIR}/series_compliance/compliance_output.json" >> $log
         if [[ -f "${datadir}/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ]]; then
-  	  cp "${datadir}/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ${datadir}/quarantine/${SDIR}.json
+          cp "${datadir}/site/output/scp_${SDIR}/series_compliance/compliance_output.json" ${datadir}/quarantine/${SDIR}.json
           echo "`date`:    copy compliance_output.json to ${datadir}/quarantine/scp_${SDIR}.json" >> $log
         fi
         echo "`date`: done with creating tar file and md5sum" >> $log
