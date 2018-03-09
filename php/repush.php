@@ -5,7 +5,7 @@
 #  requires:
 #     yum install php-posix
 #  add cron job for processing user
-#    */1 * * * * /usr/bin/php /var/www/html/php/repush.php ABCD >> /var/www/html/server/logs/repush.log 2>&1
+#    */1 * * * * /usr/bin/php /var/www/html/php/repush.php >> /var/www/html/server/logs/repush.log 2>&1
 #
 
 function rrmdir($dir) { 
@@ -53,28 +53,25 @@ if (!$user_name) {
         ftruncate($lock_file, 0);
         fwrite($lock_file, getmypid() . "\n");
         
-        // should be happening if we are called as a cron job - now we have the correct permissions do do the work
-        $project = "";
-        if (count($argv)>1) {
-            $project = $argv[1];
-        }
-        if ($project == "ABCD") {
-            $project = "";
-        }
-
         $content = explode("\n", file_get_contents('/var/www/html/php/repush.jobs'));
         if (count($content) > 0) {
+	    $firstjob = explode(" ",$content[0]);
+	    $project = $firstjob[1];
+	    if ($project == "ABCD") {
+                $project = "";
+            }
+
             // only run the first job
-            $studyinstanceuid = $content[0];
+            $studyinstanceuid = $firstjob[0];
             if (strlen($studyinstanceuid) == 0) {
                 return;
             }   
             echo(date(DATE_ATOM)." found repush job for: \"".$content[0]."\"\n");
 
-            $path = "/data/site/raw/".$studyinstanceuid;
+            $path = "/data".$project."/site/raw/".$studyinstanceuid;
             $p = realpath($path);
             if (strpos($p, "/data".$project."/site/raw/") !== 0) {
-                echo("Error: asked to remove directory that is not in /data/site/raw/ ->\"".$p."\" of ".$path."\n");
+                echo("Error: asked to remove directory that is not in /data".$project."/site/raw/ ->\"".$p."\" of ".$path."\n");
                 // lets remove this entry
                 array_shift($content);
                 file_put_contents('/var/www/html/php/repush.jobs', implode("\n",$content));
@@ -108,12 +105,10 @@ if (!$user_name) {
     return; // nothing
 }
 
+// only the web-call will use the project as a post argument
 $project = "";
 if (isset($_POST['project'])) {
     $project = $_POST['project'];
-}
-if ($project == "ABCD") {
-    $project = "";
 }
 
 // remove the data from /data/site/raw
@@ -126,6 +121,6 @@ if ($studyinstanceuid == "") {
     return;
 }
 // place a job into repush.jobs
-file_put_contents('/var/www/html/php/repush.jobs', $studyinstanceuid."\n", FILE_APPEND);
+file_put_contents('/var/www/html/php/repush.jobs', $studyinstanceuid." ".$project."\n", FILE_APPEND);
 
 ?>
