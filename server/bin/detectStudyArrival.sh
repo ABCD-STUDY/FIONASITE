@@ -109,8 +109,8 @@ runSeriesInventions () {
       docker images | grep ${dproc}
       if [ $? == "1" ]; then
         mkdir -p ${d}
-        $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
-        erg=$(docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${datadir}/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
+        $(docker run --rm ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
+        erg=$(docker run --rm -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${datadir}/site/raw/${SDIR}/${SSERIESDIR}:/input ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
         echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
       fi
   fi
@@ -129,9 +129,9 @@ runStudyInventions () {
   mkdir -p ${d}
   # lets move the docker's info file as documentation in there
   dproc=compliance_check
-  $(docker run ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
+  $(docker run --rm ${dproc} /bin/bash -c "cat /root/info.json") | jq "." > ${d}.json
   echo "`date`: ${SDIR} -> docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${dproc} /bin/bash -c \"/root/work.sh /input /output\"" >> $log
-  erg=$(docker run -d -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${datadir}/site/raw/${SSDIR}:/input:ro ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
+  erg=$(docker run --rm -d -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${datadir}/site/raw/${SSDIR}:/input:ro ${dproc} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1)
   echo "`date`: docker run finished for $dproc with \"$erg\"" >> $log
 }
 
@@ -150,8 +150,8 @@ runAtInterval () {
   echo "`date`: start the job now" >> $log
   d=${datadir}/site/output/${SDIR}/series_compliance
   mkdir -p ${d}
-  echo "/usr/bin/nohup watch -n $interval docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &" >> $log
-  /usr/bin/nohup watch -n $interval /usr/bin/bash -c "docker run -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> /tmp/watch.log" &
+  echo "/usr/bin/nohup watch -n $interval docker run --rm -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> $log &" >> $log
+  /usr/bin/nohup watch -n $interval /usr/bin/bash -c "docker run --rm -d -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR} -v ${SDIR}:/input ${machineid} /bin/bash -c \"/root/work.sh /input /output\" 2>&1 >> /tmp/watch.log" &
 }
 
 detect () {
@@ -172,14 +172,14 @@ detect () {
       mkdir -p ${d}
       machineid=compliance_check
       SSDIR=${SDIR:4}
-      echo "`date`: protocol compliance check (/usr/bin/nohup docker run -d -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR}:ro -v ${datadir}/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
-      id=$(docker run -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR}:ro -v ${datadir}/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
+      echo "`date`: protocol compliance check (/usr/bin/nohup docker run --rm -d -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR}:ro -v ${datadir}/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c \"/root/work.sh /input /output /quarantine\" 2>&1 >> $log &)" >> $log
+      id=$(docker run --rm -v ${datadir}/quarantine:/quarantine:ro -v ${d}:/output -v ${datadir}/site/archive/${SDIR}:${datadir}/site/archive/${SDIR}:ro -v ${datadir}/site/raw/${SSDIR}:/input:ro ${machineid} /bin/bash -c "/root/work.sh /input /output /quarantine" 2>&1 >> /tmp/watch.log)
       echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log
 
-      # lets do some cleanup and remove any unused docker containers
-      docker ps -aq --filter status=exited | xargs --no-run-if-empty docker rm
-      #$(docker rm -v $(docker ps -a -q -f status=exited))
-      echo "`date`: cleanup of unused containers done..." >> $log
+      # lets do some cleanup and remove any unused docker containers (not needed if we run with --rm)
+      # docker ps -aq --filter status=exited | xargs --no-run-if-empty docker rm
+      # $(docker rm -v $(docker ps -a -q -f status=exited))
+      # echo "`date`: cleanup of unused containers done..." >> $log
 
       # we could run something at specific intervals, by compliance check should run every time
       # runAtInterval 10 machine57080de9bbc3d ${SDIR}
@@ -230,11 +230,11 @@ detect () {
         fi
         # This functionality has been replaced, instead of anonymizing on receiving a study we now anonymize if we send the study out
         # This way we can anonymize both the patient ID and the patient name as well. 
-        if [[ "$anonymize" == "1" ]]; then
+        #if [[ "$anonymize" == "1" ]]; then
           #echo "`date`: anonymize files linked to by ${datadir}/site/raw/${SDIR}/${SSERIESDIR}" >> $log  
-   	      #anonymize ${SDIR} ${SSERIESDIR} ${projname}
+   	  #anonymize ${SDIR} ${SSERIESDIR} ${projname}
           #echo "`date`: anonymization is done" >> $log
-        fi
+        #fi
         echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP ${datadir}/site/raw/$SDIR series: $SSERIESDIR" >> $log
         runSeriesInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR $SSERIESDIR
 
