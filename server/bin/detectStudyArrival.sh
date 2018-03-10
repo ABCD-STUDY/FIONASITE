@@ -177,9 +177,9 @@ detect () {
       echo "`date`: compliance check finished for ${SDIR} with \"$id\"" >> $log
 
       # lets do some cleanup and remove any unused docker containers (not needed if we run with --rm)
-      # docker ps -aq --filter status=exited | xargs --no-run-if-empty docker rm
+      docker ps -aq --filter status=exited | xargs --no-run-if-empty docker rm
       # $(docker rm -v $(docker ps -a -q -f status=exited))
-      # echo "`date`: cleanup of unused containers done..." >> $log
+      echo "`date`: cleanup of unused containers done..." >> $log
 
       # we could run something at specific intervals, by compliance check should run every time
       # runAtInterval 10 machine57080de9bbc3d ${SDIR}
