@@ -869,6 +869,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['Slices'] = str(dataset[0x21,0x104f].value)
+                                except:
+                                        pass
+                                try:
                                         data['ScanningSequence'] = str(dataset[0x18,0x20].value)
                                 except:
                                         pass
@@ -1035,6 +1039,12 @@ class ProcessSingleFile(Daemon):
                                 # add new types as they are found (this will create all type that map to any of the images in the series)
 				data['ClassifyType'] = self.classify(dataset, data, data['ClassifyType'])
                                 #data['ClassifyType'] = data['ClassifyType'] + list(set(self.classify(dataset, data)) - set(data['ClassifyType']))
+
+                                # we should sanitize this data first, otherwise there might be values in there can not be unicoded
+                                for key,value in data.items():
+                                        if isinstance(value,basestring) and not isinstance(value,unicode):
+                                                data[key] = unicode(value, "UTF-8", errors='ignore')
+
                                 with open(fn3,'w') as f:
                                         json.dump(data,f,indent=2,sort_keys=True)
                 rp.close()

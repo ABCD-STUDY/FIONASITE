@@ -3,7 +3,7 @@
 
   $config = json_decode(file_get_contents('config.json'), TRUE);
   if (isset($config['LOCALTIMEZONE'])) {
-    date_default_timezone_set($config['LOCALTIMEZONE']);
+     date_default_timezone_set($config['LOCALTIMEZONE']);
   }
 
   $projname = "";

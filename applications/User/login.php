@@ -20,7 +20,7 @@ if (isset($_POST["ac"]) && $_POST["ac"]=="log") { /// do after login form is sub
 if (array_key_exists($_SESSION["logged"],$USERS)) {
      $l = strlen('/login.php');
      if (isset($_POST["url"]) && $l > 0 && substr($_POST["url"],-$l) === '/login.php')
-        $u = $_POST["url"];
+        $u = htmlentities($_POST["url"]);
      else
         $u = "/index.php";
      header("Location: ".$u); // if user is logged go to front page

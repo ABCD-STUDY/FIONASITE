@@ -5,11 +5,20 @@
   // This script will capture the current state of the system and produce a hierarchical structure of study/series/state that
   // can be used to visualize the state of the system.
   //
+
+  $shortopts = "p:";
+  $options = getopt($shortopts);
+  // project name should be empty (equals to path /data/)
+  $project = "";
+  if (isset($options['p'])) {
+     $project = $options['p'];
+  }
+
   $data = array();
   chdir('/var/www/html/php');
 
-  // get all studies from /data/site/archive
-  $studies = glob('data/site/archive/scp_*', GLOB_ONLYDIR);
+  // get all studies from /data${project}/site/archive
+  $studies = glob('data'.$project.'/site/archive/scp_*', GLOB_ONLYDIR);
   foreach ($studies as $key => $study) {
      $studyInstanceUID = explode("scp_", $study)[1];
      if ($studyInstanceUID != "") {
@@ -18,12 +27,12 @@
   }
 
   // get all studies from data/site/raw
-  $studies = glob('data/site/raw/*', GLOB_ONLYDIR);
+  $studies = glob('data'.$project.'/site/raw/*', GLOB_ONLYDIR);
   foreach( $studies as $key => $study) {
       if ($study != "") {
          $s = basename($study);
 
-	 $series = glob('data/site/raw/'.$s.'/*.json');
+	 $series = glob('data'.$project.'/site/raw/'.$s.'/*.json');
          if (count($series) == 0)
              continue;
 	 if (!isset($data[$s])) {
@@ -44,7 +53,7 @@
   }
 
   // get all studies from data/quarantine
-  $series = glob('data/quarantine/*.tgz');
+  $series = glob('data'.$project.'/quarantine/*.tgz');
   foreach( $series as $serie) {
      $sname = basename($serie);
 
@@ -108,7 +117,7 @@
 
 
   // get all studies from data/outbox
-  $series = glob('data/outbox/*.tgz');
+  $series = glob('data'.$project.'/outbox/*.tgz');
   foreach( $series as $serie) {
      $sname = basename($serie);
 
@@ -161,7 +170,7 @@
   }
 
   // get all studies from data/DAIC
-  $series = glob('data/DAIC/*.tgz');
+  $series = glob('data'.$project.'/DAIC/*.tgz');
   foreach( $series as $serie) {
      $sname = basename($serie);
 

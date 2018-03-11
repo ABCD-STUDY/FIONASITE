@@ -6,6 +6,9 @@
   { "group": "0x08", "element": "0x50", "hr": "AccessionNumber" },
   { "group": "0x08", "element": "0x90", "hr": "ReferringPhysicianName" },
   { "group": "0x08", "element": "0x1155", "hr": "ReferencedSOPInstanceUID" },
+  { "group": "0x08", "element": "0x1010", "hr": "StationName" },
+  { "group": "0x09", "element": "0x1030", "hr": "ServieID" },
+  { "group": "0x09", "element": "0x1002", "hr": "SuiteID" },
   { "group": "0x10", "element": "0x30", "hr": "PatientBirthDate" },
   { "group": "0x10", "element": "0x1000", "hr": "OtherPatientIDs" },
   { "group": "0x10", "element": "0x1001", "hr": "OtherPatientNames" },
@@ -13,5 +16,6 @@
   { "group": "0x10", "element": "0x1040", "hr": "PatientAddress" },
   { "group": "0x10", "element": "0x40", "hr": "PatientSex" },
   { "group": "0x20", "element": "0x4000", "hr": "ImageComments" },
-  { "group": "0x20", "element": "0x10", "hr": "StudyID" }
+  { "group": "0x20", "element": "0x10", "hr": "StudyID" },
+  { "group": "0x25", "element": "0x101A", "hr": "PrimaryReceiverSuiteAndHost" }
 ]

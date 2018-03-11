@@ -31,42 +31,49 @@
 
    include("php/AC.php");
    $user_name = check_logged();
-  echo('<script type="text/javascript"> user_name = "'.$user_name.'"; </script>'."\n");
-  // print out all the permissions
-  $permissions = list_permissions_for_user($user_name);
-  $p = '<script type="text/javascript"> permissions = [';
-  foreach($permissions as $perm) {
-    $p = $p."\"".$perm."\",";
-  }
-  echo ($p."]; </script>\n");
+   echo('<script type="text/javascript"> user_name = "'.$user_name.'"; </script>'."\n");
+   // print out all the permissions
+   $permissions = list_permissions_for_user($user_name);
+   $p = '<script type="text/javascript"> permissions = [';
+   foreach($permissions as $perm) {
+     $p = $p."\"".$perm."\",";
+   }
+   echo ($p."]; </script>\n"); 
 
-  // PCGC
-  // For each $permissions: "SiteABCD", "SitePCGC"
-  // get the site name: "ABCD", "PCGC"
-  // and create and array of $sites
-  $sites = array();
-  foreach ($permissions as $perm) {
-     $parts = explode("Site", $perm);
-     if (count($parts) > 1) {
-        $sites[] = $parts[1];
-     }
-  }
-  $p = '<script type="text/javascript"> sites = [';
-  foreach($sites as $s) {
-    $p = $p."\"".$s."\",";
-  }
-  echo ($p."]; </script>\n");
+   // what is the current project name?
+   $project = getUserVariable( $user_name, "project_name");
+   if ($project === FALSE) {
+      $project = "ABCD";
+   }
+   echo('<script type="text/javascript"> project_name = "' . $project . '";</script>');
 
-  $admin = false;
-  if (check_role( "admin" )) {
-     $admin = true;
-  }
-  if (check_permission( "developer" )) {
-     $developer = true;
-  }
-  if (check_permission( "see-scanner" )) {
-     $seescanner = true;
-  }
+   // PCGC
+   // For each $permissions: "SiteABCD", "SitePCGC"
+   // get the site name: "ABCD", "PCGC"
+   // and create and array of $sites
+   $sites = array();
+   foreach ($permissions as $perm) {
+      $parts = explode("Site", $perm);
+      if (count($parts) > 1) {
+         $sites[] = $parts[1];
+      }
+   }
+   $p = '<script type="text/javascript"> sites = [';
+   foreach($sites as $s) {
+     $p = $p."\"".$s."\",";
+   }
+   echo ($p."]; </script>\n");   
+
+   $admin = false;
+   if (check_role( "admin" )) {
+      $admin = true;
+   }
+   if (check_permission( "developer" )) {
+      $developer = true;
+   }
+   if (check_permission( "see-scanner" )) {
+      $seescanner = true;
+   }
 ?>
 
     <style>
@@ -345,15 +352,15 @@
 	  <!-- PCGC -->
 	  <!-- Dropdown selector to pick a project -->
 	  <div style="position: absolute; right: 10px; top: 0px;" id="project-dropdown-section">
-            <div class="demo-avatar-dropdown">
+            <div class="demo-avatar-dropdown" style="z-index: 99;">
               <!-- <button id="projbtn" class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon"> -->
               <button id="projbtn" class="mdl-button mdl-js-button mdl-button--icon">
 		<i class="material-icons" role="presentation">arrow_drop_down</i>
               </button>
               <!--<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="projbtn">-->
               <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu" for="projbtn">
-		<li class="mdl-menu__item clickable-project-name" id="projAAAA"> </li>
-		<li class="mdl-menu__item clickable-project-name" id="projBBBB"> </li>
+		<!-- <li class="mdl-menu__item clickable-project-name" id="projAAAA"> </li>
+		<li class="mdl-menu__item clickable-project-name" id="projBBBB"> </li> -->
 		<?php
 		   // Add a menu item for each project
 		   foreach ($sites as $site) {
@@ -619,6 +626,23 @@ loading information...
     </div>
 </dialog>
 
+<dialog class="mdl-dialog" id="modal-repush">
+    <div class="mdl-dialog__content">
+        <div style="font-size: 24pt; margin-bottom: 20px;">
+            Recreate send buttons for this study
+        </div>
+        <div>
+<p style="line-height: 1.1em;">Do you want to recreate the send buttons for this study?</p>
+<p style="line-height: 1.1em;">Upon request from the central data repository you may use this functionality to re-create the data package for this participant. Once started this operation may take a long time - at most 1 hour depended on the load on the machine. Please be patient and wait until all the Send buttons appear again on the Study Transfer dialog before using the "Send all series" button.</p>
+        </div>
+    </div>
+    <div class="mdl-dialog__actions">
+        <button type="button" class="mdl-button" id="repush-cancel">cancel</button>
+        <button type="button" class="mdl-button" id="repush-ok">ok</button>
+    </div>
+</dialog>
+
+
 <dialog class="mdl-dialog" id="modal-about">
     <div class="mdl-dialog__content">
         <div style="font-size: 22pt; margin-bottom: 20px;">
@@ -634,6 +658,11 @@ loading information...
         <button type="button" class="mdl-button close-dialog">OK</button>
     </div>
 </dialog>
+
+<div id="message-window" class="mdl-shadow--2dp mdl-color--white" style="display: none;">
+   <div id="message-window-header"></div>
+   <div id="message-window-body" style="height: 60px; overflow-y: scroll;"></div>
+</div>
 
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" style="position: fixed; left: -1000px; height: -1000px;">
         <defs>
@@ -670,7 +699,7 @@ loading information...
 
       // PCGC
       // ABCD is the default project name
-      var projname = "ABCD";
+      var projname = project_name;
 
       // logout the current user
       function logout() {
@@ -772,6 +801,9 @@ function loadStudies() {
 	str = "<ul id=\"study-list-bonsai\" class=\"data\">";
         var studies = Object.keys(data);
         for (var i = 0; i < studies.length; i++) {
+            if (typeof data[studies[i]][0] === 'undefined' || data[studies[i]][0] === null) {
+               continue;
+            }
 	    str = str + "<li title=\""+data[studies[i]][0]['PatientName']+"\">" + data[studies[i]][0]['PatientName'] + "-" + data[studies[i]][0]['PatientID'] + "<ul>";
             var seriesList = data[studies[i]];
 	    seriesList.sort(function(a,b) { 
@@ -916,6 +948,7 @@ function setTimeline(view) {
 }
 
 function createCalendar() {
+    jQuery('#calendar-loc').fullCalendar('destroy');
     var cal = jQuery('#calendar-loc').fullCalendar({
 	header: {
 	    left: 'prev,next today',
@@ -924,7 +957,7 @@ function createCalendar() {
 	},
         defaultView: 'month', // only month is working here, would be good to switch to agendaDay instead
         timezone: 'America/Los_Angeles',
-	eventSources: [ { url: "php/events.php", color: '#dddddd', textColor: 'black' } ],
+	eventSources: [ { url: "php/events.php", data: { project: projname }, color: '#dddddd', textColor: 'black' } ],
 	eventResize: function(calEvent, jsEvent, view) {
 	    alert("eventResize: function(calEvent, jsEvent, view)");
             if (!updateEvent(calEvent)) {
@@ -1117,6 +1150,7 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          } else {
              filePath = series["file"][0]["path"];
              transferStatus = filePath.substring(0,filePath.lastIndexOf("/")+1);
+console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath);
          }
 
          var str = "";
@@ -1128,7 +1162,8 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
          if (typeof series["SeriesNumber"] != 'undefined') { 
            str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + (series["SeriesNumber"]==null?"":series["SeriesNumber"]) + "</div>");
          }
-         if (transferStatus == "/quarantine/") {
+console.log('transferStatus: ' + transferStatus);				  
+         if (transferStatus == "/quarantine/" && project_name == "ABCD") { // this might be ok for ABCD, but not for other projects
              str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
          }
          str = str.concat("</li>");
@@ -1140,16 +1175,21 @@ function displaySeries(series, seriesName, StudyInstanceUID) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
 	         if (data.length == 0) {
-		   jQuery('#'+id).text("TransferStatus: FILE_NOT_FOUND_ERROR");
+		     jQuery('#'+id).text("TransferStatus: FILE_NOT_FOUND_ERROR");
                  }
 		 for (var i = 0; i < data.length; i++) {
-	           console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
-	           var fname = data[i].filename.replace(/^.*[\\\/]/, '').split("_");
-		   if (fname.length > 2)
-                       fname = fname.slice(0,2).join("_");
-		   else
-		       fname = "unknown";
-		   jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path)</span>");
+	             console.log("series instance uid: " + id + "  " + data[i].message + " " + data[i].filename);
+	             var fname = data[i].filename.replace(/^.*[\\\/]/, '').split("_");
+		     if (fname.length > 2)
+			 fname = fname.slice(0,2).join("_");
+		     else
+			 fname = "unknown";
+		     jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path)</span>");
+		     // here we would also need to add the button - if it does not exist yet
+		     if (data[i].message == "readyToSend" && jQuery('#'+id).parent().find('button').length === 0) {
+			 //jQuery('#'+id).parent().append("Should show send button here " + data[i].filename);
+			 jQuery('#'+id).parent().append("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + data[i].filename + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button>");
+		     }
                  }
              };
            })(id)
@@ -1253,10 +1293,39 @@ function getReadableFileSizeString(fileSizeInBytes) {
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
+function goodHeader( header ) {
+    if (header == "") {
+	return false;
+    }
+    if (header.indexOf("NDAR") === 0) {
+	return true;
+    }
+    return false;
+}
+
+function checkMessageWindow() {
+  jQuery.ajax({
+       url: 'php/repush.jobs',
+       dataType: 'text'     
+  }).done(function(data) {
+       data = data.split("\n");
+       if (data.length > 1) {
+  	  jQuery('#message-window').show();
+          jQuery('#message-window-header').html("List of currently queued repush jobs");
+          jQuery('#message-window-body').html(data.join("<br>"));
+       } else {
+	  jQuery('#message-window').hide();
+       }	    
+  });			     
+  setTimeout(checkMessageWindow, 5000);
+}
+
 var quarantineDataTmp = []; // temporarily store the quarantine data for lookup
 var editor = "";    // one for setup
 var editor2 = "";   // one for series informations
 jQuery(document).ready(function() {
+
+    checkMessageWindow();
 
     if (sites.length < 1) {
         // hide project-dropdown-section
@@ -1391,8 +1460,13 @@ jQuery(document).ready(function() {
         var value = jQuery(this).text();
 	jQuery('#projname').text(value);
         projname = value;
+	// store this choice
+	jQuery.get('/php/setProject.php?project_name=' + projname, function(data) {
+	   console.log("got back: " + JSON.stringify(data));
+	});
 	loadSubjects();
-        loadSystem();
+        loadSystem(); 
+        createCalendar();
     });
 
     jQuery('#load-subjects').click(function() {
@@ -1443,6 +1517,40 @@ jQuery(document).ready(function() {
         if (!dialog.showModal) {
         dialogPolyfill.registerDialog(dialog);
     }
+
+
+    jQuery('#list-of-subjects').contextmenu(function(e) {
+        e.preventDefault();
+        var studyinstanceuid  = jQuery(e.target).parent().attr('studyinstanceuid');
+        if (studyinstanceuid == undefined) { // try the parent
+	       studyinstanceuid = jQuery(e.target).parent().parent().attr('studyinstanceuid');
+        }
+        if (studyinstanceuid == undefined) {
+           alert("Error: could not find the study instance uid for this study. Try again?");
+           return false;
+        }
+        jQuery('#repush-ok').attr('studyinstanceuid', studyinstanceuid);
+        var dialog = document.querySelector('#modal-repush');
+        if (!dialog.showModal) {
+            dialogPolyfill.registerDialog(dialog);
+        }
+        dialog.showModal();
+        return false;
+    });
+    var dialogRepush = document.querySelector('#modal-repush');
+    var closeButton = dialogRepush.querySelector('#repush-cancel');
+    var closeClickHandler = function (event) {
+       dialogRepush.close();
+    }
+    closeButton.addEventListener('click', closeClickHandler);
+    jQuery('#repush-ok').on('click', function() {
+	var dialogRepush = document.querySelector('#modal-repush');
+	dialogRepush.close();
+	jQuery.post('php/repush.php', { 'studyinstanceuid': jQuery(this).attr('studyinstanceuid'), 'project': projname }, function(data) {
+
+	});
+    });
+
     var studyinstanceuid;
     jQuery('#list-of-subjects').on('click', '.open-study-info', function() {
         console.log("clicked on study: ");
@@ -1611,14 +1719,17 @@ jQuery(document).ready(function() {
           quarantineDataTmp = data;
 	  studies = Object.keys(data);
 	  for (var i = 0; i < studies.length; i++) {
-             jQuery('#cleanQuarantine').append("<tr data=\"" + studies[i] + "\">" + // data can be used to lookup in quarantineDataTmp
-					       "<td title=\""+data[studies[i]]['files'].join(", ")+"\">" + data[studies[i]]['files'].length + "</td>" +
-			                       "<td>" + "<button class=\"btn quarantine-delete-these\">Delete</button>" + "<button class=\"btn quarantine-move-these\">Move to DAIC</button>" + "</td>" +
-					       "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientName'] + "</td>" +
-			                       "<td>" + data[studies[i]]['StudyDate'] + "</td>" + 
-					       "<td>" + getReadableFileSizeString(data[studies[i]]['size']) + "</td>" +
-					       "<td>" + data[studies[i]]['header'] + "</td>"
-					       + "</tr>");
+	      var it = "<tr data=\"" + studies[i] + "\">" +
+		  "<td title=\""+data[studies[i]]['files'].join(", ")+"\">" + data[studies[i]]['files'].length + "</td>" +
+                  "<td>" + "<button class=\"btn quarantine-delete-these\">Delete</button>" + 
+		  "<button class=\"btn quarantine-move-these\" " + (goodHeader(data[studies[i]]['header'])?"":"disabled title=\"First send this study on Study Transfer to create proper parts\"") + ">Move to DAIC</button>" + "</td>" +
+                  "<td class=\"mdl-data-table__cell--non-numeric\">" + data[studies[i]]['PatientName'] + "</td>" +
+                  "<td>" + data[studies[i]]['StudyDate'] + "</td>" +
+                  "<td>" + getReadableFileSizeString(data[studies[i]]['size']) + "</td>" +
+                  "<td>" + data[studies[i]]['header'] + "</td>"
+                  + "</tr>";
+	      
+             jQuery('#cleanQuarantine').append(it);
           }
       });
     });
@@ -1720,6 +1831,8 @@ jQuery(document).ready(function() {
        if (jQuery('#session-participant').val() == "" || 
            jQuery('#session-participant').val() == null || 
            jQuery('#session-name').val() == null || 
+           jQuery('#session-name').val() == "" || 
+           jQuery('#session-run').val() == "" ||
            jQuery('#session-run').val() == null) {
    	  alert("Please select a valid (screened) participant before uploading data");
 	  return;
@@ -1732,7 +1845,9 @@ jQuery(document).ready(function() {
           var filename = jQuery(value).attr('filename');
 	  if ( jQuery('#session-participant').val() == "" || 
 	       jQuery('#session-participant').val() == null || 
+               jQuery('#session-name').val() == "" || 
                jQuery('#session-name').val() == null || 
+               jQuery('#session-run').val() == "" ||
                jQuery('#session-run').val() == null) {
 		alert("Please select a valid (screened) participant before uploading data");
 		return;

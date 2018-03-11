@@ -26,6 +26,9 @@
         }
         $data = json_decode(file_get_contents($j[0]), True);
         //echo ("   found study information" . $data['PatientID']);
+	if (!isset($data['StudyDescription'])) {
+	   $data['StudyDescription'] = "";
+        }
         $studyList['studyList'][] = array( "patientName" => $data['PatientName'], 
 				    	   "patientId" => $data['PatientID'], 
 					   "studyDate" => $data['StudyDate'], 
