@@ -1223,7 +1223,7 @@
         "value": "0, 256, 256, 0"
       },{ 
         "tag": [ "0x19", "0x109c"],
-        "value": "research/3dfse_promo"
+        "value": "3dfse_promo$"
       }
     ]
   },
