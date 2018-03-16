@@ -1305,7 +1305,7 @@ function goodHeader( header ) {
 
 function checkMessageWindow() {
   jQuery.ajax({
-       url: 'php/repush.jobs',
+       url: '/php/repush.jobs',
        dataType: 'text'     
   }).done(function(data) {
        data = data.split("\n");
@@ -1546,7 +1546,7 @@ jQuery(document).ready(function() {
     jQuery('#repush-ok').on('click', function() {
 	var dialogRepush = document.querySelector('#modal-repush');
 	dialogRepush.close();
-	jQuery.post('php/repush.php', { 'studyinstanceuid': jQuery(this).attr('studyinstanceuid'), 'project': projname }, function(data) {
+	jQuery.post('/php/repush.php', { 'studyinstanceuid': jQuery(this).attr('studyinstanceuid'), 'project': projname }, function(data) {
 
 	});
     });
