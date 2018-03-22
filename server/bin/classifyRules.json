@@ -1073,7 +1073,7 @@
 	     "rule": "GEBYMANUFACTURER"
 	  },
     {"tag": [ "0x19", "0x109c" ],
-             "value": "^/research/.*/epi_pepolar"
+             "value": "epi_pepolar$"
           },{ 
         "tag": [ "AcquisitionMatrix" ],
         "value": "64, 0, 0, 64"
