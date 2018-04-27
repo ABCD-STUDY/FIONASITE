@@ -238,6 +238,15 @@ detect () {
         echo "`date`: series detected: \"$AETitleCaller\" \"$AETitleCalled\" $CallerIP ${datadir}/site/raw/$SDIR series: $SSERIESDIR" >> $log
         runSeriesInventions "$AETitleCaller" "$AETitleCalled" $CallerIP $SDIR $SSERIESDIR
 
+	# lets update the series JSON to include the correct number of images found in NumFiles
+	if [ -d "${SDIR}/${SSERIESDIR}/" ]; then
+	    # don't list directories and all strange filenames should be on a single line
+	    NumFiles=`ls -1ql "${SDIR}/${SSERIESDIR}/" | tail -n+2 | wc -l`
+	    echo "`date`: fix NumFiles, set to ${NumFiles}" >> $log
+	    tmp=$(mktemp)
+	    /usr/bin/jq '.NumFiles = "'${NumFiles}'"' "${SDIR}/${SSERIESDIR}.json" > "$tmp" && mv "$tmp" "${SDIR}/${SSERIESDIR}.json"
+	fi
+
         # we have a series store it as a tar
         mkdir -p ${datadir}/quarantine/
         # allow the site user to write to this directory (from the scanner)
