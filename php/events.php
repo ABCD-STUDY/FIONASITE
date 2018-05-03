@@ -71,10 +71,11 @@
              $data = json_decode(file_get_contents($value), TRUE);    
 
              // time could have fractional seconds, use up to seconds only
-             $tim = explode(".", $data['SeriesTime']);
+             $tim = explode(".", $data['StudyTime']);
 
              $D = DateTime::createFromFormat("Ymd His", $data['StudyDate']. " " . $tim[0]);
              if ($D == null) { // ignore these
+	         //syslog(LOG_EMERG, "WE will ignore \"" .$data['StudyDate']. "\" \"" .$data['StudyTime']."\" value:".$value);
                  continue;
              }
              $D2 = $D;
