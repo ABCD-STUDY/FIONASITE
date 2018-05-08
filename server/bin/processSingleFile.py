@@ -725,7 +725,7 @@ class ProcessSingleFile(Daemon):
                                 #print 'DEBUG: outdir: ', outdir
                                 if not os.path.exists(outdir):
                                         os.makedirs(outdir)
-                                        os.chmod(outdir, 0777)
+                                        os.chmod(outdir, 0o777)
                                 infile = os.path.basename(response)
                                 fn = os.path.join(outdir, dataset.StudyInstanceUID, dataset.SeriesInstanceUID)
                                 if not os.path.exists(fn):
@@ -1011,7 +1011,6 @@ class ProcessSingleFile(Daemon):
                                                 except ValueError:
                                                         print("Error: could not read json file in %s, ValueError" % fn3)
                                                         pass
-
                                 if currentSliceLocation != None:
                                         try:
                                                 if float(data['SliceLocation']) > float(currentSliceLocation):
@@ -1045,8 +1044,12 @@ class ProcessSingleFile(Daemon):
                                         if isinstance(value,basestring) and not isinstance(value,unicode):
                                                 data[key] = unicode(value, "UTF-8", errors='ignore')
 
-                                with open(fn3,'w') as f:
+                                # make sure that the file permissions are correct
+                                os.umask(0)
+                                fd = os.open(fn3, os.O_CREAT | os.O_WRONLY, 0o666)
+                                with os.fdopen(fd,'w') as f:
                                         json.dump(data,f,indent=2,sort_keys=True)
+                                os.chmod(fn3, 0o666)
                 rp.close()
 
 # There are two files that make this thing work, one is the .pid file for the daemon
