@@ -135,6 +135,11 @@
 	     "tag": [ "0x08", "0x08" ],
         "operator": "contains",
              "value": "NORM"
+          },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "DIS"
           }
     ]
   },{ 
@@ -160,6 +165,11 @@
         "operator": "contains",
         "negate": "yes", 
         "value": "NORM"
+          },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "DIS"
           }       
       
     ]
@@ -187,6 +197,11 @@
         "operator": "contains",
         "negate": "yes", 
         "value": "NORM"
+          },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "DIS"
           }
     ]
   },
@@ -212,6 +227,11 @@
 	     "tag": [ "0x08", "0x08" ],
         "operator": "contains",
         "value": "NORM"
+          },{
+	     "tag": [ "0x08", "0x08" ],
+        "operator": "contains",
+        "negate": "yes", 
+        "value": "DIS"
           }
     ]
   },
