@@ -56,6 +56,9 @@ if (!$user_name) {
         $content = explode("\n", file_get_contents('/var/www/html/php/repush.jobs'));
         if (count($content) > 0) {
 	    $firstjob = explode(" ",$content[0]);
+	    if (count($firstjob) < 2) {
+	        return;
+            }
 	    $project = $firstjob[1];
 	    if ($project == "ABCD") {
                 $project = "";
