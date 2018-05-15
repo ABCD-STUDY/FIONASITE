@@ -244,7 +244,7 @@ detect () {
 	    NumFiles=`ls -1ql "${SDIR}/${SSERIESDIR}/" | tail -n+2 | wc -l`
 	    echo "`date`: fix NumFiles, set to ${NumFiles}" >> $log
 	    tmp=$(mktemp)
-	    /usr/bin/jq '.NumFiles = "'${NumFiles}'"' "${SDIR}/${SSERIESDIR}.json" > "$tmp" && mv "$tmp" "${SDIR}/${SSERIESDIR}.json"
+	    /usr/bin/jq '.NumFiles = "'${NumFiles}'"' "${SDIR}/${SSERIESDIR}.json" > "$tmp" && mv "$tmp" "${SDIR}/${SSERIESDIR}.json" && chmod gou+rw "${SDIR}/${SSERIESDIR}.json"
 	fi
 
         # we have a series store it as a tar

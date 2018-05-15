@@ -707,7 +707,9 @@ class ProcessSingleFile(Daemon):
                                 arriveddir = datadir + '/site/.arrived'
                                 #print 'DEBUG: arriveddir: ', arriveddir
                                 if not os.path.exists(arriveddir):
-                                        os.makedirs(arriveddir)
+                                        oldmask = os.umask(0)
+                                        os.makedirs(arriveddir,0o777)
+                                        os.umask(oldmask)
                                 # write a touch file for each image of a series (to detect series arrival)
                                 # make sure that the touch file name does not contain double quotes or back-slash characters, or null bytes
                                 try:
@@ -720,17 +722,24 @@ class ProcessSingleFile(Daemon):
                                 patientdir = datadir + '/site/participants'
                                 #print 'DEBUG: patientdir: ', patientdir
                                 if not os.path.exists(patientdir):
-                                        os.makedirs(patientdir)
+                                        oldmask = os.umask(0)
+                                        os.makedirs(patientdir,0o777)
+                                        os.umask(oldmask)
                                 outdir = datadir + '/site/raw'
                                 #print 'DEBUG: outdir: ', outdir
                                 if not os.path.exists(outdir):
-                                        os.makedirs(outdir)
-                                        os.chmod(outdir, 0o777)
+                                        oldmask = os.umask(0)
+                                        os.makedirs(outdir,0o777)
+                                        # might not be needed anymore
+                                        # os.chmod(outdir, 0o777)
+                                        os.umask(oldmask)
                                 infile = os.path.basename(response)
                                 fn = os.path.join(outdir, dataset.StudyInstanceUID, dataset.SeriesInstanceUID)
                                 if not os.path.exists(fn):
                                         try:
-                                                os.makedirs(fn)
+                                                oldmask = os.umask(0)
+                                                os.makedirs(fn,01777)
+                                                os.umask(oldmask)
                                         except OSError:
                                                 print "Error: no permissions to create this path ", fn
                                         if not os.path.exists(fn):
@@ -739,8 +748,9 @@ class ProcessSingleFile(Daemon):
                                                 continue
                                         # for some reason os.makedirs does not create the path with the correct permissions (umask problem?)
                                         # set the permissions here to make sure we can later write into these directories
-                                        os.umask(00000)
-                                        os.chmod(fn,01777)
+                                        #oldmask = os.umask(0)
+                                        #os.chmod(fn,01777)
+                                        #os.umask(oldmask)
                                 fn2 = os.path.join(fn, dataset.SOPInstanceUID)
                                 if not os.path.isfile(fn2):
                                         try:
@@ -751,7 +761,9 @@ class ProcessSingleFile(Daemon):
                                 if dataset.PatientID:
                                         patdir = os.path.join(patientdir, dataset.PatientID)
                                         if not os.path.exists(patdir):
-                                                os.makedirs(patdir)
+                                                oldmask = os.umask(0)
+                                                os.makedirs(patdir,01777)
+                                                os.umask(oldmask)
                                         studydir = os.path.join(patdir, ''.join([dataset.StudyDate, "_", dataset.StudyTime]))
                                         if not os.path.islink( studydir ):
                                                 os.symlink( os.path.join(outdir, dataset.StudyInstanceUID), studydir )
@@ -1039,17 +1051,22 @@ class ProcessSingleFile(Daemon):
 				data['ClassifyType'] = self.classify(dataset, data, data['ClassifyType'])
                                 #data['ClassifyType'] = data['ClassifyType'] + list(set(self.classify(dataset, data)) - set(data['ClassifyType']))
 
-                                # we should sanitize this data first, otherwise there might be values in there can not be unicoded
+                                # we should sanitize this data first, otherwise there might be values in there that cannot be unicoded
                                 for key,value in data.items():
                                         if isinstance(value,basestring) and not isinstance(value,unicode):
                                                 data[key] = unicode(value, "UTF-8", errors='ignore')
 
                                 # make sure that the file permissions are correct
-                                os.umask(0)
-                                fd = os.open(fn3, os.O_CREAT | os.O_WRONLY, 0o666)
+                                # make also sure that the write operation is atomic (otherwise we end up with bad json files because more than one process is writing)
+                                oldmask = os.umask(0)
+                                tfn = tempfile.mktemp()
+                                fd = os.open(tfn, os.O_CREAT | os.O_WRONLY, 0o666)
                                 with os.fdopen(fd,'w') as f:
                                         json.dump(data,f,indent=2,sort_keys=True)
+                                # should be atomic now
+                                os.rename(tfn,fn3)
                                 os.chmod(fn3, 0o666)
+                                os.umask(oldmask)
                 rp.close()
 
 # There are two files that make this thing work, one is the .pid file for the daemon
