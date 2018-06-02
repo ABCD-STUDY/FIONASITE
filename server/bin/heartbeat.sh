@@ -53,9 +53,16 @@ if (($? == 124)); then
 
    # if we had to kill the process this way they port will belong to a parent, lets kill all of those as well
    portstr=`netstat -lnp | grep $PARENTPORT`
+   count=20
    while [ ! -z "$portstr" ]; do
       echo "the port is still in use..." >> $log
-      
+      # It happened once that this loop did not stop, the proc name was tmp and the loop continued to kill
+      # storescp again and again. Only stopping heartbeat resolved this issue.
+      (( --count ))
+      if [ "$count" -gt "0" ]; then
+	  break
+      fi
+
       proc=`netstat -lnp | grep $PARENTPORT | cut -d'/' -f2`
       id=`netstat -lnp | grep $PARENTPORT | cut -d'/' -f 1 | awk '{ print $7 }'`
       echo "the port is still in use by a process ($proc) with id $id, kill it" >> $log
