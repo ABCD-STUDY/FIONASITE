@@ -133,13 +133,16 @@ Processing containers inside FIONA use the DAIC Invention system which is docker
 Server Endpoint
 ===============
 
-The site FIONA computer running this software needs to forward data to a project end-point machine which is available on the web by sftp. This FIONA end-point is responsible to calculate for each incoming tripple of TGZ, md5sum, and json a md5sum_server file. All of the md5sum_server files need to be package at regular intervals into a md5sum server cache file which is pulled from the site FIONA machines. The site FIONA uses that file to compare the site md5sum with the server md5sum file. Only if both contain the same hash the files is considered to be transferred correctly (and moved to /data/DAIC).
+The site FIONA running this software forwards data to a project end-point computer, which is accessed using sftp. This FIONA end-point is responsible to calculate for each incoming triple of TGZ, md5sum, and json an md5sum_server file. All of the md5sum_server files are packaged at regular intervals into a md5sum server cache on the end-point, which is pulled from the site FIONA. The site FIONA uses that file to compare the site md5sum with the server md5sum file. Only if both contain the same hash the file is considered to be transferred correctly (and moved to /data/DAIC).
 
-There are two scripts running on the end-point FIONA. One is an incrontab deamon that observs the directories for each site FIONA.
+There are two scripts running on the end-point FIONA. One is an incrontab deamon that observes the directories for each site FIONA.
 
 checkIncomingFile.sh
 ```
 #!/bin/bash
+
+# run by 'incrontab -e' entry for each incoming file:
+#   /data/home/acquisition_sites/ucsd/fiona/outbox IN_CLOSE_WRITE /home/fiona/checkIncomingFile.sh "$@" "$#"
 
 #
 # Calculate server based md5sum's to allow checks of correct file transfer from client
