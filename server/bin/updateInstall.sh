@@ -43,6 +43,7 @@ todo=(
     'permission' '/data/finished-scans' '755'
     'permission' '/data/scanner' '755'
     'permission' '/data/site' '755'
+    'permission' '/data/site/raw' '1777'
     'permission' '/data/inbox' '755'
     'permission' '/var/www/html/server' '755'
     'permission' '/var/www/html/server/.pids' '777'

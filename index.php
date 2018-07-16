@@ -1184,7 +1184,7 @@ console.log('transferStatus: ' + transferStatus);
 			 fname = fname.slice(0,2).join("_");
 		     else
 			 fname = "unknown";
-		     jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path)</span>");
+		     jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path, " + data[i].filemtime + ")</span>");
 		     // here we would also need to add the button - if it does not exist yet
 		     if (data[i].message == "readyToSend" && jQuery('#'+id).parent().find('button').length === 0) {
 			 //jQuery('#'+id).parent().append("Should show send button here " + data[i].filename);

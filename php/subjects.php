@@ -20,9 +20,9 @@
   # get all files first (need to sort by modification time)
   $dirs = array();
   foreach ($results as $dd) {
-    if ($dd === '.' or $dd === '..') 
+    if ($dd === '.' or $dd === '..' or $dd == "")
       continue;
-    $dirs[$dd] = filemtime($dd);
+    $dirs[$dd] = filemtime($d."/".$dd);
   }
   asort($dirs);
 
