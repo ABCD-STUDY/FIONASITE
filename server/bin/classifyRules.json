@@ -1126,6 +1126,24 @@
       ]
   },
   {
+      "type" : "ABCD-Coil-QA",
+      "description": "GE phantom coil scan",
+      "rules": [
+          {	     
+	     "rule": "GEBYMANUFACTURER"
+	  },
+    {"tag": [ "0x19", "0x109c" ],
+             "value": "^research/.*/efgre3d"
+          },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 32, 32, 0"
+      },{ 
+        "tag": [ "0x20", "0x1002" ],
+        "value": "924"
+      }
+      ]
+  },
+  {
       "type" : "ABCD-rsfMRI",
       "description": "GE ABCD rsfMRI",
       "rules": [
