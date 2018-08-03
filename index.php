@@ -329,6 +329,12 @@
      .status1 {
 	 background: linear-gradient(to right, white, white 80%, green);
      }
+     .unknown-type {
+       color: yellow !important;
+     }
+     .transferred-type {
+       color: 'rgba(255,255,255,0.56)';
+     }
     </style>
     <link rel="stylesheet" href="css/dialog-polyfill.min.css">
   </head>
@@ -802,8 +808,9 @@ function updateSendInformation() {
 		}
 	    });
 	    if (a !== null) {
-		jQuery(a).find('a div.detail-information').remove();
-		jQuery(a).find('a').append("<div class='detail-information'>" + sendInformationCache[studyinstanceuid].event + " " + sendInformationCache[studyinstanceuid].pGUID + " (" + sendInformationCache[studyinstanceuid].date.format('MMM Do YYYY') + ")" );
+            jQuery(a).find('a i.unknown-type').removeClass('unknown-type').addClass('transferred-type');
+		    jQuery(a).find('a div.detail-information').remove();
+		    jQuery(a).find('a').append("<div class='detail-information'>" + sendInformationCache[studyinstanceuid].event + " " + sendInformationCache[studyinstanceuid].pGUID + " (" + sendInformationCache[studyinstanceuid].date.format('MMM Do YYYY') + ")" );
 	    }
 	}
     }
@@ -952,14 +959,14 @@ function loadSubjects() {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	    shortname = shortenName( shortname );
 
-	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
+	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
 	}
 
 	// if an element is in view get the detailed information for the last send for it
 	updateSendInformation();
         
 	jQuery('.demo-drawer').on("scroll", function() {
-	    var minScrollTime = 100;
+	    var minScrollTime = 200;
 	    var now = new Date().getTime();
 	    
 	    if (!scrollTimer) {
