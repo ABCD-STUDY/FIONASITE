@@ -231,6 +231,22 @@
 .mark {
   background-color: DarkSlateGray;
 }
+.detail-information {
+    font-size: 10px;
+    left: 10px;
+    bottom: 0px;
+    position: absolute;
+    color: white;
+    white-space: no-wrap;
+}
+.scan-date {
+    color: white;
+    font-size: 10px; 
+    position: absolute; 
+    right: 10px; 
+    bottom: 15px;
+    white-space: no-wrap;
+}
 </style>
     <!-- <link href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en" rel="stylesheet"> -->
     <!-- <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"> -->
@@ -761,8 +777,169 @@ loading information...
         });
       }
 
+// make sure that we list if a scan has been send previously (when and under what pGUID)
+// do this for all participants in the open-study-info that are currently visible on screen, cache the results
+var sendInformationCache = {}; // use study instance uid as key in this cache
+var sendInformationQueue = [];
+function updateSendInformation() {
+    // get all currently visible entries
+    function checkVisible(elm) {
+	var style = window.getComputedStyle(elm);
+	if (style.display === 'none')
+	    return false;
+	var rect = elm.getBoundingClientRect();
+	var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+	return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
+    }
+    // todo: we get this call a lot, each time there we get values for another series. Would be better to delay the render - not a big issue
+    function renderResult(studyinstanceuid) {
+	if (sendInformationCache[studyinstanceuid].status == "transferred") {
+	    // find the right entry on screen
+	    var a = null;
+	    jQuery('#list-of-subjects').children().each(function(i,v) {
+		if (jQuery(v).attr('studyinstanceuid') == studyinstanceuid) {
+		    a = v;
+		}
+	    });
+	    if (a !== null) {
+		jQuery(a).find('a div.detail-information').remove();
+		jQuery(a).find('a').append("<div class='detail-information'>" + sendInformationCache[studyinstanceuid].event + " " + sendInformationCache[studyinstanceuid].pGUID + " (" + sendInformationCache[studyinstanceuid].date.format('MMM Do YYYY') + ")" );
+	    }
+	}
+    }
+    jQuery.each(jQuery('.open-study-info'), function(i,a) {
+	if (checkVisible(jQuery(a)[0])) {
+	    var studyinstanceuid = jQuery(a).attr('studyinstanceuid');
+	    // do we have an entry in the cache for this already?
+	    if (typeof sendInformationCache[studyinstanceuid] == 'undefined') {
+		// we will get a value for this at some point (don't request this a second time)
+		sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
+
+		// get the data for this studyinstanceuid
+		(function(studyinstanceuid) { // make studyinstanceuid a local variable in the scope
+		    var options = {
+			"action": "getStudy",
+			"study": studyinstanceuid,
+			"project": projname
+		    };
+		    // get a list of the series for this study
+		    jQuery.getJSON('/php/existingData.php', options, function(data) {
+			dataSec1 = {};
+			dataSec2 = {};
+			dataSec3 = {};
+			var keys = Object.keys(data);
+			for (var i = 0; i < keys.length; i++) {			    
+			    var value = data[keys[i]];
+			    if (Array.isArray(value)) {
+				dataSec3[keys[i]] = value;
+			    } else if (typeof value === 'object') {
+				dataSec2[keys[i]] = value;
+			    } else if (typeof value === 'string') {
+				dataSec1[keys[i]] = value;
+			    } else {
+				alert("Error: No existing data, perhaps protocol compliance check was not run.");
+			    }
+			}
+			// we are looking for the data in dataSec2+dataSec3 (series that have been detected)
+			// we need to call fileStatus.php for them to find out which once are in DAIC
+			var allFilePaths = [];
+			for (var k in dataSec2) {
+			    if (dataSec2[k] === null || typeof dataSec2[k]['file'] == 'undefined') {
+				// if there is no 'file' it can still be in a key one down
+				var keys = Object.keys(dataSec2[k]);
+				for (var j = 0; j < keys.length; j++) {
+				    if (typeof dataSec2[k][keys[j]]['file'] !== 'undefined') {
+					for (var i = 0; i < dataSec2[k][keys[j]]['file'].length; i++) {
+					    if (typeof dataSec2[k][keys[j]]['file'][i]['path'] !== 'undefined' && dataSec2[k][keys[j]]['file'][i]['path'] !== "") {
+						allFilePaths.push(dataSec2[k][keys[j]]['file'][i]['path']);
+					    }
+					}
+				    }
+				}
+				continue;
+			    }
+			    for (var i = 0; i < dataSec2[k]['file'].length; i++) {
+				if (typeof dataSec2[k]['file'][i]['path'] !== 'undefined' && dataSec2[k]['file'][i]['path'] !== "") {
+				    allFilePaths.push(dataSec2[k]['file'][i]['path']);
+				}
+			    }
+			}
+			if ( allFilePaths.length == 0 ) {
+			    // don't ask for this studyinstanceuid again
+			    sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
+			}
+			for (var i = 0; i < allFilePaths.length; i++) {
+			    filePath = allFilePaths[i]; // for each file path search and return if its transferred, in transit, or readyToSend, if its transferred extract the pGUID and date
+			    jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(studyinstanceuid) {
+				// return a function that knows about our series Instance UID variable
+				return function(data) {
+				    // now add the information returned to the sendInformationCache[studyinstanceuid]
+				    // we get back data here that looks like this:
+				    //      $val[] = array( "ok" => 1, "message" => "readyToSend", "filename" => $qv[0], "filemtime" => $qv[1] );
+				    //      $val[] = array( "ok" => 1, "message" => "transit", "filename" => $qv[0], "filemtime" => $qv[1] );
+				    //      $val[] = array( "ok" => 1, "message" => "transferred", "filename" => $qv[0], "filemtime" => $qv[1] );
+				    if (data.length == 0) {
+					sendInformationCache[studyinstanceuid] = { 'status': 'fileNotFound' };
+					return;
+				    }
+				    var sendAsGUID = "";
+				    var sendWhen = "";
+				    var sendWhat = "";
+				    var sendEvent = "";
+				    for (var i = 0; i < data.length; i++) {
+					// find the newest transferred dataset
+					if (data[i].message == "transferred") {
+					    // found one!
+					    if (sendWhen == "") { // first time
+						sendWhen   = data[i].filemtime;
+						if (data[i].filename.split("/")[3].split("_")[0] == "NDAR") {
+						    sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,2).join("_");
+						    sendEvent = data[i].filename.split("/")[3].split("_").slice(2,4).join("_");
+						} else {
+						    sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,1);
+						    sendEvent = data[i].filename.split("/")[3].split("_").slice(1,3).join("_");
+						}
+						sendWhat   = data[i].filename;
+					    } else {
+						// not the first time, is this a later date? Use the latest data for all send operations ( January 21 2018 14:45:10 )
+						var date1 = moment(sendWhen, 'MMMM D YYYY H:m:s');
+						var date2 = moment(data[i].filemtime, 'MMMM D YYYY H:m:s');
+						if ( moment().diff(date1, 'minutes') > moment().diff(date2, 'minutes') ) {
+						    sendWhen   = data[i].filemtime;
+						    if (data[i].filename.split("/")[3].split("_")[0] == "NDAR") {
+							sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,2).join("_");
+							sendEvent = data[i].filename.split("/")[3].split("_").slice(2,4).join("_");
+						    } else {
+							sendAsGUID = data[i].filename.split("/")[3].split("_").slice(0,1);
+							sendEvent = data[i].filename.split("/")[3].split("_").slice(1,3).join("_");
+						    }
+						    
+						    sendWhat   = data[i].filename;
+						} // otherwise we have an old send for this study
+					    }
+					}
+				    }
+				    if (sendWhen !== "") {
+					var date = moment(sendWhen, 'MMMM D YYYY H:m:s');
+					sendInformationCache[studyinstanceuid] = { 'status': 'transferred', 'pGUID': sendAsGUID, 'date': date, 'filename': sendWhat, 'event': sendEvent };
+					renderResult(studyinstanceuid);
+				    }
+				};
+			    })(studyinstanceuid) );
+			}
+		    });
+		})(studyinstanceuid);		
+	    } else {
+		// if we have an entry already show it
+		renderResult(studyinstanceuid);
+	    }
+	}
+    });
+
+}
 
 var subjectData = [];
+var scrollTimer, lastScrollFireTime = 0; // for handling the scroll event (throdle)
 function loadSubjects() {
     console.log("loadSubjects");
     jQuery('#list-of-subjects').find('.data').remove();
@@ -775,8 +952,32 @@ function loadSubjects() {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	    shortname = shortenName( shortname );
 
-	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div style="font-size: 10px; position: absolute; left: 44px; bottom: 0px;">' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 15px; right: 10px;">'+shortname+'</div></a></div>');
+	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
 	}
+
+	// if an element is in view get the detailed information for the last send for it
+	updateSendInformation();
+        
+	jQuery('.demo-drawer').on("scroll", function() {
+	    var minScrollTime = 100;
+	    var now = new Date().getTime();
+	    
+	    if (!scrollTimer) {
+		if (now - lastScrollFireTime > (3 * minScrollTime)) {
+		    // processScroll();   // fire immediately on first scroll
+		    updateSendInformation();
+		    lastScrollFireTime = now;
+		}
+		scrollTimer = setTimeout(function() {
+		    scrollTimer = null;
+		    lastScrollFireTime = new Date().getTime();
+		    // processScroll();
+		    updateSendInformation();
+		}, minScrollTime);
+	    }
+	    
+	});
+	// also on search we need to updateSendInformation
     });
 }
 function shortenName( name ) {
@@ -1171,7 +1372,7 @@ console.log('transferStatus: ' + transferStatus);
          //jQuery('#detected-scans').append(str);
 
          // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
-         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(id) {
+         jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(ids) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
 	         if (data.length == 0) {
@@ -1427,6 +1628,7 @@ jQuery(document).ready(function() {
                  jQuery(v).hide();
              }
          });
+         updateSendInformation(); // for all visible entries
    });
 
    jQuery('#list-of-subjects').on('click', '.pull-study', function() {

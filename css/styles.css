@@ -112,6 +112,7 @@ html, body {
   font-weight: 200;
   letter-spacing: 1.5px;
   padding: 10px 10px;
+  padding-bottom: 30px;
 }
 .mdl-layout__drawer {
    width: 340px;
