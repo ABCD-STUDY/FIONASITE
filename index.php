@@ -335,6 +335,9 @@
      .transferred-type {
        color: 'rgba(255,255,255,0.56)';
      }
+     .demo-drawer {
+       overflow-x: hidden;
+     }
     </style>
     <link rel="stylesheet" href="css/dialog-polyfill.min.css">
   </head>
