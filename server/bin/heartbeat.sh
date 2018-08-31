@@ -19,10 +19,20 @@ PARENTPORT=`cat /data/config/config.json | jq -r ".DICOMPORT"`
 SERVERDIR=`dirname "$(readlink -f "$0")"`/../
 log=${SERVERDIR}/logs/heartbeat.log
 
+projname="$1"
+if [ -z "$projname" ]; then
+    projname="ABCD"
+fi
+if [ "$projname" != "ABCD" ]; then
+    PARENTIP=`cat /data/config/config.json | jq -r ".SITES.${projname}.DICOMIP"`
+    PARENTPORT=`cat /data/config/config.json | jq -r ".SITES.${projname}.DICOMPORT"`
+    log=${SERVERDIR}/logs/heartbeat${projname}.log
+fi
+
 # cheap way to test if storescp is actually running
 # check if the storescp log file is new enough
 # (Bug: fixes a problem with non-fork send data, echoscu does not work if data is received)
-storelog=${SERVERDIR}/logs/storescpd.log
+storelog=${SERVERDIR}/logs/storescpd${projname}.log
 
 #
 # The time selected here should be timed with the number of seconds storescp will wait and keep
@@ -31,7 +41,7 @@ storelog=${SERVERDIR}/logs/storescpd.log
 #
 testtime=16
 if [ "$(( $(date +"%s") - $(stat -c "%Y" "$storelog") ))" -lt "$testtime" ]; then
-   echo "`date` - no try: storescpd.log is too new, seems to work" >> $log
+   echo "`date` - no try: ${storelog} is too new, seems to work" >> $log
    exit 0
 fi
 
@@ -87,7 +97,7 @@ while read -r line; do
 	:
     elif [ "$tr" -gt "3600" ]; then
         echo "`date`: Error, detectStudyArrival is running for more than 1 hour, stop it now and have it restart" >> $log
-	/usr/bin/kill $line && /bin/bin/rm -f /var/www/html/server/.pids/detectStudyArrival.lock
+	/usr/bin/kill $line && /bin/bin/rm -f /var/www/html/server/.pids/detectStudyArrival${projname}.lock
 	# the cron job will restart this service again
     fi
 done <<< "$ids"
