@@ -590,7 +590,7 @@ loading configuration file...
         </div>
 	
         <div class="form-group">
-          <label for="session-name" class="control-label">Session name</label><br/>
+          <label for="session-name" class="control-label">Event name (baseline or 2-year or 4-year)</label><br/>
           <select class="form-control" id="session-name"></select>
         </div>
 	
@@ -958,36 +958,38 @@ function loadSubjects() {
     jQuery.getJSON('/php/subjects.php', {'project': projname }, function(data) {
         
         subjectData = data; // we can re-use those
-	for (var i = 0; i < data.length; i++) {
+	    for (var i = 0; i < data.length; i++) {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
-	    shortname = shortenName( shortname );
-
-	    jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
-	}
-
-	// if an element is in view get the detailed information for the last send for it
-	updateSendInformation();
-        
-	jQuery('.demo-drawer').on("scroll", function() {
-	    var minScrollTime = 200;
-	    var now = new Date().getTime();
-	    
-	    if (!scrollTimer) {
-		if (now - lastScrollFireTime > (3 * minScrollTime)) {
-		    // processScroll();   // fire immediately on first scroll
-		    updateSendInformation();
-		    lastScrollFireTime = now;
-		}
-		scrollTimer = setTimeout(function() {
-		    scrollTimer = null;
-		    lastScrollFireTime = new Date().getTime();
-		    // processScroll();
-		    updateSendInformation();
-		}, minScrollTime);
+	        shortname = shortenName( shortname );
+            
+	        jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
 	    }
-	    
-	});
-	// also on search we need to updateSendInformation
+        
+        // if an element is in view get the detailed information for the last send for it
+        updateSendInformation();
+        
+	    jQuery('.demo-drawer').on("scroll", function() {
+	        var minScrollTime = 200;
+	        var now = new Date().getTime();
+	        
+	        if (!scrollTimer) {
+		        if (now - lastScrollFireTime > (3 * minScrollTime)) {
+		            // processScroll();   // fire immediately on first scroll
+		            updateSendInformation();
+		            lastScrollFireTime = now;
+		        }
+		        scrollTimer = setTimeout(function() {
+		            scrollTimer = null;
+		            lastScrollFireTime = new Date().getTime();
+		            // processScroll();
+		            updateSendInformation();
+		        }, minScrollTime);
+	        }
+	    });
+        jQuery(window).on('resize', function() {
+		    updateSendInformation();
+        });
+	    // also on search we need to updateSendInformation
     });
 }
 function shortenName( name ) {
@@ -1450,11 +1452,12 @@ function displayAdditionalScans(data, StudyInstanceUID) {
 function getSessionNamesFromREDCap() {
     jQuery.getJSON('/php/getRCEvents.php?project=' + projname, function(data) {
         jQuery('#session-name').children().remove();
+	jQuery('#session-name').append("<option></option>");
         for (var i = 0; i < data.length; i++) {
             val = "";
-            if (i == 1) {
-                val = "selected=\"selected\"";
-            }
+            //if (i == 1) {
+            //    val = "selected=\"selected\"";
+            //}
             jQuery('#session-name').append("<option " + val + " value=\"" + data[i].unique_event_name + "\">" + data[i].event_name + "</option>");
         }
         getParticipantNamesFromREDCap();
@@ -1766,10 +1769,17 @@ jQuery(document).ready(function() {
     var studyinstanceuid;
     jQuery('#list-of-subjects').on('click', '.open-study-info', function() {
         console.log("clicked on study: ");
+
+        // clean the displayed information before opening the dialog
+        jQuery('#study-info-text').text("loading...");
+        jQuery('#header-section').children().remove();
+        jQuery('#detected-scans').children().remove();
+
 	// we should highlight the current row in this case until the next hover event		     
         var dialog = document.querySelector('#modal-study-info');
         dialog.showModal();
         jQuery('#session-participant').val(null);
+	jQuery('#session-name').val(null);			     
 	jQuery('#session-run').val(null);
 
 	// get list of valid participant names from our database	
@@ -2046,7 +2056,7 @@ jQuery(document).ready(function() {
            jQuery('#session-name').val() == "" || 
            jQuery('#session-run').val() == "" ||
            jQuery('#session-run').val() == null) {
-   	  alert("Please select a valid (screened) participant before uploading data");
+   	  alert("Please select a valid (screened) participant, an event name, and a session type before uploading data!");
 	  return;
        }	
 
@@ -2061,7 +2071,7 @@ jQuery(document).ready(function() {
                jQuery('#session-name').val() == null || 
                jQuery('#session-run').val() == "" ||
                jQuery('#session-run').val() == null) {
-		alert("Please select a valid (screened) participant before uploading data");
+		alert("Please select a valid (screened) participant, an event name, and a session type before uploading data");
 		return;
           }
 				
