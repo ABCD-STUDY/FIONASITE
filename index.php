@@ -957,6 +957,29 @@ function loadSubjects() {
     // PCGC
     jQuery.getJSON('/php/subjects.php', {'project': projname }, function(data) {
         
+         // we should re-sort the participants list and have them first sorted by most recent and secondly by name
+         // use the initial sorting order for the participant names
+         for (var i = data.length-1; i > 0; i--) {
+             var name1 = data[i].PatientName;
+             var name2 = data[i].PatientID;
+             if (data[i].PatientName.indexOf('Phantom') > -1 || data[i].PatientID.indexOf('Phantom') > -1 || 
+                 data[i].PatientID.indexOf('geservice') > -1 || data[i].PatientName.indexOf('geservice') > -1 || 
+                 data[i].PatientID.indexOf('test') > -1 || data[i].PatientName.indexOf('test') > -1)
+                 continue; // don't resort Phantom scans
+
+             // get the indices for the same participant and add them here
+             var count = 0;
+             for (var j = i-1; j >= 0; j--) {
+                 if (data[j].PatientName == name1 || data[j].PatientID == name2) {
+                     var tmp = data.splice(j,1);
+                     data.splice(i+1, 0, tmp[0]); // remove is data.splice(index,1)
+                     count++;
+                 }
+             }
+             i = i - count;
+         }
+
+
         subjectData = data; // we can re-use those
 	    for (var i = 0; i < data.length; i++) {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
