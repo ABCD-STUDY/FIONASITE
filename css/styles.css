@@ -124,9 +124,10 @@ html, body {
    font-size: 16px;
 }
 .demo-layout .demo-navigation .mdl-navigation__link:hover {
-  background-color: #00BCD4;
+  background-color: #78909C;
   color: #37474F;
 }
+
 .mdl-layout--fixed-drawer > .mdl-layout__header .mdl-layout__header-row {
     padding-left: 150px;
     transform: translateX(0px);
