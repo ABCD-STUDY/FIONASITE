@@ -830,7 +830,8 @@ function updateSendInformation() {
 		    var options = {
 			"action": "getStudy",
 			"study": studyinstanceuid,
-			"project": projname
+			"project": projname,
+                        "skipComplianceReRun": 1
 		    };
 		    // get a list of the series for this study
 		    jQuery.getJSON('/php/existingData.php', options, function(data) {
@@ -846,9 +847,9 @@ function updateSendInformation() {
 				dataSec2[keys[i]] = value;
 			    } else if (typeof value === 'string') {
 				dataSec1[keys[i]] = value;
-			    } else {
+			    } /* else {
 				alert("Error: No existing data, perhaps protocol compliance check was not run.");
-			    }
+			    } */
 			}
 			// we are looking for the data in dataSec2+dataSec3 (series that have been detected)
 			// we need to call fileStatus.php for them to find out which once are in DAIC
@@ -964,6 +965,7 @@ function loadSubjects() {
              var name2 = data[i].PatientID;
              if (data[i].PatientName.indexOf('Phantom') > -1 || data[i].PatientID.indexOf('Phantom') > -1 || 
                  data[i].PatientID.indexOf('geservice') > -1 || data[i].PatientName.indexOf('geservice') > -1 || 
+                 data[i].PatientID.indexOf('QA') > -1 || data[i].PatientName.indexOf('QA') > -1 || 
                  data[i].PatientID.indexOf('test') > -1 || data[i].PatientName.indexOf('test') > -1)
                  continue; // don't resort Phantom scans
 
@@ -972,7 +974,7 @@ function loadSubjects() {
              for (var j = i-1; j >= 0; j--) {
                  if (data[j].PatientName == name1 || data[j].PatientID == name2) {
                      var tmp = data.splice(j,1);
-                     data.splice(i+1, 0, tmp[0]); // remove is data.splice(index,1)
+                     data.splice(i+count-1, 0, tmp[0]);
                      count++;
                  }
              }
