@@ -619,3 +619,10 @@ div.message {
 #message-window-header {
     font-size: 16px;
 }
+
+div.tag-0 {
+   background-color: #3c3c3c;
+}
+div.tag-1 {
+   background-color: #0c0c0c;
+}
