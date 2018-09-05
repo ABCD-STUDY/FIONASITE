@@ -963,18 +963,16 @@ function loadSubjects() {
          for (var i = data.length-1; i > 0; i--) {
              var name1 = data[i].PatientName;
              var name2 = data[i].PatientID;
-             if (data[i].PatientName.indexOf('Phantom') > -1 || data[i].PatientID.indexOf('Phantom') > -1 || 
-                 data[i].PatientID.indexOf('geservice') > -1 || data[i].PatientName.indexOf('geservice') > -1 || 
-                 data[i].PatientID.indexOf('QA') > -1 || data[i].PatientName.indexOf('QA') > -1 || 
-                 data[i].PatientID.indexOf('test') > -1 || data[i].PatientName.indexOf('test') > -1)
+             if ((name1+name2).toLowerCase().indexOf('phantom') > -1 || (name1+name2).toLowerCase().indexOf('geservice') > -1 || 
+                 (name1+name2).toLowerCase().indexOf('qa') > -1 || (name1+name2).toLowerCase().indexOf('test') > -1)
                  continue; // don't resort Phantom scans
 
              // get the indices for the same participant and add them here
              var count = 0;
              for (var j = i-1; j >= 0; j--) {
-                 if (data[j].PatientName == name1 || data[j].PatientID == name2) {
+                 if ((data[j].PatientName.length > 0 && data[j].PatientName == name1) || (data[j].PatientID.length > 0 && data[j].PatientID == name2)) {
                      var tmp = data.splice(j,1);
-                     data.splice(i+count-1, 0, tmp[0]);
+                     data.splice(i-1, 0, tmp[0]);
                      count++;
                  }
              }
