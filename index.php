@@ -968,6 +968,7 @@ function loadSubjects() {
              var name2 = data[i].PatientID;
 	     data[i].lightTag = (lightTag?"1":"0");
              if ((name1+name2).toLowerCase().indexOf('phantom') > -1 || (name1+name2).toLowerCase().indexOf('geservice') > -1 || 
+    	         (name1+name2).toLowerCase().indexOf('technical') > -1 || 
                  (name1+name2).toLowerCase().indexOf('qa') > -1 || (name1+name2).toLowerCase().indexOf('test') > -1)
                  continue; // don't resort Phantom scans
 
