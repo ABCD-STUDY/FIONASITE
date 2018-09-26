@@ -39,14 +39,20 @@ if ( $action == "getStudy" ) {
     if ( $project != "" ) {
         $fname = $fname."_".$project;
     }
-
-    file_put_contents($fname, "study: ".$study." please run compliance check now");
-    chmod ('/tmp/'.$study, 0777);
-    $cpath = 'request_compliance_check';
-    if(!is_dir($cpath)) {
-       mkdir($cpath, 0777);
+    $requestReRun = true;
+    if (isset($_GET['skipComplianceReRun'])) {
+       $requestReRun = false;
     }
-    rename($fname, $cpath.DIRECTORY_SEPARATOR.$study);    
+
+    if ($requestReRun) {
+       file_put_contents($fname, "study: ".$study." please run compliance check now");
+       chmod ('/tmp/'.$study, 0777);
+       $cpath = 'request_compliance_check';
+       if(!is_dir($cpath)) {
+          mkdir($cpath, 0777);
+       }
+       rename($fname, $cpath.DIRECTORY_SEPARATOR.$study);    
+    }
 
     //$d = 'output/scp_'.$study.'/series_compliance/compliance_output.json';
     $d = '/data'.$project.'/site/output/scp_'.$study.'/series_compliance/compliance_output.json';

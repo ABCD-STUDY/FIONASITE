@@ -830,7 +830,8 @@ function updateSendInformation() {
 		    var options = {
 			"action": "getStudy",
 			"study": studyinstanceuid,
-			"project": projname
+			"project": projname,
+                        "skipComplianceReRun": 1
 		    };
 		    // get a list of the series for this study
 		    jQuery.getJSON('/php/existingData.php', options, function(data) {
@@ -846,9 +847,9 @@ function updateSendInformation() {
 				dataSec2[keys[i]] = value;
 			    } else if (typeof value === 'string') {
 				dataSec1[keys[i]] = value;
-			    } else {
+			    } /* else {
 				alert("Error: No existing data, perhaps protocol compliance check was not run.");
-			    }
+			    } */
 			}
 			// we are looking for the data in dataSec2+dataSec3 (series that have been detected)
 			// we need to call fileStatus.php for them to find out which once are in DAIC
@@ -957,12 +958,40 @@ function loadSubjects() {
     // PCGC
     jQuery.getJSON('/php/subjects.php', {'project': projname }, function(data) {
         
+         // we should re-sort the participants list and have them first sorted by most recent and secondly by name
+         // use the initial sorting order for the participant names
+	 // color the fields that belong together
+	 var lightTag = false;
+         for (var i = data.length-1; i > 0; i--) {
+	     lightTag = !lightTag;
+             var name1 = data[i].PatientName;
+             var name2 = data[i].PatientID;
+	     data[i].lightTag = (lightTag?"1":"0");
+             if ((name1+name2).toLowerCase().indexOf('phantom') > -1 || (name1+name2).toLowerCase().indexOf('geservice') > -1 || 
+    	         (name1+name2).toLowerCase().indexOf('technical') > -1 || 
+                 (name1+name2).toLowerCase().indexOf('qa') > -1 || (name1+name2).toLowerCase().indexOf('test') > -1)
+                 continue; // don't resort Phantom scans
+
+             // get the indices for the same participant and add them here
+             var count = 0;
+             for (var j = i-1; j >= 0; j--) {
+                 if ((data[j].PatientName.length > 0 && data[j].PatientName == name1) || (data[j].PatientID.length > 0 && data[j].PatientID == name2)) {
+                     var tmp = data.splice(j,1);
+		     tmp[0].lightTag = (lightTag?"1":"0");
+                     data.splice(i-1, 0, tmp[0]);
+                     count++;
+                 }
+             }
+             i = i - count;
+         }
+
+
         subjectData = data; // we can re-use those
 	    for (var i = 0; i < data.length; i++) {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	        shortname = shortenName( shortname );
             
-	        jQuery('#list-of-subjects').prepend('<div class="data open-study-info" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
+	        jQuery('#list-of-subjects').prepend('<div class="data open-study-info tag-' + data[i].lightTag + '" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
 	    }
         
         // if an element is in view get the detailed information for the last send for it
