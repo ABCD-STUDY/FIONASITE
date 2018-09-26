@@ -73,15 +73,29 @@ if [[ $# -eq 2 ]]; then
 fi
 if [ ! -d "$dir" ]; then
     # path does not exist, perhaps we got a subject id - find and select first study with that ID
-    dd=`jq -r "[.PatientID,.PatientName,.StudyInstanceUID] | @csv" /data${project}/site/raw/*/*.json | grep $1 | sort | uniq | cut -d',' -f3 | tr -d '"'`
+    # this does not work because there are too many json files for the length of the command line
+    # try this instead:
+    dd=''
+    OLDIFS=$IFS
+    IFS=$'\n'
+    fileArray=($(find /data/site/raw/ -mindepth 1 -maxdepth 2 -type f -print))
+    IFS=$OLDIFS
+    tLen=${#fileArray[@]}
+    for (( i=0; i<${tLen}; i++ )); do
+	file="${fileArray[$i]}"
+	dd_tmp=`jq -r "[.PatientID,.PatientName,.StudyInstanceUID] | @csv" "${file}" | grep $1 | sort | uniq | cut -d',' -f3 | tr -d '"'`
+	dd="${dd} ${dd_tmp}"
+    done
+
+    #dd=`jq -r "[.PatientID,.PatientName,.StudyInstanceUID] | @csv" /data${project}/site/raw/*/*.json | grep $1 | sort | uniq | cut -d',' -f3 | tr -d '"'`
     for a in $dd; do
-	    # call ourselfs again with the participant id
-	    dir=`realpath "/data${project}/site/archive/scp_$a"`
+	# call ourselfs again with the participant id
+	dir=`realpath "/data${project}/site/archive/scp_$a"`
         # run this in an interactive shell
         echo "#################################"
         echo "# Run a new sub-send command    #"
         echo "#################################"
-	    /usr/bin/bash -i -c "$0 $dir"
+        /usr/bin/bash -i -c "$0 $dir"
     done
     exit
 fi
