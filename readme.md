@@ -62,7 +62,8 @@ Configuration
   "WEBPROXYPORT":       "<port of the web proxy>",
   "DATADIR": 		"<default projects data directory - (default /data)>",
   "LOCALTIMEZONE":      "<php formatted local timezone identifier e.g. America/Chicago>",
-  "SUBJECTID":      	"<REDCap id, first field in project, default=id_redcap>"
+  "SUBJECTID":      	"<REDCap id, first field in project, default=id_redcap>",
+  "HIDEPATTERN":        "\\\\^" 
 }
 ```
 
