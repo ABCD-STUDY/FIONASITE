@@ -220,8 +220,9 @@
       	 foreach($study['series'] as $seriesInstanceUID => $v) {
 	    if (array_key_exists('DAIC',$v) && $v['DAIC'] == 1 &&
 	        array_key_exists('quarantine',$v) && $v['quarantine'] == 1) {
+
 		// check the file times of both tgz files
-		$tgzDAIC = glob('data'.$project.'/DAIC/*'.$seriesInstanceUID.'*.tgz');
+		$tgzDAIC = glob('/data'.$project.'/DAIC/*'.$seriesInstanceUID.'*.tgz');
 		for ( $i = 0; $i < count($tgzDAIC); $i++) { // we want to find the correct DAIC file (matches with the series we found in quarantine)
 		    $tgzQuarantine = glob('data'.$project.'/quarantine/*'.$seriesInstanceUID.'*.tgz');
 		    for ( $j = 0; $j < count($tgzQuarantine); $j++) {
@@ -251,7 +252,7 @@
 			      //echo ("Warning: did not find the correct file in /data/DAIC, should have been: ".$newfilename. ", but got:".$tgzDAIC[$i]."\n");
 			      continue;
 			   }
-			   echo ("Info: did find the same (older) file in /data".$project."/DAIC as ".$newfilename." now copy the newer file over to /data/outbox to replace the older file in /data/DAIC");
+			   echo ("Info: did find the same (older) file in /data".$project."/DAIC as ".$newfilename." now copy the newer file over to /data/outbox to replace the older file in /data/DAIC\n");
 
 		           $fs = glob("/".dirname($tgzQuarantine[$j])."/".$ofn."*");
 		           if ($force) {
