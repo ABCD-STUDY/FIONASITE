@@ -47,6 +47,16 @@
    }
    echo('<script type="text/javascript"> project_name = "' . $project . '";</script>');
 
+   $filter_pattern = "";
+   if (is_readable("php/config.json")) {
+      $config = json_decode(file_get_contents("php/config.json"),True);
+      if ( isset($config['HIDEPATTERN']) ) {
+         $filter_pattern = $config['HIDEPATTERN'];
+         echo('<script type="text/javascript"> hidepattern = "' . $filter_pattern . '";</script>');
+      }
+   }
+
+
    // PCGC
    // For each $permissions: "SiteABCD", "SitePCGC"
    // get the site name: "ABCD", "PCGC"
@@ -952,6 +962,9 @@ function updateSendInformation() {
 var subjectData = [];
 var scrollTimer, lastScrollFireTime = 0; // for handling the scroll event (throdle)
 function loadSubjects() {
+    // 
+    // hidepattern
+    //
     console.log("loadSubjects");
     jQuery('#list-of-subjects').find('.data').remove();
     jQuery('#view-name').text('Subjects');
@@ -985,11 +998,18 @@ function loadSubjects() {
              i = i - count;
          }
 
-
         subjectData = data; // we can re-use those
 	    for (var i = 0; i < data.length; i++) {
             var shortname = data[i].PatientName + "-" + data[i].PatientID;
 	        shortname = shortenName( shortname );
+		// if we have a hidepattern use it to not display some participants
+//console.log("hidepattern: " + hidepattern);
+		if (typeof hidepattern !== "undefined") {
+		   if (shortname.match(new RegExp(hidepattern)) !== null) {
+//console.log("filter out " + shortname);
+		      continue; // skip this item
+                   }
+		}
             
 	        jQuery('#list-of-subjects').prepend('<div class="data open-study-info tag-' + data[i].lightTag + '" style="position: relative;" studyinstanceuid="'+data[i].StudyInstanceUID+'"><a class="mdl-navigation__link" href="#" title=\"' + data[i].PatientName + '-' + data[i].PatientID + '\"><i class="mdl-color-text--blue-grey-400 material-icons unknown-type" role="presentation">accessibility</i><div class="scan-date">scan date: ' + data[i].StudyDate.replace( /(\d{4})(\d{2})(\d{2})/, "$2/$3/$1") + ' ' + data[i].StudyTime.split('.')[0].replace(/(.{2})/g,":$1").slice(1) + '</div><div class="mono" style="position: absolute; bottom: 30px; right: 10px;">'+shortname+'</div></a></div>');
 	    }
