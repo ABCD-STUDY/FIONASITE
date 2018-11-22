@@ -348,7 +348,7 @@
        "tag": [ "SeriesDescription" ],
         "operator": "contains",
         "negate": "yes", 
-        "value": "ABCD_QA_dMRI"
+        "value": "_QA_dMRI"
       }
     ]
   },
@@ -590,7 +590,7 @@
         "value": "ep_b"
       },{ 
         "tag": [ "SeriesDescription" ],
-        "value": "ABCD_QA_dMRI" 
+        "value": "...._QA_dMRI" 
       }
     ]
   },
