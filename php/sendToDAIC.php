@@ -20,9 +20,9 @@ if ($project == "ABCD") {
 }
 
 // find out if we have anonymization enabled
-$fn="/data/enabled";
+$fn="/data/config/enabled";
 if ($project !== "") {
-   $fn = '/data'.$project.'/enabled';
+   $fn = '/data'.$project.'/config/enabled';
 }
 $enable = file_get_contents($fn);
 $ar = str_split($enable);

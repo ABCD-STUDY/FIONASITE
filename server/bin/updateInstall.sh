@@ -67,7 +67,7 @@ todo=(
     'owner' '/var/www/html/server/.pids' 'processing:processing'
     'owner' '/var/www/html/server/logs' 'processing:processing'
 
-    'existsFile' '/data/enabled' '110'
+    'existsFile' '/data/config/enabled' '110'
     'existsFile' '/var/www/html/php/repush.jobs' ''
     'existsFile' '/var/www/html/server/logs/audit.log' ''
     'owner' '/var/www/html/server/logs/audit.log' 'apache:apache'
@@ -76,11 +76,11 @@ todo=(
     'owner' '/data/config/machines.json' 'processing:processing'
     'permission' '/data/config/machines.json' '644'
 
-    'permission' '/data/enabled' '666'
+    'permission' '/data/config/enabled' '666'
     'permission' '/var/www/html/php/repush.jobs' '666'
     'permission' '/data/config/config.json' '644'
 
-    'owner' '/data/enabled' 'apache:apache'
+    'owner' '/data/config/enabled' 'apache:apache'
     'owner' '/var/www/html/php/repush.jobs' 'apache:apache'
     'owner' '/data/config/config.json' 'apache:apache'
 )
