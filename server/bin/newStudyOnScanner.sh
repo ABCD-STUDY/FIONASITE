@@ -23,8 +23,8 @@ fi
 # Check if we have MPPS on (if we have it off we should not copy to active-scans
 # actually we should remove the MPPS file as it might contain patient information for
 # non ABCD participants.
-if [[ -f /data/enabled ]]; then
-  enabled=`cat /data/enabled | head -c 2 | tail -c 1`
+if [[ -f /data/config/enabled ]]; then
+  enabled=`cat /data/config/enabled | head -c 2 | tail -c 1`
   if [[ "$enabled" == "0" ]]; then
      /bin/rm -f "$1/$2"
      echo "`date`: Switched OFF, deleted MPPS file $1/$2 uppon receive" >> $log
