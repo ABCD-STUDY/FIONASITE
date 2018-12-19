@@ -3,7 +3,7 @@
 #
 # This script is called by incrond (root) if someone changes the contents of /data/enabled.
 #
-# Characters in the /data/enabled file are used to control storescp (first character "0" to disable)
+# Characters in the /data/config/enabled file are used to control storescp (first character "0" to disable)
 # and the mpps system service (second character "0" to disable).
 #
 # We can run in two different modes. We can either disable MPPS as a system service on this machine
