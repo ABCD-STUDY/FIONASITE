@@ -58,9 +58,9 @@ fi
 # echo "`date`: lock file is at: ${SERVERDIR}/.pids/moveFromScannerPCGC.lock" >> $log
 
 enabled=0
-if [[ -f ${DATADIR}/enabled ]]; then
+if [[ -f ${DATADIR}/config/enabled ]]; then
   # this will only work if there is no file named '2' in the ${DATADIR} directory
-  enabled=`cat ${DATADIR}/enabled | head -c 2| tail -c 1`
+  enabled=`cat ${DATADIR}/config/enabled | head -c 2| tail -c 1`
 fi
 
 getSeries () {
