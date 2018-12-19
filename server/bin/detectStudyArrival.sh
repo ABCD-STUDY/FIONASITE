@@ -225,8 +225,8 @@ detect () {
         fi
         # before we can do anything we need to anonymize this series (real file location, no symbolic links)
         anonymize=1
-        if [[ -f ${datadir}/enabled ]]; then
-          anonymize=`cat ${datadir}/enabled | head -c 3 | tail -c 1`
+        if [[ -f ${datadir}/config/enabled ]]; then
+          anonymize=`cat ${datadir}/config/enabled | head -c 3 | tail -c 1`
         fi
         # This functionality has been replaced, instead of anonymizing on receiving a study we now anonymize if we send the study out
         # This way we can anonymize both the patient ID and the patient name as well. 
