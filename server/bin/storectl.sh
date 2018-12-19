@@ -51,11 +51,11 @@ export DCMDICTPATH=/usr/share/dcmtk/dicom.dic
 #
 case $1 in
     'start')
-        if [[ -f ${DATADIR}/enabled ]] && [[ -r ${DATADIR}/enabled ]]; then
-           v=`cat ${DATADIR}/enabled | head -c 1`
+        if [[ -f ${DATADIR}/config/enabled ]] && [[ -r ${DATADIR}/config/enabled ]]; then
+           v=`cat ${DATADIR}/config/enabled | head -c 1`
            if [[ "$v" == "0" ]]; then
-              echo "`date`: service disabled using /data/enabled control file" >> ${SERVERDIR}/logs/storescpd${projname}.log
-              echo "service disabled using /data/enabled control file"
+              echo "`date`: service disabled using ${SERVERDIR}/config/enabled control file" >> ${SERVERDIR}/logs/storescpd${projname}.log
+              echo "service disabled using ${SERVERDIR}/config/enabled control file"
               exit
            fi
         fi
