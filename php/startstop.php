@@ -8,10 +8,10 @@
   }
 
   // control file that contains something like  "000"
-  $fn="/data/enabled";
+  $fn="/data/config/enabled";
 
   if ($project !== "") {
-     $fn = '/data'.$project.'/enabled';
+     $fn = '/data'.$project.'/config/enabled';
   }
 
   // enable disable the system services
