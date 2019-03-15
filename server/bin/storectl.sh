@@ -76,7 +76,8 @@ case $1 in
         [ $RETVAL = 0 ] && exit || echo "storescpd process not running, start now.."
         echo "Starting storescp daemon..."
         echo "`date`: we try to start storescp by: /usr/bin/nohup /usr/bin/storescpFIONA --fork --promiscuous --write-xfer-little --exec-on-reception \"$scriptfile '#a' '#c' '#r' '#p' '#f' &\" --sort-on-study-uid scp --output-directory \"$od\" $port &>${SERVERDIR}/logs/storescpd.log &" >> ${SERVERDIR}/logs/storescpd-start.log
-
+	# set the LD_LIBRARY_PATH to make this work on Ubuntu
+	export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/var/www/html/server/bin/backage
         /usr/bin/nohup /var/www/html/server/bin/storescpFIONA --fork \
 	    --datadir ${ARRIVEDDIR} \
 	    --datapipe ${pipe} \
