@@ -35,7 +35,7 @@ The 'incrontab -e' for the processing user should look like this:
 Additionally the root user needs the following 'incrontab -e' entries:
 
 ```
-/data/ IN_MODIFY /var/www/html/server/bin/updateSystemStatus.sh $@ $#
+/data/config/ IN_MODIFY /var/www/html/server/bin/updateSystemStatus.sh $@ $#
 ```
 
 ## Files of interest
