@@ -20,6 +20,8 @@ todo=(
     'existsDirectory' '/data/finished-scans' ''
     'existsDirectory' '/data/scanner' ''
     'existsDirectory' '/data/site' ''
+    'existsDirectory' '/data/site/archive' ''
+    'existsDirectory' '/data/site/raw' ''
     'existsDirectory' '/data/inbox' ''
     'existsDirectory' '/var/www/html/server' ''
     'existsDirectory' '/var/www/html/server/.pids' ''
@@ -32,6 +34,7 @@ todo=(
     'permission' '/data/site/scanner-share/ABCDstream/yarra_export' '777'
     'existsLink' '/var/www/html/php/output' '/data/site/output'
     'existsLink' '/var/www/html/php/data' '/data'
+    'existsLink' '/var/www/html/php/raw' '/data/site/raw'
 
     'permission' '/data' '777'
     'permission' '/data/DAIC' '755'
@@ -70,7 +73,7 @@ todo=(
     'existsFile' '/data/config/enabled' '110'
     'existsFile' '/var/www/html/php/repush.jobs' ''
     'existsFile' '/var/www/html/server/logs/audit.log' ''
-    'owner' '/var/www/html/server/logs/audit.log' 'apache:apache'
+    'owner' '/var/www/html/server/logs/audit.log' 'www-data:www-data'
     'existsFile' '/data/config/config.json' '{ "DICOMIP": "137.110.181.168", "DICOMPORT": "4006", "DICOMAETITLE": "UCSDFIONA", "SCANNERIP": "172.20.141.70", "SCANNERPORT": "4006", "SCANNERAETITLE": "CTIPMUCSD1", "SCANNERTYPE": "SIEMENS", "MPPSPORT": "4007", "SERVERUSER": "daic", "DAICSERVER": "137.110.181.166", "PFILEDIR": "/data/DAIC", "CONNECTION": "" }'
     'existsFile' '/data/config/machines.json' '[]'
     'owner' '/data/config/machines.json' 'processing:processing'
@@ -80,9 +83,9 @@ todo=(
     'permission' '/var/www/html/php/repush.jobs' '666'
     'permission' '/data/config/config.json' '644'
 
-    'owner' '/data/config/enabled' 'apache:apache'
-    'owner' '/var/www/html/php/repush.jobs' 'apache:apache'
-    'owner' '/data/config/config.json' 'apache:apache'
+    'owner' '/data/config/enabled' 'www-data:www-data'
+    'owner' '/var/www/html/php/repush.jobs' 'www-data:www-data'
+    'owner' '/data/config/config.json' 'www-data:www-data'
 )
 
 if [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]]; then
