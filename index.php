@@ -1425,14 +1425,15 @@ console.log("GOT transferStatus as : " + transferStatus + " from : " + filePath)
            str = str.concat("<div class='SeriesNumber'>SeriesNumber: " + (series["SeriesNumber"]==null?"":series["SeriesNumber"]) + "</div>");
          }
 console.log('transferStatus: ' + transferStatus);				  
-         if (transferStatus == "/quarantine/" && project_name == "ABCD") { // this might be ok for ABCD, but not for other projects
-             str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
-         }
+//         if (transferStatus == "/quarantine/" && project_name == "ABCD") { // this might be ok for ABCD, but not for other projects
+//             str = str.concat("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + filePath + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button></div>");
+  //       }
          str = str.concat("</li>");
          str = str.concat("");
          //jQuery('#detected-scans').append(str);
-
+         
          // update transfer status based on what fileStatus.php returns for this series (acquired, readytosend, transit, transfer)
+         console.log(" display Series filepath :" + filePath);
          jQuery.getJSON('/php/fileStatus.php?filename=' + filePath + '&project='+projname, (function(ids) {
              // return a function that knows about our series Instance UID variable
              return function(data) {
@@ -1448,7 +1449,8 @@ console.log('transferStatus: ' + transferStatus);
 			 fname = "unknown";
 		     jQuery('#'+id).html("TransferStatus: " + data[i].message + " <span title=\"" + data[i].filename + "\" >as " + fname + " (path, " + data[i].filemtime + ")</span>");
 		     // here we would also need to add the button - if it does not exist yet
-		     if (data[i].message == "readyToSend" && jQuery('#'+id).parent().find('button').length === 0) {
+		     console.log("Display Series:  TransferStatus: " + data[i].message + " filename as " + data[i].filename  + " filemTime as : " + data[i].filemtime );
+		     if (data[i].message == "readyToSend" && jQuery('#'+id).parent().find('button').length === 0 ) {
 			 //jQuery('#'+id).parent().append("Should show send button here " + data[i].filename);
 			 jQuery('#'+id).parent().append("<button type='button' class='mdl-button send-series-button mdl-js-button mdl-button--raised pull-right' filename=\"" + data[i].filename + "\" StudyInstanceUID =" + StudyInstanceUID + " SeriesInstanceUID=" + series['SeriesInstanceUID'] + ">Send</button>");
 		     }
@@ -1840,6 +1842,26 @@ jQuery(document).ready(function() {
         console.log("seriesinstanceuid: " + seriesinstanceuid);
 	jQuery('#list-of-subjects').children().each(function() { jQuery(this).removeClass('mark'); } );
         jQuery(this).addClass('mark');
+
+        // to fix incomplete series bug:  send button appear while tgz file in quarantine folder is still transfereing data.
+        var options = {
+            "suid": studyinstanceuid,
+            "project": projname
+        };
+        
+        console.log(" Get suid.json file status "); 
+        jQuery.getJSON('/php/checkFileReady.php', options, function(data) {
+               // return a filemtime of /data/quarantine/suid.json 
+
+              // if /data/quarantine/suid.json has not been changed for 5 min. the files are ready to send.
+              console.log(" suid.json file is not changing, ready to send status " + data['message']); 
+              if ( data.message === 'readToSend' ){  //enabled  sendall button 
+                 jQuery('#study-info-dialog-sendall').removeAttr("disabled");
+
+              } else {
+                 jQuery('#study-info-dialog-sendall').attr("disabled", true);
+              }
+        });
 
 
         var options = {
