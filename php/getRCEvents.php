@@ -62,6 +62,28 @@ if ($token == "") {
   curl_setopt($ch, CURLOPT_TIMEOUT, 400);
   curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data, '', '&'));
   $output = curl_exec($ch);
+  //print $output;
+
+  //remove non imaging events.
+  $event = json_decode($output , true); 
+  foreach ($event as $key => $value) {
+    if(preg_match('/\bmonth\b/', $value["event_name"])){
+        unset($event[$key]);
+    }
+    if(preg_match('/\bScreener\b/', $value["event_name"])){
+        unset($event[$key]);
+    }
+    if(preg_match('/\b1 Year\b/', $value["event_name"])){
+        unset($event[$key]);
+    }
+    if(preg_match('/\b4 Year\b/', $value["event_name"])){
+        unset($event[$key]);
+    }
+    if(preg_match('/\b5 Year\b/', $value["event_name"])){
+        unset($event[$key]);
+    }
+  }
+  $output = json_encode(array_values($event));
   print $output;
   print curl_error($ch);
   curl_close($ch);
