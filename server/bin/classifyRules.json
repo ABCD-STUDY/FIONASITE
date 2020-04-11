@@ -119,6 +119,8 @@
     "rules" : [
       {
 	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
       },{ 
         "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -128,6 +130,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "255"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 256, 256, 0"
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "tfl3d1_16ns"
@@ -148,6 +153,8 @@
     "rules" : [
       {
 	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
       },{ 
         "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -157,6 +164,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "255"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 256, 256, 0"
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "tfl3d1_16ns"}
@@ -180,6 +190,8 @@
     "rules" : [
       {
 	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -189,6 +201,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "227" 
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 256, 256, 0"
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "spc_200ns"
@@ -211,6 +226,8 @@
     "rules" : [
       {
 	"rule" : "SIEMENSBYMANUFACTURER"
+      },{
+	"rule" : "ORIGINAL"
       },{ 
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
@@ -220,6 +237,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "227" 
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "0, 256, 256, 0"
       },{ 
         "tag": [ "0x18", "0x24" ],
         "value": "spc_200ns"
@@ -277,6 +297,9 @@
         "tag": [ "NumSlices" ],
         "value": "81"
       },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "105" 
@@ -308,6 +331,9 @@
         "operator": "==",
         "value": "105" 
       },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
+      },{ 
         "tag": [ "NumSlices" ],
         "value": "81"
       },{ 
@@ -334,6 +360,9 @@
        "tag": [ "0x28", "0x10" ],
         "operator": "==",
         "value": "1260"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "140, 0, 0, 140"
       },{ 
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
@@ -371,6 +400,9 @@
       },{ 
         "tag": [ "NumSlices" ],
         "value": "60"
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "SequenceName" ],
         "value": "epf..2d1_90"
@@ -410,6 +442,9 @@
         "operator": "==",
         "value": "90" 
       },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
+      },{ 
         "tag": [ "NumSlices" ],
         "value": "60"
       },{ 
@@ -437,6 +472,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "NumSlices" ],
         "value": "60"
@@ -466,6 +504,9 @@
         "operator": "==",
         "value": "90" 
       },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
+      },{ 
         "tag": [ "NumSlices" ],
         "value": "60"
       },{ 
@@ -493,6 +534,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "NumSlices" ],
         "value": "60"
@@ -857,6 +901,9 @@
         "tag": [ "0x18", "0x89" ],
         "operator": "==",
         "value": "90" 
+      },{ 
+        "tag": [ "AcquisitionMatrix" ],
+        "value": "90, 0, 0, 90"
       },{ 
         "tag": [ "NumSlices" ],
         "value": "60"
