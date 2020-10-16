@@ -471,7 +471,7 @@
 </label>
 
 <label for="anonymize" id="anonymize-label" class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect">
-  <input type="checkbox" id="anonymize" class="mdl-checkbox__input" checked />
+  <input type="checkbox" id="anonymize" class="mdl-checkbox__input" disabled />
   <span class="mdl-checkbox__label">anonymize files</span>
 </label>
             </div>

@@ -76,7 +76,7 @@ if ($token == "") {
     if(preg_match('/\b1 Year\b/', $value["event_name"])){
         unset($event[$key]);
     }
-    if(preg_match('/\b4 Year\b/', $value["event_name"])){
+    if(preg_match('/\b2\b/', $value["arm_num"])){
         unset($event[$key]);
     }
     if(preg_match('/\b5 Year\b/', $value["event_name"])){
