@@ -863,6 +863,10 @@ class ProcessSingleFile(Daemon):
                                         data['SequenceName'] = str(dataset[0x18,0x24].value)
                                 except:
                                         pass
+				try:
+                                        data['ScanOptions'] = str(dataset[0x18,0x22].value)
+                                except:
+                                        pass
                                 try:
                                         data['EchoTime'] = str(dataset.EchoTime)
                                 except:

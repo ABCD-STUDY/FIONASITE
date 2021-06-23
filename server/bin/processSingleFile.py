@@ -853,6 +853,10 @@ class ProcessSingleFile(Daemon):
                                 except:
                                         pass
                                 try:
+                                        data['ScanOptions'] = str(dataset[0x18,0x22].value)
+                                except:
+                                        pass
+				try:
                                         data['EchoTime'] = str(dataset.EchoTime)
                                 except:
                                         pass
